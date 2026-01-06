@@ -548,7 +548,7 @@
                 const weekAgoStr = weekAgo.toISOString().split('T')[0];
 
                 // Ore oggi
-                const { data: todayData } = await supabase
+                const { data: todayData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('ore')
                     .eq('data', today);
@@ -557,7 +557,7 @@
                 document.getElementById('stat-today-hours').textContent = `${Math.round(todayHours)}h`;
 
                 // Ore settimana
-                const { data: weekData } = await supabase
+                const { data: weekData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('ore')
                     .gte('data', weekAgoStr);
@@ -566,7 +566,7 @@
                 document.getElementById('stat-week-hours').textContent = `${Math.round(weekHours)}h`;
 
                 // Operai attivi
-                const { data: operaiData } = await supabase
+                const { data: operaiData } = await supabaseClient
                     .from('operai')
                     .select('*')
                     .eq('attivo', true);
@@ -574,7 +574,7 @@
                 document.getElementById('stat-active-workers').textContent = operaiData ? operaiData.length : 0;
 
                 // Attività
-                const { data: attivitaData } = await supabase
+                const { data: attivitaData } = await supabaseClient
                     .from('attivita')
                     .select('*')
                     .eq('attiva', true);
@@ -591,7 +591,7 @@
         // ==========================================
         async function loadOperai() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('operai')
                     .select('*')
                     .order('cognome', { ascending: true });
@@ -610,7 +610,7 @@
                 const today = new Date().toISOString().split('T')[0];
                 const operaiWithHours = await Promise.all(
                     operai.map(async (op) => {
-                        const { data: todayHours } = await supabase
+                        const { data: todayHours } = await supabaseClient
                             .from('ore_lavorate')
                             .select('ore')
                             .eq('operaio_id', op.id)
@@ -671,7 +671,7 @@
             }
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('operai')
                     .insert({ nome, cognome })
                     .select()
@@ -731,7 +731,7 @@
         // ==========================================
         async function toggleOperaioStatus(id, newStatus) {
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('operai')
                     .update({ attivo: newStatus })
                     .eq('id', id);
@@ -753,7 +753,7 @@
         // ==========================================
         async function loadAttivita() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('attivita')
                     .select('*')
                     .order('ordine', { ascending: true });
@@ -852,7 +852,7 @@
 
                 if (id) {
                     // Update
-                    const { error } = await supabase
+                    const { error } = await supabaseClient
                         .from('attivita')
                         .update(dataToSave)
                         .eq('id', id);
@@ -861,7 +861,7 @@
                     showMessage('✅ Attività aggiornata!', 'success');
                 } else {
                     // Insert
-                    const { error } = await supabase
+                    const { error } = await supabaseClient
                         .from('attivita')
                         .insert(dataToSave);
 
@@ -881,7 +881,7 @@
 
         async function toggleAttivitaStatus(id, newStatus) {
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('attivita')
                     .update({ attiva: newStatus })
                     .eq('id', id);
@@ -908,7 +908,7 @@
 
             try {
                 // Report per operaio
-                const { data: oreData } = await supabase
+                const { data: oreData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('*, operai(*)')
                     .gte('data', startDate.toISOString().split('T')[0]);
@@ -963,7 +963,7 @@
                 });
 
                 // Report per attività
-                const { data: oreAttData } = await supabase
+                const { data: oreAttData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('*, attivita(*)')
                     .gte('data', startDate.toISOString().split('T')[0]);
