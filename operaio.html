@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Registra Ore Lavoro</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            min-height: 100vh;
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .card h2 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .today-summary {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(16, 185, 129, 0.1));
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .today-total {
+            font-size: 2em;
+            font-weight: bold;
+            color: #10b981;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .voice-result {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .voice-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .voice-entry:last-child {
+            margin-bottom: 0;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .message-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid #10b981;
+            color: #6ee7b7;
+        }
+
+        .message-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        .message-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid #3b82f6;
+            color: #93c5fd;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+        }
+
+        .history-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .history-date {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .history-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-color: #3b82f6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2em;
+            }
+            
+            .today-total {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>⏱️ Registra Ore Lavoro</h1>
+            <div class="subtitle" id="user-name">Caricamento...</div>
+        </div>
+
+        <div id="error-message"></div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('home')">🏠 Oggi</div>
+            <div class="tab" onclick="switchTab('history')">📊 Storico</div>
+        </div>
+
+        <!-- TAB: HOME -->
+        <div id="tab-home" class="tab-content active">
+            <!-- OGGI -->
+            <div class="card">
+                <h2>📅 Oggi: <span id="today-date"></span></h2>
+                <div class="today-summary">
+                    <div class="today-total" id="today-total">0h</div>
+                    <ul class="activity-list" id="today-activities">
+                        <li style="text-align: center; color: #94a3b8;">Nessuna ora registrata</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- AGGIUNGI ORE -->
+            <div class="card">
+                <h2>➕ Aggiungi Ore</h2>
+                
+                <div class="form-group">
+                    <label>📅 Data</label>
+                    <input type="date" id="input-date" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label>🔧 Attività</label>
+                    <select id="input-activity" class="form-select">
+                        <option value="">Caricamento attività...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>⏱️ Ore</label>
+                    <input type="number" id="input-hours" class="form-input" step="0.5" min="0.5" max="24" placeholder="Es: 8 o 4.5">
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Note (opzionale)</label>
+                    <input type="text" id="input-notes" class="form-input" placeholder="Aggiungi eventuali note...">
+                </div>
+
+                <button class="btn btn-primary" onclick="saveHours()">💾 SALVA ORE</button>
+                <button class="btn btn-secondary" onclick="startVoiceRecognition()">🎤 Usa Voce</button>
+
+                <div id="voice-result"></div>
+            </div>
+        </div>
+
+        <!-- TAB: STORICO -->
+        <div id="tab-history" class="tab-content">
+            <div class="card">
+                <h2>📊 Storico Ore</h2>
+                
+                <div class="form-group">
+                    <label>Periodo</label>
+                    <select id="history-period" class="form-select" onchange="loadHistory()">
+                        <option value="7">Ultimi 7 giorni</option>
+                        <option value="30">Ultimo mese</option>
+                        <option value="90">Ultimi 3 mesi</option>
+                    </select>
+                </div>
+
+                <div id="history-list">
+                    <div class="loading">Caricamento storico...</div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; text-align: center;">
+                    <div style="font-size: 0.9em; color: #94a3b8; margin-bottom: 5px;">Totale periodo</div>
+                    <div style="font-size: 2em; font-weight: bold; color: #10b981;" id="history-total">0h</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="status-message"></div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURAZIONE SUPABASE
+        // ==========================================
+        const SUPABASE_URL = 'https://xxzyhzalfqyqseedsuub.supabase.co';
+        const SUPABASE_ANON_KEY =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2ODgxNjMsImV4cCI6MjA4MzI2NDE2M30.7o18J8g0tcWX2qyrQl-zGBU10AerbHlG-R_WMkjRn7s';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==========================================
+        // VARIABILI GLOBALI
+        // ==========================================
+        let currentUser = null;
+        let activities = [];
+        let voiceParsedEntries = [];
+
+        // ==========================================
+        // INIZIALIZZAZIONE
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Ottieni token dall'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (!token) {
+                showError('❌ Link non valido. Contatta l\'amministratore.');
+                return;
+            }
+
+            // Carica operaio
+            await loadUser(token);
+            
+            if (currentUser) {
+                await loadActivities();
+                setTodayDate();
+                await loadTodaySummary();
+            }
+        });
+
+        // ==========================================
+        // CARICA OPERAIO
+        // ==========================================
+        async function loadUser(token) {
+            try {
+                const { data, error } = await supabase
+                    .from('operai')
+                    .select('*')
+                    .eq('token_personale', token)
+                    .eq('attivo', true)
+                    .single();
+
+                if (error || !data) {
+                    showError('❌ Operaio non trovato o non attivo.');
+                    return;
+                }
+
+                currentUser = data;
+                document.getElementById('user-name').textContent = `👤 ${data.nome} ${data.cognome}`;
+            } catch (error) {
+                console.error('Errore caricamento operaio:', error);
+                showError('❌ Errore di connessione.');
+            }
+        }
+
+        // ==========================================
+        // CARICA ATTIVITÀ
+        // ==========================================
+        async function loadActivities() {
+            try {
+                const { data, error } = await supabase
+                    .from('attivita')
+                    .select('*')
+                    .eq('attiva', true)
+                    .order('ordine', { ascending: true });
+
+                if (error) throw error;
+
+                activities = data;
+                
+                const select = document.getElementById('input-activity');
+                select.innerHTML = '<option value="">Seleziona attività...</option>' +
+                    activities.map(a => `<option value="${a.id}">${a.icona} ${a.nome}</option>`).join('');
+            } catch (error) {
+                console.error('Errore caricamento attività:', error);
+                showError('❌ Errore caricamento attività.');
+            }
+        }
+
+        // ==========================================
+        // DATA OGGI
+        // ==========================================
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('input-date').value = today;
+            
+            const dateObj = new Date();
+            const days = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+            
+            document.getElementById('today-date').textContent = 
+                `${days[dateObj.getDay()]} ${dateObj.getDate()} ${months[dateObj.getMonth()]}`;
+        }
+
+        // ==========================================
+        // CARICA RIEPILOGO OGGI
+        // ==========================================
+        async function loadTodaySummary() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                const { data, error } = await supabase
+                    .from('ore_lavorate')
+                    .select('*, attivita(*)')
+                    .eq('operaio_id', currentUser.id)
+                    .eq('data', today);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('today-total').textContent = '0h';
+                    document.getElementById('today-activities').innerHTML = 
+                        '<li style="text-align: center; color: #94a3b8;">Nessuna ora registrata</li>';
+                    return;
+                }
+
+                // Calcola totale
+                const total = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+                document.getElementById('today-total').textContent = `${total}h`;
+
+                // Raggruppa per attività
+                const grouped = {};
+                data.forEach(item => {
+                    const actName = item.attivita.nome;
+                    if (!grouped[actName]) {
+                        grouped[actName] = {
+                            ore: 0,
+                            icona: item.attivita.icona
+                        };
+                    }
+                    grouped[actName].ore += parseFloat(item.ore);
+                });
+
+                // Mostra lista
+                const list = Object.entries(grouped)
+                    .map(([name, info]) => `
+                        <li class="activity-item">
+                            <span>${info.icona} ${name}</span>
+                            <span style="font-weight: bold; color: #10b981;">${info.ore}h</span>
+                        </li>
+                    `).join('');
+
+                document.getElementById('today-activities').innerHTML = list;
+            } catch (error) {
+                console.error('Errore caricamento oggi:', error);
+            }
+        }
+
+        // ==========================================
+        // SALVA ORE
+        // ==========================================
+        async function saveHours() {
+            const date = document.getElementById('input-date').value;
+            const activityId = document.getElementById('input-activity').value;
+            const hours = parseFloat(document.getElementById('input-hours').value);
+            const notes = document.getElementById('input-notes').value;
+
+            // Validazione
+            if (!date || !activityId || !hours) {
+                showMessage('⚠️ Compila tutti i campi obbligatori', 'error');
+                return;
+            }
+
+            if (hours <= 0 || hours > 24) {
+                showMessage('⚠️ Le ore devono essere tra 0.5 e 24', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('ore_lavorate')
+                    .insert({
+                        operaio_id: currentUser.id,
+                        data: date,
+                        attivita_id: activityId,
+                        ore: hours,
+                        note: notes || null,
+                        metodo_inserimento: 'manuale'
+                    });
+
+                if (error) throw error;
+
+                showMessage('✅ Ore salvate con successo!', 'success');
+                
+                // Reset form
+                document.getElementById('input-hours').value = '';
+                document.getElementById('input-notes').value = '';
+                document.getElementById('input-activity').selectedIndex = 0;
+                
+                // Ricarica oggi
+                await loadTodaySummary();
+            } catch (error) {
+                console.error('Errore salvataggio:', error);
+                showMessage('❌ Errore nel salvataggio', 'error');
+            }
+        }
+
+        // ==========================================
+        // VOICE RECOGNITION
+        // ==========================================
+        function startVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showMessage('❌ Il tuo browser non supporta il riconoscimento vocale. Usa Chrome o Safari.', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            recognition.lang = 'it-IT';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            showMessage('🎤 Parla ora... (es: "4 ore trattore e 3 ore stalla")', 'info');
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                console.log('Riconosciuto:', transcript);
+                
+                parseVoiceInput(transcript);
+            };
+
+            recognition.onerror = function(event) {
+                showMessage('❌ Errore riconoscimento vocale. Riprova.', 'error');
+                console.error('Errore:', event.error);
+            };
+
+            recognition.start();
+        }
+
+        // ==========================================
+        // PARSING VOICE INPUT
+        // ==========================================
+        function parseVoiceInput(text) {
+            voiceParsedEntries = [];
+            
+            // Pattern per trovare: numero + parole chiave
+            // Es: "quattro ore trattore", "3 ore stalla", "due ore e mezza campo"
+            
+            // Converti numeri in parole
+            const numberWords = {
+                'zero': 0, 'una': 1, 'uno': 1, 'due': 2, 'tre': 3, 'quattro': 4, 'cinque': 5,
+                'sei': 6, 'sette': 7, 'otto': 8, 'nove': 9, 'dieci': 10,
+                'undici': 11, 'dodici': 12, 'mezza': 0.5, 'mezzo': 0.5
+            };
+
+            // Split per "e" o virgola
+            const segments = text.split(/\se\s|,/);
+
+            segments.forEach(segment => {
+                segment = segment.trim();
+                
+                // Cerca numero
+                let hours = null;
+                
+                // Prima cerca numeri in cifre (es: "4", "3.5")
+                const digitMatch = segment.match(/(\d+\.?\d*)/);
+                if (digitMatch) {
+                    hours = parseFloat(digitMatch[1]);
+                } else {
+                    // Cerca numeri in parole
+                    for (const [word, num] of Object.entries(numberWords)) {
+                        if (segment.includes(word)) {
+                            hours = num;
+                            break;
+                        }
+                    }
+                }
+
+                if (!hours) return;
+
+                // Cerca quale attività corrisponde
+                let matchedActivity = null;
+                
+                for (const activity of activities) {
+                    for (const keyword of activity.keywords) {
+                        if (segment.includes(keyword)) {
+                            matchedActivity = activity;
+                            break;
+                        }
+                    }
+                    if (matchedActivity) break;
+                }
+
+                if (matchedActivity) {
+                    voiceParsedEntries.push({
+                        activity: matchedActivity,
+                        hours: hours
+                    });
+                }
+            });
+
+            displayVoiceResult();
+        }
+
+        // ==========================================
+        // MOSTRA RISULTATO VOICE
+        // ==========================================
+        function displayVoiceResult() {
+            const container = document.getElementById('voice-result');
+            
+            if (voiceParsedEntries.length === 0) {
+                container.innerHTML = `
+                    <div class="message message-error">
+                        ❌ Non ho capito. Riprova dicendo: "4 ore trattore e 3 ore stalla"
+                    </div>
+                `;
+                return;
+            }
+
+            const entriesHtml = voiceParsedEntries.map((entry, index) => `
+                <div class="voice-entry">
+                    <span>${entry.activity.icona} ${entry.activity.nome}</span>
+                    <span style="font-weight: bold; color: #10b981;">${entry.hours}h</span>
+                    <button onclick="removeVoiceEntry(${index})" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">✕</button>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="voice-result">
+                    <div style="margin-bottom: 10px; font-weight: 600; color: #60a5fa;">✓ Ho capito:</div>
+                    ${entriesHtml}
+                    <button class="btn btn-primary" style="margin-top: 10px;" onclick="confirmVoiceEntries()">✅ CONFERMA E SALVA</button>
+                </div>
+            `;
+        }
+
+        function removeVoiceEntry(index) {
+            voiceParsedEntries.splice(index, 1);
+            displayVoiceResult();
+        }
+
+        async function confirmVoiceEntries() {
+            const date = document.getElementById('input-date').value;
+            
+            try {
+                for (const entry of voiceParsedEntries) {
+                    await supabase
+                        .from('ore_lavorate')
+                        .insert({
+                            operaio_id: currentUser.id,
+                            data: date,
+                            attivita_id: entry.activity.id,
+                            ore: entry.hours,
+                            metodo_inserimento: 'voice'
+                        });
+                }
+
+                showMessage(`✅ ${voiceParsedEntries.length} registrazioni salvate!`, 'success');
+                document.getElementById('voice-result').innerHTML = '';
+                voiceParsedEntries = [];
+                await loadTodaySummary();
+            } catch (error) {
+                console.error('Errore salvataggio voice:', error);
+                showMessage('❌ Errore nel salvataggio', 'error');
+            }
+        }
+
+        // ==========================================
+        // STORICO
+        // ==========================================
+        async function loadHistory() {
+            const days = parseInt(document.getElementById('history-period').value);
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
+
+            try {
+                const { data, error } = await supabase
+                    .from('ore_lavorate')
+                    .select('*, attivita(*)')
+                    .eq('operaio_id', currentUser.id)
+                    .gte('data', startDate.toISOString().split('T')[0])
+                    .order('data', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('history-list').innerHTML = 
+                        '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna registrazione nel periodo</div>';
+                    document.getElementById('history-total').textContent = '0h';
+                    return;
+                }
+
+                // Calcola totale
+                const total = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+                document.getElementById('history-total').textContent = `${total}h`;
+
+                // Raggruppa per data
+                const grouped = {};
+                data.forEach(item => {
+                    if (!grouped[item.data]) {
+                        grouped[item.data] = [];
+                    }
+                    grouped[item.data].push(item);
+                });
+
+                // Mostra lista
+                const html = Object.entries(grouped).map(([date, items]) => {
+                    const dateObj = new Date(date + 'T12:00:00');
+                    const dateStr = `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+                    const dayTotal = items.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+                    
+                    const itemsHtml = items.map(item => `
+                        <div style="margin-top: 5px; font-size: 0.9em;">
+                            ${item.attivita.icona} ${item.attivita.nome}: <strong>${item.ore}h</strong>
+                            ${item.note ? `<span style="color: #94a3b8;"> - ${item.note}</span>` : ''}
+                        </div>
+                    `).join('');
+
+                    return `
+                        <div class="history-item">
+                            <div class="history-date">${dateStr}</div>
+                            <div class="history-details">
+                                <div style="flex: 1;">${itemsHtml}</div>
+                                <div style="font-size: 1.2em; font-weight: bold; color: #10b981;">${dayTotal}h</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('history-list').innerHTML = html;
+            } catch (error) {
+                console.error('Errore caricamento storico:', error);
+                showMessage('❌ Errore caricamento storico', 'error');
+            }
+        }
+
+        // ==========================================
+        // TABS
+        // ==========================================
+        function switchTab(tabName) {
+            // Rimuovi active da tutti
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+            // Aggiungi active al selezionato
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // Carica dati se necessario
+            if (tabName === 'history') {
+                loadHistory();
+            }
+        }
+
+        // ==========================================
+        // UTILITY
+        // ==========================================
+        function showMessage(message, type) {
+            const container = document.getElementById('status-message');
+            container.innerHTML = `<div class="message message-${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 4000);
+        }
+
+        function showError(message) {
+            document.getElementById('error-message').innerHTML = `<div class="message message-error">${message}</div>`;
+        }
+    </script>
+</body>
+</html>
