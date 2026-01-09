@@ -6,6 +6,7 @@
     <title>Gestionale Ore Lavoro - Admin</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -440,6 +441,13 @@
                     <canvas id="activity-chart"></canvas>
                 </div>
             </div>
+
+            <!-- EXPORT EXCEL -->
+            <div class="card">
+                <h2>📥 Export Dati</h2>
+                <p style="color: #94a3b8; margin-bottom: 15px;">Esporta tutti i dati in formato Excel (compatibile con il tuo foglio presenze)</p>
+                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;">📥 EXPORT EXCEL</button>
+            </div>
         </div>
 
         <div id="status-message"></div>
@@ -516,7 +524,7 @@
         // CONFIGURAZIONE SUPABASE
         // ==========================================
         const SUPABASE_URL = 'https://xxzyhzalfqyqseedsuub.supabase.co';
-        const SUPABASE_ANON_KEY =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2ODgxNjMsImV4cCI6MjA4MzI2NDE2M30.7o18J8g0tcWX2qyrQl-zGBU10AerbHlG-R_WMkjRn7s';
+        const SUPABASE_ANON_KEY =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzY4ODE2MywiZXhwIjoyMDgzMjY0MTYzfQ.Y1fUlGwzlzjYc-zJnOIF7X-7V7FrcRzfJJN5ZNhgi2s';
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1055,6 +1063,108 @@
             setTimeout(() => container.innerHTML = '', 4000);
         }
 
+
+        // ==========================================
+        // EXPORT TO EXCEL
+        // ==========================================
+        async function exportToExcel() {
+            try {
+                showMessage('⏳ Generando Excel...', 'info');
+                
+                // Preleva tutti i dati
+                const { data: oreData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, operai(*), attivita(*)')
+                    .order('data', { ascending: true });
+
+                if (!oreData || oreData.length === 0) {
+                    showMessage('⚠️ Nessun dato da esportare', 'error');
+                    return;
+                }
+
+                // Raggruppa per mese/anno
+                const dataByMonth = {};
+                oreData.forEach(item => {
+                    const date = new Date(item.data);
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    if (!dataByMonth[monthKey]) {
+                        dataByMonth[monthKey] = [];
+                    }
+                    dataByMonth[monthKey].push(item);
+                });
+
+                // Crea workbook
+                const wb = XLSX.utils.book_new();
+
+                // Per ogni mese, crea un foglio
+                Object.entries(dataByMonth).forEach(([monthKey, monthData]) => {
+                    const [year, month] = monthKey.split('-');
+                    const monthNames = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+                    const sheetName = `${monthNames[parseInt(month) - 1]} ${year}`;
+
+                    // Struttura Excel: operaio | 1 | 2 | 3 | ... | 31 | TOTALE
+                    const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+                    
+                    // Header
+                    const headerRow = ['Nome'];
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        headerRow.push(d);
+                    }
+                    headerRow.push('TOTALE');
+
+                    // Dati operai
+                    const operaiData = {};
+                    monthData.forEach(item => {
+                        const operaioName = `${item.operai.nome} ${item.operai.cognome}`.trim();
+                        const day = new Date(item.data).getDate();
+                        
+                        if (!operaiData[operaioName]) {
+                            operaiData[operaioName] = Array(daysInMonth + 2).fill('');
+                            operaiData[operaioName][0] = operaioName;
+                        }
+                        
+                        // Aggiungi ore al giorno
+                        const currentValue = operaiData[operaioName][day] || 0;
+                        operaiData[operaioName][day] = (parseFloat(currentValue) + parseFloat(item.ore)).toFixed(1);
+                    });
+
+                    // Calcola totali
+                    Object.keys(operaiData).forEach(name => {
+                        let total = 0;
+                        for (let d = 1; d <= daysInMonth; d++) {
+                            const val = operaiData[name][d];
+                            if (val && val !== '') {
+                                total += parseFloat(val);
+                            }
+                        }
+                        operaiData[name][daysInMonth + 1] = total.toFixed(1);
+                    });
+
+                    // Converti in array per Excel
+                    const sheetData = [headerRow];
+                    Object.values(operaiData).forEach(row => {
+                        sheetData.push(row);
+                    });
+
+                    // Crea foglio
+                    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+                    
+                    // Aggiungi al workbook
+                    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                });
+
+                // Scarica file
+                const today = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, `presenze_${today}.xlsx`);
+                
+                showMessage('✅ Excel scaricato con successo!', 'success');
+
+            } catch (error) {
+                console.error('Errore export Excel:', error);
+                showMessage('❌ Errore durante l\'export', 'error');
+            }
+        }
+
         // Click fuori modal per chiudere
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
@@ -1064,4 +1174,3 @@
     </script>
 </body>
 </html>
-
