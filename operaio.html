@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registra Ore Lavoro</title>
+    <title>Registra Ore - Operaio</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -17,7 +22,7 @@
             background: linear-gradient(135deg, #0f172a, #1e293b);
             color: white;
             min-height: 100vh;
-            padding: 15px;
+            padding: 20px;
             padding-bottom: 100px;
         }
 
@@ -28,16 +33,16 @@
 
         .header {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            padding: 20px;
+            padding: 25px;
             border-radius: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             text-align: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .header h1 {
-            font-size: 1.5em;
-            margin-bottom: 5px;
+            font-size: 2em;
+            margin-bottom: 8px;
         }
 
         .header .subtitle {
@@ -45,158 +50,65 @@
             opacity: 0.9;
         }
 
-        .card {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
             background: rgba(30, 41, 59, 0.95);
             border: 1px solid rgba(37, 99, 235, 0.2);
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .card h2 {
-            color: #60a5fa;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-
-        .today-summary {
             text-align: center;
-            padding: 20px;
+            transition: all 0.3s ease;
         }
 
-        .today-total {
-            font-size: 3em;
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2.2em;
             font-weight: bold;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #3b82f6, #10b981);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
 
-        .activity-list {
-            list-style: none;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .activity-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
+        .stat-label {
+            font-size: 0.9em;
             color: #94a3b8;
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9em;
-        }
-
-        .form-input, .form-select {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid rgba(37, 99, 235, 0.2);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            padding: 8px 12px;
-            font-size: 0.9em;
-        }
-
-        .btn:hover {
-            transform: scale(1.02);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .pending-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid #10b981;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .pending-item-info {
-            flex: 1;
-        }
-
-        .pending-item-hours {
-            font-weight: bold;
-            color: #10b981;
-            font-size: 1.1em;
-            margin-right: 10px;
         }
 
         .tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
 
         .tab {
             flex: 1;
-            padding: 12px;
+            min-width: 120px;
+            padding: 15px 20px;
             background: rgba(30, 41, 59, 0.8);
             border: 2px solid rgba(37, 99, 235, 0.2);
-            border-radius: 8px;
-            text-align: center;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-align: center;
             font-weight: 600;
         }
 
         .tab.active {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border-color: #3b82f6;
+            transform: scale(1.05);
         }
 
         .tab-content {
@@ -207,12 +119,123 @@
             display: block;
         }
 
-        .message {
-            padding: 12px;
+        .card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            color: #60a5fa;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            color: white;
+            padding: 15px;
             border-radius: 8px;
-            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .attivita-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .attivita-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            color: white;
+            padding: 20px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             text-align: center;
-            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .attivita-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .attivita-btn.selected {
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .attivita-icon {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 600;
         }
 
         .message-success {
@@ -227,19 +250,111 @@
             color: #fca5a5;
         }
 
-        .message-info {
-            background: rgba(59, 130, 246, 0.1);
-            border: 2px solid #3b82f6;
-            color: #93c5fd;
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin: 20px 0;
         }
 
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.2em;
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-color: #60a5fa;
+        }
+
+        .storico-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #10b981;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .storico-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .storico-date {
+            font-size: 0.9em;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .storico-attivita {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 5px;
+        }
+
+        .storico-ore {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .storico-note {
+            color: #cbd5e1;
+            font-size: 0.9em;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .storico-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .custom-date-range {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .custom-date-range.active {
+            display: grid;
+        }
+
+        @media (max-width: 768px) {
+            .storico-item {
+                flex-direction: column;
+                align-items: flex-start;
             }
-            
-            .today-total {
-                font-size: 2em;
+
+            .storico-actions {
+                width: 100%;
+            }
+
+            .btn-small {
+                flex: 1;
             }
         }
     </style>
@@ -248,90 +363,131 @@
     <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <h1>⏱️ Registra Ore Lavoro</h1>
-            <div class="subtitle" id="user-name">Caricamento...</div>
+            <h1>👷 Ore Lavoro</h1>
+            <div class="subtitle" id="operaio-name">Caricamento...</div>
         </div>
 
-        <div id="error-message"></div>
+        <!-- STATISTICHE -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-today">0h</div>
+                <div class="stat-label">Oggi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-week">0h</div>
+                <div class="stat-label">Settimana</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-month">0h</div>
+                <div class="stat-label">Mese</div>
+            </div>
+        </div>
 
         <!-- TABS -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('home')">🏠 Oggi</div>
-            <div class="tab" onclick="switchTab('history')">📊 Storico</div>
+            <div class="tab active" onclick="switchTab('registra')">✍️ Registra</div>
+            <div class="tab" onclick="switchTab('storico')">📅 Storico</div>
         </div>
 
-        <!-- TAB: HOME -->
-        <div id="tab-home" class="tab-content active">
-            <!-- OGGI -->
+        <!-- TAB: REGISTRA ORE -->
+        <div id="tab-registra" class="tab-content active">
             <div class="card">
-                <h2>📅 Oggi: <span id="today-date"></span></h2>
-                <div class="today-summary">
-                    <div class="today-total" id="today-total">0h</div>
-                    <ul class="activity-list" id="today-activities">
-                        <li style="text-align: center; color: #94a3b8;">Nessuna ora registrata</li>
-                    </ul>
-                </div>
-            </div>
+                <h2>📋 Registra Ore Lavorate</h2>
 
-            <!-- AGGIUNGI ORE -->
-            <div class="card">
-                <h2>➕ Aggiungi Ore</h2>
-                
                 <div class="form-group">
-                    <label>📅 Data</label>
-                    <input type="date" id="input-date" class="form-input">
+                    <label>Data</label>
+                    <input type="date" id="input-data" class="form-input">
                 </div>
 
-                <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                    <div class="form-group">
-                        <label>🔧 Attività</label>
-                        <select id="input-activity" class="form-select">
-                            <option value="">Caricamento attività...</option>
-                        </select>
+                <div class="form-group">
+                    <label>Seleziona Attività</label>
+                    <div id="attivita-grid" class="attivita-grid">
+                        <div style="text-align: center; color: #94a3b8; padding: 20px; grid-column: 1/-1;">
+                            Caricamento attività...
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>⏱️ Ore</label>
-                        <input type="number" id="input-hours" class="form-input" step="0.5" min="0.5" max="24" placeholder="Es: 8 o 4.5">
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>📝 Note (opzionale)</label>
-                        <input type="text" id="input-notes" class="form-input" placeholder="Aggiungi eventuali note...">
-                    </div>
-
-                    <button class="btn btn-secondary" onclick="addToList()" style="margin-top: 15px;">➕ Aggiungi alla Lista</button>
                 </div>
 
-                <!-- LISTA ATTIVITÀ DA SALVARE -->
-                <div id="pending-container" style="display: none; margin-bottom: 15px;">
-                    <h3 style="color: #60a5fa; font-size: 1.1em; margin-bottom: 10px;">📋 Attività da salvare:</h3>
-                    <div id="pending-list"></div>
+                <div class="form-group">
+                    <label>Ore Lavorate</label>
+                    <input type="number" id="input-ore" class="form-input" placeholder="8" step="0.5" min="0" max="24">
                 </div>
 
-                <button class="btn btn-primary" onclick="saveAllHours()" id="btn-save-all" style="display: none; margin-bottom: 10px;">💾 SALVA TUTTE LE ORE</button>
-                <button class="btn btn-secondary" onclick="startVoiceRecognition()">🎤 Usa Voce (più attività)</button>
+                <div class="form-group">
+                    <label>Note (opzionale)</label>
+                    <textarea id="input-note" class="form-textarea" placeholder="Aggiungi eventuali note..."></textarea>
+                </div>
 
-                <div id="voice-result"></div>
+                <button class="btn btn-primary" onclick="registraOre()">✅ REGISTRA ORE</button>
             </div>
         </div>
 
         <!-- TAB: STORICO -->
-        <div id="tab-history" class="tab-content">
+        <div id="tab-storico" class="tab-content">
+            <!-- FILTRI PERIODO -->
             <div class="card">
-                <h2>📊 Storico Ore</h2>
-                
-                <div class="form-group">
-                    <label>Periodo</label>
-                    <select id="history-period" class="form-select" onchange="loadHistory()">
-                        <option value="7">Ultimi 7 giorni</option>
-                        <option value="30" selected>Ultimi 30 giorni</option>
-                        <option value="90">Ultimi 90 giorni</option>
-                    </select>
+                <h2>🔍 Filtra Periodo</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="setFilter('oggi')">Oggi</button>
+                    <button class="filter-btn" onclick="setFilter('settimana')">Settimana</button>
+                    <button class="filter-btn" onclick="setFilter('mese')">Mese</button>
+                    <button class="filter-btn" onclick="setFilter('trimestre')">3 Mesi</button>
+                    <button class="filter-btn" onclick="setFilter('custom')">Personalizzato</button>
                 </div>
 
-                <div id="history-content">
-                    <div style="text-align: center; padding: 20px; color: #94a3b8;">Caricamento...</div>
+                <div id="custom-date-range" class="custom-date-range">
+                    <div class="form-group" style="margin: 0;">
+                        <label>Data Inizio</label>
+                        <input type="date" id="custom-start" class="form-input">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label>Data Fine</label>
+                        <input type="date" id="custom-end" class="form-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATISTICHE PERIODO -->
+            <div class="card">
+                <h2>📊 Statistiche Periodo</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-period-total">0h</div>
+                        <div class="stat-label">Totale Ore</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-period-days">0</div>
+                        <div class="stat-label">Giorni Lavorati</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-period-avg">0h</div>
+                        <div class="stat-label">Media Giornaliera</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRAFICI -->
+            <div class="card">
+                <h2>📈 Grafico Ore Giornaliere</h2>
+                <div class="chart-container">
+                    <canvas id="chart-daily"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Grafico Ore per Attività</h2>
+                <div class="chart-container">
+                    <canvas id="chart-activities"></canvas>
+                </div>
+            </div>
+
+            <!-- LISTA REGISTRAZIONI -->
+            <div class="card">
+                <h2>📋 Elenco Registrazioni</h2>
+                <div id="storico-list">
+                    <div style="text-align: center; color: #94a3b8; padding: 20px;">
+                        Nessuna registrazione in questo periodo
+                    </div>
                 </div>
             </div>
         </div>
@@ -351,9 +507,12 @@
         // ==========================================
         // VARIABILI GLOBALI
         // ==========================================
-        let currentUser = null;
+        let operaio = null;
         let attivita = [];
-        let pendingActivities = []; // NUOVO: Lista attività da salvare
+        let selectedAttivitaId = null;
+        let currentFilter = 'oggi';
+        let chartDaily = null;
+        let chartActivities = null;
 
         // ==========================================
         // INIZIALIZZAZIONE
@@ -363,44 +522,38 @@
             const token = urlParams.get('token');
 
             if (!token) {
-                showError('⚠️ Link non valido. Contatta l\'amministratore.');
+                showMessage('❌ Token non valido. Contatta l\'amministratore.', 'error');
                 return;
             }
 
-            await loadUser(token);
-            if (currentUser) {
-                await loadAttivita();
-                setTodayDate();
-                await loadTodaySummary();
+            // Carica operaio
+            const { data: operaioData, error: operaioError } = await supabaseClient
+                .from('operai')
+                .select('*')
+                .eq('token_personale', token)
+                .single();
+
+            if (operaioError || !operaioData) {
+                showMessage('❌ Operaio non trovato', 'error');
+                return;
             }
+
+            if (!operaioData.attivo) {
+                showMessage('❌ Account non attivo. Contatta l\'amministratore.', 'error');
+                return;
+            }
+
+            operaio = operaioData;
+            document.getElementById('operaio-name').textContent = `${operaio.nome} ${operaio.cognome}`;
+
+            // Imposta data odierna
+            document.getElementById('input-data').valueAsDate = new Date();
+
+            // Carica dati
+            await loadAttivita();
+            await loadStats();
+            await loadStorico();
         });
-
-        // ==========================================
-        // CARICA UTENTE
-        // ==========================================
-        async function loadUser(token) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('operai')
-                    .select('*')
-                    .eq('token_personale', token)
-                    .eq('attivo', true)
-                    .single();
-
-                if (error) throw error;
-
-                if (!data) {
-                    showError('❌ Operaio non trovato o non attivo');
-                    return;
-                }
-
-                currentUser = data;
-                document.getElementById('user-name').textContent = `👤 ${data.nome} ${data.cognome}`;
-            } catch (error) {
-                console.error('Errore caricamento utente:', error);
-                showError('❌ Errore nel caricamento. Riprova.');
-            }
-        }
 
         // ==========================================
         // CARICA ATTIVITÀ
@@ -417,397 +570,387 @@
 
                 attivita = data || [];
 
-                const select = document.getElementById('input-activity');
-                select.innerHTML = '<option value="">Seleziona attività...</option>';
-                
-                attivita.forEach(att => {
-                    select.innerHTML += `<option value="${att.id}">${att.icona} ${att.nome}</option>`;
-                });
-            } catch (error) {
-                console.error('Errore caricamento attività:', error);
-            }
-        }
-
-        // ==========================================
-        // SET DATA OGGI
-        // ==========================================
-        function setTodayDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('input-date').value = today;
-            
-            const dateObj = new Date();
-            const days = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-            const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
-            
-            document.getElementById('today-date').textContent = 
-                `${days[dateObj.getDay()]} ${dateObj.getDate()} ${months[dateObj.getMonth()]}`;
-        }
-
-        // ==========================================
-        // CARICA RIEPILOGO OGGI
-        // ==========================================
-        async function loadTodaySummary() {
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                
-                const { data, error } = await supabaseClient
-                    .from('ore_lavorate')
-                    .select('*, attivita(*)')
-                    .eq('operaio_id', currentUser.id)
-                    .eq('data', today);
-
-                if (error) throw error;
-
-                if (!data || data.length === 0) {
-                    document.getElementById('today-total').textContent = '0h';
-                    document.getElementById('today-activities').innerHTML = 
-                        '<li style="text-align: center; color: #94a3b8;">Nessuna ora registrata</li>';
+                if (attivita.length === 0) {
+                    document.getElementById('attivita-grid').innerHTML = 
+                        '<div style="text-align: center; color: #94a3b8; padding: 20px; grid-column: 1/-1;">Nessuna attività disponibile</div>';
                     return;
                 }
 
-                // Calcola totale
-                const total = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
-                document.getElementById('today-total').textContent = `${total}h`;
-
-                // Raggruppa per attività
-                const grouped = {};
-                data.forEach(item => {
-                    const actName = item.attivita.nome;
-                    if (!grouped[actName]) {
-                        grouped[actName] = {
-                            ore: 0,
-                            icona: item.attivita.icona
-                        };
-                    }
-                    grouped[actName].ore += parseFloat(item.ore);
-                });
-
-                // Mostra lista
-                const list = Object.entries(grouped)
-                    .map(([name, info]) => `
-                        <li class="activity-item">
-                            <span>${info.icona} ${name}</span>
-                            <span style="font-weight: bold; color: #10b981;">${info.ore}h</span>
-                        </li>
-                    `).join('');
-
-                document.getElementById('today-activities').innerHTML = list;
-            } catch (error) {
-                console.error('Errore caricamento oggi:', error);
-            }
-        }
-
-        // ==========================================
-        // AGGIUNGI ALLA LISTA (NUOVO)
-        // ==========================================
-        function addToList() {
-            const activityId = document.getElementById('input-activity').value;
-            const hours = parseFloat(document.getElementById('input-hours').value);
-            const notes = document.getElementById('input-notes').value;
-
-            // Validazione
-            if (!activityId || !hours) {
-                showMessage('⚠️ Seleziona attività e inserisci le ore', 'error');
-                return;
-            }
-
-            if (hours <= 0 || hours > 24) {
-                showMessage('⚠️ Le ore devono essere tra 0.5 e 24', 'error');
-                return;
-            }
-
-            // Trova attività
-            const activity = attivita.find(a => a.id === activityId);
-            if (!activity) return;
-
-            // Aggiungi alla lista pending
-            pendingActivities.push({
-                activityId: activityId,
-                activityName: activity.nome,
-                activityIcon: activity.icona,
-                hours: hours,
-                notes: notes
-            });
-
-            // Reset form
-            document.getElementById('input-activity').value = '';
-            document.getElementById('input-hours').value = '';
-            document.getElementById('input-notes').value = '';
-
-            // Mostra lista
-            renderPendingList();
-            showMessage('✅ Attività aggiunta alla lista!', 'success');
-        }
-
-        // ==========================================
-        // MOSTRA LISTA PENDING
-        // ==========================================
-        function renderPendingList() {
-            if (pendingActivities.length === 0) {
-                document.getElementById('pending-container').style.display = 'none';
-                document.getElementById('btn-save-all').style.display = 'none';
-                return;
-            }
-
-            document.getElementById('pending-container').style.display = 'block';
-            document.getElementById('btn-save-all').style.display = 'block';
-
-            const html = pendingActivities.map((item, index) => `
-                <div class="pending-item">
-                    <div class="pending-item-info">
-                        <div style="font-weight: bold;">${item.activityIcon} ${item.activityName}</div>
-                        ${item.notes ? `<div style="font-size: 0.85em; color: #94a3b8; margin-top: 3px;">${item.notes}</div>` : ''}
+                const html = attivita.map(att => `
+                    <div class="attivita-btn" onclick="selectAttivita('${att.id}')" id="att-${att.id}">
+                        <div class="attivita-icon">${att.icona}</div>
+                        <div>${att.nome}</div>
                     </div>
-                    <span class="pending-item-hours">${item.hours}h</span>
-                    <button class="btn btn-danger" onclick="removeFromList(${index})">❌</button>
-                </div>
-            `).join('');
+                `).join('');
 
-            document.getElementById('pending-list').innerHTML = html;
+                document.getElementById('attivita-grid').innerHTML = html;
+
+            } catch (error) {
+                console.error('Errore caricamento attività:', error);
+                showMessage('❌ Errore caricamento attività', 'error');
+            }
+        }
+
+        function selectAttivita(id) {
+            selectedAttivitaId = id;
+            document.querySelectorAll('.attivita-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById(`att-${id}`).classList.add('selected');
         }
 
         // ==========================================
-        // RIMUOVI DALLA LISTA
+        // REGISTRA ORE
         // ==========================================
-        function removeFromList(index) {
-            pendingActivities.splice(index, 1);
-            renderPendingList();
-            showMessage('✅ Attività rimossa dalla lista', 'info');
-        }
-
-        // ==========================================
-        // SALVA TUTTE LE ORE (NUOVO)
-        // ==========================================
-        async function saveAllHours() {
-            if (pendingActivities.length === 0) {
-                showMessage('⚠️ Nessuna attività da salvare', 'error');
+        async function registraOre() {
+            if (!selectedAttivitaId) {
+                showMessage('⚠️ Seleziona un\'attività', 'error');
                 return;
             }
 
-            const date = document.getElementById('input-date').value;
-            if (!date) {
+            const data = document.getElementById('input-data').value;
+            const ore = parseFloat(document.getElementById('input-ore').value);
+            const note = document.getElementById('input-note').value.trim();
+
+            if (!data) {
                 showMessage('⚠️ Seleziona una data', 'error');
                 return;
             }
 
-            try {
-                // Prepara i dati
-                const dataToInsert = pendingActivities.map(item => ({
-                    operaio_id: currentUser.id,
-                    data: date,
-                    attivita_id: item.activityId,
-                    ore: item.hours,
-                    note: item.notes || null,
-                    metodo_inserimento: 'manuale'
-                }));
-
-                // Inserisci tutto insieme
-                const { error } = await supabaseClient
-                    .from('ore_lavorate')
-                    .insert(dataToInsert);
-
-                if (error) throw error;
-
-                showMessage(`✅ ${pendingActivities.length} attività salvate con successo!`, 'success');
-
-                // Reset
-                pendingActivities = [];
-                renderPendingList();
-
-                // Ricarica riepilogo
-                await loadTodaySummary();
-
-            } catch (error) {
-                console.error('Errore salvataggio:', error);
-                showMessage('❌ Errore nel salvataggio', 'error');
-            }
-        }
-
-        // ==========================================
-        // VOICE RECOGNITION
-        // ==========================================
-        function startVoiceRecognition() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                showMessage('❌ Riconoscimento vocale non supportato su questo browser', 'error');
+            if (!ore || ore <= 0) {
+                showMessage('⚠️ Inserisci le ore lavorate', 'error');
                 return;
             }
 
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-
-            recognition.lang = 'it-IT';
-            recognition.continuous = false;
-            recognition.interimResults = false;
-
-            document.getElementById('voice-result').innerHTML = 
-                '<div class="message message-info">🎤 Sto ascoltando... Parla ora!</div>';
-
-            recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript.toLowerCase();
-                console.log('Riconosciuto:', transcript);
-
-                const parsed = parseVoiceInput(transcript);
-                
-                if (parsed.length === 0) {
-                    document.getElementById('voice-result').innerHTML = 
-                        '<div class="message message-error">❌ Non ho capito. Riprova dicendo ad esempio: "4 ore trattore e 3 ore stalla"</div>';
-                    return;
-                }
-
-                // Aggiungi tutte le attività alla lista pending
-                parsed.forEach(item => {
-                    pendingActivities.push({
-                        activityId: item.activityId,
-                        activityName: item.activityName,
-                        activityIcon: item.activityIcon,
-                        hours: item.hours,
-                        notes: 'Inserito con voce'
+            try {
+                const { error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .insert({
+                        operaio_id: operaio.id,
+                        attivita_id: selectedAttivitaId,
+                        data,
+                        ore,
+                        note: note || null
                     });
-                });
 
-                renderPendingList();
+                if (error) throw error;
 
-                document.getElementById('voice-result').innerHTML = 
-                    `<div class="message message-success">✅ Ho capito ${parsed.length} attività! Controlla e poi salva.</div>`;
-            };
+                showMessage('✅ Ore registrate con successo!', 'success');
+                
+                // Reset form
+                document.getElementById('input-ore').value = '';
+                document.getElementById('input-note').value = '';
+                selectedAttivitaId = null;
+                document.querySelectorAll('.attivita-btn').forEach(btn => btn.classList.remove('selected'));
 
-            recognition.onerror = function(event) {
-                console.error('Errore riconoscimento:', event.error);
-                document.getElementById('voice-result').innerHTML = 
-                    '<div class="message message-error">❌ Errore riconoscimento vocale. Riprova.</div>';
-            };
+                await loadStats();
 
-            recognition.start();
+            } catch (error) {
+                console.error('Errore registrazione:', error);
+                showMessage('❌ Errore nella registrazione', 'error');
+            }
         }
 
         // ==========================================
-        // PARSE VOICE INPUT
+        // CARICA STATISTICHE
         // ==========================================
-        function parseVoiceInput(text) {
-            const results = [];
+        async function loadStats() {
+            if (!operaio) return;
+
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                const monthAgo = new Date();
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+                // Ore oggi
+                const { data: todayData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('ore')
+                    .eq('operaio_id', operaio.id)
+                    .eq('data', today);
+
+                const todayHours = todayData ? todayData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
+                document.getElementById('stat-today').textContent = `${todayHours.toFixed(1)}h`;
+
+                // Ore settimana
+                const { data: weekData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('ore')
+                    .eq('operaio_id', operaio.id)
+                    .gte('data', weekAgo.toISOString().split('T')[0]);
+
+                const weekHours = weekData ? weekData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
+                document.getElementById('stat-week').textContent = `${weekHours.toFixed(1)}h`;
+
+                // Ore mese
+                const { data: monthData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('ore')
+                    .eq('operaio_id', operaio.id)
+                    .gte('data', monthAgo.toISOString().split('T')[0]);
+
+                const monthHours = monthData ? monthData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
+                document.getElementById('stat-month').textContent = `${monthHours.toFixed(1)}h`;
+
+            } catch (error) {
+                console.error('Errore caricamento statistiche:', error);
+            }
+        }
+
+        // ==========================================
+        // STORICO - FILTRI
+        // ==========================================
+        function setFilter(filter) {
+            currentFilter = filter;
             
-            // Numeri in parole
-            const numberWords = {
-                'zero': 0, 'mezza': 0.5, 'mezzo': 0.5,
-                'uno': 1, 'una': 1, 'due': 2, 'tre': 3, 'quattro': 4,
-                'cinque': 5, 'sei': 6, 'sette': 7, 'otto': 8, 'nove': 9, 'dieci': 10
-            };
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
 
-            // Split per "e" o virgola
-            const segments = text.split(/\se\s|,\s*/);
+            const customRange = document.getElementById('custom-date-range');
+            if (filter === 'custom') {
+                customRange.classList.add('active');
+                // Imposta date di default
+                const today = new Date();
+                const monthAgo = new Date();
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+                document.getElementById('custom-end').valueAsDate = today;
+                document.getElementById('custom-start').valueAsDate = monthAgo;
+            } else {
+                customRange.classList.remove('active');
+            }
 
-            segments.forEach(segment => {
-                segment = segment.trim();
-                
-                // Cerca numero (cifra o parola)
-                let hours = null;
-                const numberMatch = segment.match(/(\d+(?:[.,]\d+)?)/);
-                if (numberMatch) {
-                    hours = parseFloat(numberMatch[1].replace(',', '.'));
-                } else {
-                    for (const [word, value] of Object.entries(numberWords)) {
-                        if (segment.includes(word)) {
-                            hours = value;
-                            break;
-                        }
+            loadStorico();
+        }
+
+        function getDateRange() {
+            const today = new Date();
+            let startDate, endDate = today;
+
+            switch(currentFilter) {
+                case 'oggi':
+                    startDate = today;
+                    break;
+                case 'settimana':
+                    startDate = new Date();
+                    startDate.setDate(today.getDate() - 7);
+                    break;
+                case 'mese':
+                    startDate = new Date();
+                    startDate.setMonth(today.getMonth() - 1);
+                    break;
+                case 'trimestre':
+                    startDate = new Date();
+                    startDate.setMonth(today.getMonth() - 3);
+                    break;
+                case 'custom':
+                    const customStart = document.getElementById('custom-start').value;
+                    const customEnd = document.getElementById('custom-end').value;
+                    if (customStart && customEnd) {
+                        startDate = new Date(customStart);
+                        endDate = new Date(customEnd);
+                    } else {
+                        startDate = new Date();
+                        startDate.setMonth(today.getMonth() - 1);
                     }
+                    break;
+            }
+
+            return {
+                start: startDate.toISOString().split('T')[0],
+                end: endDate.toISOString().split('T')[0]
+            };
+        }
+
+        // ==========================================
+        // CARICA STORICO
+        // ==========================================
+        async function loadStorico() {
+            if (!operaio) return;
+
+            try {
+                const { start, end } = getDateRange();
+
+                const { data: storicoData, error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, attivita(*)')
+                    .eq('operaio_id', operaio.id)
+                    .gte('data', start)
+                    .lte('data', end)
+                    .order('data', { ascending: false });
+
+                if (error) throw error;
+
+                if (!storicoData || storicoData.length === 0) {
+                    document.getElementById('storico-list').innerHTML = 
+                        '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna registrazione in questo periodo</div>';
+                    updatePeriodStats([]);
+                    updateCharts([]);
+                    return;
                 }
 
-                if (!hours) return;
+                // Aggiorna statistiche periodo
+                updatePeriodStats(storicoData);
 
-                // Cerca attività per keywords
-                for (const att of attivita) {
-                    if (!att.keywords || att.keywords.length === 0) continue;
+                // Aggiorna grafici
+                updateCharts(storicoData);
 
-                    for (const keyword of att.keywords) {
-                        if (segment.includes(keyword.toLowerCase())) {
-                            results.push({
-                                activityId: att.id,
-                                activityName: att.nome,
-                                activityIcon: att.icona,
-                                hours: hours
-                            });
-                            return; // Trova solo una corrispondenza per segment
+                // Mostra lista
+                const html = storicoData.map(item => `
+                    <div class="storico-item">
+                        <div class="storico-info">
+                            <div class="storico-date">📅 ${formatDate(item.data)}</div>
+                            <div class="storico-attivita">${item.attivita.icona} ${item.attivita.nome}</div>
+                            <div class="storico-ore">${item.ore}h</div>
+                            ${item.note ? `<div class="storico-note">📝 ${item.note}</div>` : ''}
+                        </div>
+                        <div class="storico-actions">
+                            <button class="btn btn-danger btn-small" onclick="deleteRegistrazione('${item.id}')">
+                                🗑️ Elimina
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('storico-list').innerHTML = html;
+
+            } catch (error) {
+                console.error('Errore caricamento storico:', error);
+                showMessage('❌ Errore caricamento storico', 'error');
+            }
+        }
+
+        // ==========================================
+        // STATISTICHE PERIODO
+        // ==========================================
+        function updatePeriodStats(data) {
+            const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+            const uniqueDays = new Set(data.map(item => item.data)).size;
+            const avgHours = uniqueDays > 0 ? totalHours / uniqueDays : 0;
+
+            document.getElementById('stat-period-total').textContent = `${totalHours.toFixed(1)}h`;
+            document.getElementById('stat-period-days').textContent = uniqueDays;
+            document.getElementById('stat-period-avg').textContent = `${avgHours.toFixed(1)}h`;
+        }
+
+        // ==========================================
+        // AGGIORNA GRAFICI
+        // ==========================================
+        function updateCharts(data) {
+            // Grafico giornaliero
+            const dailyData = {};
+            data.forEach(item => {
+                if (!dailyData[item.data]) {
+                    dailyData[item.data] = 0;
+                }
+                dailyData[item.data] += parseFloat(item.ore);
+            });
+
+            const sortedDates = Object.keys(dailyData).sort();
+            const dailyLabels = sortedDates.map(date => formatDate(date));
+            const dailyValues = sortedDates.map(date => dailyData[date]);
+
+            const ctx1 = document.getElementById('chart-daily');
+            if (chartDaily) chartDaily.destroy();
+
+            chartDaily = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: dailyLabels,
+                    datasets: [{
+                        label: 'Ore',
+                        data: dailyValues,
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: '#10b981',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
                         }
                     }
                 }
             });
 
-            return results;
+            // Grafico attività
+            const activityData = {};
+            const activityColors = {};
+            data.forEach(item => {
+                const name = item.attivita.nome;
+                if (!activityData[name]) {
+                    activityData[name] = 0;
+                    activityColors[name] = item.attivita.colore;
+                }
+                activityData[name] += parseFloat(item.ore);
+            });
+
+            const ctx2 = document.getElementById('chart-activities');
+            if (chartActivities) chartActivities.destroy();
+
+            chartActivities = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(activityData),
+                    datasets: [{
+                        data: Object.values(activityData),
+                        backgroundColor: Object.values(activityColors),
+                        borderWidth: 2,
+                        borderColor: '#1e293b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', padding: 15 }
+                        }
+                    }
+                }
+            });
         }
 
         // ==========================================
-        // STORICO
+        // ELIMINA REGISTRAZIONE
         // ==========================================
-        async function loadHistory() {
-            const days = parseInt(document.getElementById('history-period').value);
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - days);
+        async function deleteRegistrazione(id) {
+            if (!confirm('Sei sicuro di voler eliminare questa registrazione?')) {
+                return;
+            }
 
             try {
-                const { data, error } = await supabaseClient
+                const { error } = await supabaseClient
                     .from('ore_lavorate')
-                    .select('*, attivita(*)')
-                    .eq('operaio_id', currentUser.id)
-                    .gte('data', startDate.toISOString().split('T')[0])
-                    .order('data', { ascending: false });
+                    .delete()
+                    .eq('id', id);
 
                 if (error) throw error;
 
-                if (!data || data.length === 0) {
-                    document.getElementById('history-content').innerHTML = 
-                        '<div style="text-align: center; padding: 20px; color: #94a3b8;">Nessuna ora registrata</div>';
-                    return;
-                }
-
-                // Raggruppa per data
-                const grouped = {};
-                data.forEach(item => {
-                    if (!grouped[item.data]) {
-                        grouped[item.data] = [];
-                    }
-                    grouped[item.data].push(item);
-                });
-
-                // Genera HTML
-                let html = '';
-                Object.entries(grouped).forEach(([date, items]) => {
-                    const dateObj = new Date(date + 'T00:00:00');
-                    const dateStr = dateObj.toLocaleDateString('it-IT', { 
-                        weekday: 'short', 
-                        day: 'numeric', 
-                        month: 'short' 
-                    });
-
-                    const total = items.reduce((sum, item) => sum + parseFloat(item.ore), 0);
-
-                    html += `
-                        <div style="margin-bottom: 20px;">
-                            <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(37, 99, 235, 0.1); border-radius: 8px; margin-bottom: 10px;">
-                                <strong>${dateStr}</strong>
-                                <strong style="color: #10b981;">${total}h</strong>
-                            </div>
-                            <ul class="activity-list">
-                                ${items.map(item => `
-                                    <li class="activity-item">
-                                        <span>${item.attivita.icona} ${item.attivita.nome}</span>
-                                        <span style="font-weight: bold; color: #10b981;">${item.ore}h</span>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                    `;
-                });
-
-                document.getElementById('history-content').innerHTML = html;
+                showMessage('✅ Registrazione eliminata', 'success');
+                await loadStats();
+                await loadStorico();
 
             } catch (error) {
-                console.error('Errore caricamento storico:', error);
+                console.error('Errore eliminazione:', error);
+                showMessage('❌ Errore eliminazione', 'error');
             }
         }
 
         // ==========================================
-        // TABS
+        // UTILITY
         // ==========================================
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -816,24 +959,42 @@
             event.target.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
 
-            if (tabName === 'history') {
-                loadHistory();
+            if (tabName === 'storico') {
+                loadStorico();
             }
         }
 
-        // ==========================================
-        // UTILITY
-        // ==========================================
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            if (date.toDateString() === today.toDateString()) {
+                return 'Oggi';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Ieri';
+            } else {
+                return date.toLocaleDateString('it-IT', { 
+                    weekday: 'short', 
+                    day: 'numeric', 
+                    month: 'short' 
+                });
+            }
+        }
+
         function showMessage(message, type) {
             const container = document.getElementById('status-message');
             container.innerHTML = `<div class="message message-${type}">${message}</div>`;
-            setTimeout(() => container.innerHTML = '', 3000);
+            setTimeout(() => container.innerHTML = '', 4000);
         }
 
-        function showError(message) {
-            document.getElementById('error-message').innerHTML = 
-                `<div class="message message-error">${message}</div>`;
-        }
+        // Custom date change
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'custom-start' || e.target.id === 'custom-end') {
+                loadStorico();
+            }
+        });
     </script>
 </body>
 </html>
