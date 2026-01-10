@@ -365,7 +365,7 @@
     <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <h1>🏢 Gestionale Ore Lavoro</h1>
+            <h1>ðŸ¢ Gestionale Ore Lavoro</h1>
             <div class="subtitle">Pannello Amministratore</div>
         </div>
 
@@ -385,43 +385,136 @@
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="stat-activities">0</div>
-                <div class="stat-label">Attività</div>
+                <div class="stat-label">AttivitÃ </div>
             </div>
         </div>
 
         <!-- TABS -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('operai')">👥 Operai</div>
-            <div class="tab" onclick="switchTab('attivita')">🔧 Attività</div>
-            <div class="tab" onclick="switchTab('report')">📊 Report</div>
+            <div class="tab active" onclick="switchTab('operai')">ðŸ‘¥ Operai</div>
+            <div class="tab" onclick="switchTab('attivita')">ðŸ”§ AttivitÃ </div>
+            <div class="tab" onclick="switchTab('report')">ðŸ“Š Report</div>
         </div>
 
         <!-- TAB: OPERAI -->
         <div id="tab-operai" class="tab-content active">
             <div class="card">
-                <h2>👥 Gestione Operai</h2>
-                <button class="btn btn-primary" onclick="openNewOperaioModal()">➕ Nuovo Operaio</button>
+                <h2>ðŸ‘¥ Gestione Operai</h2>
+                <button class="btn btn-primary" onclick="openNewOperaioModal()">âž• Nuovo Operaio</button>
                 <div id="operai-list" style="margin-top: 25px;">
                     <div style="text-align: center; color: #94a3b8; padding: 20px;">Caricamento operai...</div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB: ATTIVITÀ -->
+        <!-- TAB: ATTIVITÃ€ -->
         <div id="tab-attivita" class="tab-content">
             <div class="card">
-                <h2>🔧 Gestione Attività</h2>
-                <button class="btn btn-primary" onclick="openNewAttivitaModal()">➕ Nuova Attività</button>
+                <h2>ðŸ”§ Gestione AttivitÃ </h2>
+                <button class="btn btn-primary" onclick="openNewAttivitaModal()">âž• Nuova AttivitÃ </button>
                 <div id="attivita-list" style="margin-top: 25px;">
-                    <div style="text-align: center; color: #94a3b8; padding: 20px;">Caricamento attività...</div>
+                    <div style="text-align: center; color: #94a3b8; padding: 20px;">Caricamento attivitÃ ...</div>
                 </div>
             </div>
         </div>
 
+        <!-- TAB: STORICO DETTAGLIATO -->
+        <div id="tab-storico" class="tab-content">
+            <!-- FILTRI -->
+            <div class="card">
+                <h2>🔍 Filtri Ricerca</h2>
+                <div class="form-group">
+                    <label>Operaio</label>
+                    <select id="filter-operaio" class="form-select" onchange="loadStoricoDettagliato()">
+                        <option value="">Tutti gli operai</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Attività</label>
+                    <select id="filter-attivita" class="form-select" onchange="loadStoricoDettagliato()">
+                        <option value="">Tutte le attività</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Data Inizio</label>
+                        <input type="date" id="filter-start-date" class="form-input" onchange="loadStoricoDettagliato()">
+                    </div>
+                    <div class="form-group">
+                        <label>Data Fine</label>
+                        <input type="date" id="filter-end-date" class="form-input" onchange="loadStoricoDettagliato()">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="resetFiltersStorico()" style="width: 100%;">🔄 Reset Filtri</button>
+            </div>
+
+            <!-- STATISTICHE FILTRATE -->
+            <div class="card">
+                <h2>📊 Statistiche Periodo Filtrato</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="storico-stat-total">0h</div>
+                        <div class="stat-label">Totale Ore</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="storico-stat-records">0</div>
+                        <div class="stat-label">Registrazioni</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="storico-stat-days">0</div>
+                        <div class="stat-label">Giorni</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="storico-stat-avg">0h</div>
+                        <div class="stat-label">Media/Giorno</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRAFICI -->
+            <div class="card">
+                <h2>📈 Andamento Ore Giornaliere</h2>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="storico-chart-daily"></canvas>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="card">
+                    <h2>👥 Ore per Operaio</h2>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="storico-chart-operai"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>🔧 Ore per Attività</h2>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="storico-chart-attivita"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABELLA REGISTRAZIONI -->
+            <div class="card">
+                <h2>📋 Registrazioni Dettagliate</h2>
+                <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="exportStoricoToExcel()" style="flex: 1;">
+                        📥 Export Excel Filtrato
+                    </button>
+                </div>
+                <div id="storico-table-container" style="overflow-x: auto;">
+                    <div style="text-align: center; color: #94a3b8; padding: 20px;">
+                        Seleziona i filtri per visualizzare i dati
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <!-- TAB: REPORT -->
         <div id="tab-report" class="tab-content">
             <div class="card">
-                <h2>📊 Report Ore per Operaio</h2>
+                <h2>ðŸ“Š Report Ore per Operaio</h2>
                 <div class="form-group">
                     <label>Periodo</label>
                     <select id="report-period" class="form-select" onchange="loadReport()">
@@ -436,7 +529,7 @@
             </div>
 
             <div class="card">
-                <h2>📊 Report Ore per Attività</h2>
+                <h2>ðŸ“Š Report Ore per AttivitÃ </h2>
                 <div class="chart-container">
                     <canvas id="activity-chart"></canvas>
                 </div>
@@ -444,9 +537,9 @@
 
             <!-- EXPORT EXCEL -->
             <div class="card">
-                <h2>📥 Export Dati</h2>
+                <h2>ðŸ“¥ Export Dati</h2>
                 <p style="color: #94a3b8; margin-bottom: 15px;">Esporta tutti i dati in formato Excel (compatibile con il tuo foglio presenze)</p>
-                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;">📥 EXPORT EXCEL</button>
+                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;">ðŸ“¥ EXPORT EXCEL</button>
             </div>
         </div>
 
@@ -456,7 +549,7 @@
     <!-- MODAL: NUOVO OPERAIO -->
     <div id="modal-new-operaio" class="modal">
         <div class="modal-content">
-            <div class="modal-header">➕ Crea Nuovo Operaio</div>
+            <div class="modal-header">âž• Crea Nuovo Operaio</div>
             
             <div class="form-group">
                 <label>Nome *</label>
@@ -468,15 +561,15 @@
                 <input type="text" id="new-operaio-cognome" class="form-input" placeholder="Rossi">
             </div>
 
-            <button class="btn btn-primary" onclick="createOperaio()" style="width: 100%; margin-bottom: 10px;">✅ Crea Operaio</button>
-            <button class="btn btn-secondary" onclick="closeModal('modal-new-operaio')" style="width: 100%;">❌ Annulla</button>
+            <button class="btn btn-primary" onclick="createOperaio()" style="width: 100%; margin-bottom: 10px;">âœ… Crea Operaio</button>
+            <button class="btn btn-secondary" onclick="closeModal('modal-new-operaio')" style="width: 100%;">âŒ Annulla</button>
         </div>
     </div>
 
     <!-- MODAL: MOSTRA LINK -->
     <div id="modal-show-link" class="modal">
         <div class="modal-content">
-            <div class="modal-header">🔗 Link Personale Operaio</div>
+            <div class="modal-header">ðŸ”— Link Personale Operaio</div>
             
             <div id="link-content"></div>
 
@@ -484,28 +577,28 @@
         </div>
     </div>
 
-    <!-- MODAL: NUOVA ATTIVITÀ -->
+    <!-- MODAL: NUOVA ATTIVITÃ€ -->
     <div id="modal-new-attivita" class="modal">
         <div class="modal-content">
-            <div class="modal-header" id="attivita-modal-title">➕ Nuova Attività</div>
+            <div class="modal-header" id="attivita-modal-title">âž• Nuova AttivitÃ </div>
             
             <input type="hidden" id="edit-attivita-id">
 
             <div class="form-group">
-                <label>Nome Attività *</label>
+                <label>Nome AttivitÃ  *</label>
                 <input type="text" id="new-attivita-nome" class="form-input" placeholder="Es: Taglio legna">
             </div>
 
             <div class="form-group">
                 <label>Icona (emoji)</label>
-                <input type="text" id="new-attivita-icona" class="form-input" placeholder="🪓" maxlength="5">
+                <input type="text" id="new-attivita-icona" class="form-input" placeholder="ðŸª“" maxlength="5">
             </div>
 
             <div class="form-group">
                 <label>Keywords (parole chiave per riconoscimento vocale)</label>
                 <textarea id="new-attivita-keywords" class="form-textarea" placeholder="Inserisci le parole separate da virgola.&#10;Es: legna, bosco, motosega, tagliare, taglio"></textarea>
                 <div style="color: #94a3b8; font-size: 0.85em; margin-top: 8px;">
-                    💡 Quando l'operaio dice una di queste parole, il sistema associa automaticamente questa attività
+                    ðŸ’¡ Quando l'operaio dice una di queste parole, il sistema associa automaticamente questa attivitÃ 
                 </div>
             </div>
 
@@ -514,8 +607,8 @@
                 <input type="color" id="new-attivita-colore" class="form-input" value="#3b82f6">
             </div>
 
-            <button class="btn btn-primary" onclick="saveAttivita()" style="width: 100%; margin-bottom: 10px;">✅ Salva</button>
-            <button class="btn btn-secondary" onclick="closeModal('modal-new-attivita')" style="width: 100%;">❌ Annulla</button>
+            <button class="btn btn-primary" onclick="saveAttivita()" style="width: 100%; margin-bottom: 10px;">âœ… Salva</button>
+            <button class="btn btn-secondary" onclick="closeModal('modal-new-attivita')" style="width: 100%;">âŒ Annulla</button>
         </div>
     </div>
 
@@ -581,7 +674,7 @@
 
                 document.getElementById('stat-active-workers').textContent = operaiData ? operaiData.length : 0;
 
-                // Attività
+                // AttivitÃ 
                 const { data: attivitaData } = await supabaseClient
                     .from('attivita')
                     .select('*')
@@ -634,19 +727,19 @@
                         <div class="operaio-info">
                             <div class="operaio-name">${op.nome} ${op.cognome}</div>
                             <div class="operaio-stats">
-                                Oggi: <strong>${op.todayHours}h</strong> • 
-                                ${op.attivo ? '✅ Attivo' : '❌ Non attivo'}
+                                Oggi: <strong>${op.todayHours}h</strong> â€¢ 
+                                ${op.attivo ? 'âœ… Attivo' : 'âŒ Non attivo'}
                             </div>
                         </div>
                         <div class="operaio-actions">
                             <button class="btn btn-secondary" onclick="showLink('${op.token_personale}', '${op.nome} ${op.cognome}')">
-                                🔗 Vedi Link
+                                ðŸ”— Vedi Link
                             </button>
                             <button class="btn btn-primary" onclick="openOperaioLink('${op.token_personale}')">
-                                👤 Gestisci Ore
+                                ðŸ‘¤ Gestisci Ore
                             </button>
                             <button class="btn ${op.attivo ? 'btn-danger' : 'btn-primary'}" onclick="toggleOperaioStatus('${op.id}', ${!op.attivo})">
-                                ${op.attivo ? '🔒 Disattiva' : '✅ Attiva'}
+                                ${op.attivo ? 'ðŸ”’ Disattiva' : 'âœ… Attiva'}
                             </button>
                         </div>
                     </div>
@@ -656,7 +749,7 @@
 
             } catch (error) {
                 console.error('Errore caricamento operai:', error);
-                showMessage('❌ Errore caricamento operai', 'error');
+                showMessage('âŒ Errore caricamento operai', 'error');
             }
         }
 
@@ -674,7 +767,7 @@
             const cognome = document.getElementById('new-operaio-cognome').value.trim();
 
             if (!nome || !cognome) {
-                showMessage('⚠️ Inserisci nome e cognome', 'error');
+                showMessage('âš ï¸ Inserisci nome e cognome', 'error');
                 return;
             }
 
@@ -688,7 +781,7 @@
                 if (error) throw error;
 
                 closeModal('modal-new-operaio');
-                showMessage(`✅ Operaio ${nome} ${cognome} creato!`, 'success');
+                showMessage(`âœ… Operaio ${nome} ${cognome} creato!`, 'success');
                 
                 // Mostra subito il link
                 showLink(data.token_personale, `${nome} ${cognome}`);
@@ -698,7 +791,7 @@
 
             } catch (error) {
                 console.error('Errore creazione operaio:', error);
-                showMessage('❌ Errore nella creazione', 'error');
+                showMessage('âŒ Errore nella creazione', 'error');
             }
         }
 
@@ -715,13 +808,13 @@
                 </p>
                 <div class="link-display">${fullLink}</div>
                 <button class="btn btn-primary" onclick="copyToClipboard('${fullLink}')" style="width: 100%; margin-bottom: 10px;">
-                    📋 Copia Link
+                    ðŸ“‹ Copia Link
                 </button>
                 <button class="btn btn-secondary" onclick="window.open('${fullLink}', '_blank')" style="width: 100%;">
-                    🔗 Apri Link
+                    ðŸ”— Apri Link
                 </button>
                 <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 0.9em; color: #94a3b8;">
-                    💡 Invia questo link all'operaio tramite WhatsApp, Email o SMS. L'operaio deve salvarlo nei preferiti del browser per accesso rapido.
+                    ðŸ’¡ Invia questo link all'operaio tramite WhatsApp, Email o SMS. L'operaio deve salvarlo nei preferiti del browser per accesso rapido.
                 </div>
             `;
 
@@ -746,18 +839,18 @@
 
                 if (error) throw error;
 
-                showMessage(`✅ Operaio ${newStatus ? 'attivato' : 'disattivato'}`, 'success');
+                showMessage(`âœ… Operaio ${newStatus ? 'attivato' : 'disattivato'}`, 'success');
                 await loadOperai();
                 await loadStats();
 
             } catch (error) {
                 console.error('Errore aggiornamento stato:', error);
-                showMessage('❌ Errore aggiornamento', 'error');
+                showMessage('âŒ Errore aggiornamento', 'error');
             }
         }
 
         // ==========================================
-        // CARICA ATTIVITÀ
+        // CARICA ATTIVITÃ€
         // ==========================================
         async function loadAttivita() {
             try {
@@ -772,7 +865,7 @@
 
                 if (attivita.length === 0) {
                     document.getElementById('attivita-list').innerHTML = 
-                        '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna attività</div>';
+                        '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna attivitÃ </div>';
                     return;
                 }
 
@@ -781,14 +874,14 @@
                         <div class="attivita-header">
                             <div class="attivita-name">${att.icona} ${att.nome}</div>
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-secondary" onclick="editAttivita('${att.id}')">✏️ Modifica</button>
+                                <button class="btn btn-secondary" onclick="editAttivita('${att.id}')">âœï¸ Modifica</button>
                                 <button class="btn ${att.attiva ? 'btn-danger' : 'btn-primary'}" onclick="toggleAttivitaStatus('${att.id}', ${!att.attiva})">
-                                    ${att.attiva ? '🔒 Disattiva' : '✅ Attiva'}
+                                    ${att.attiva ? 'ðŸ”’ Disattiva' : 'âœ… Attiva'}
                                 </button>
                             </div>
                         </div>
                         <div class="keywords-container">
-                            <div class="keywords-label">🔑 Keywords per riconoscimento vocale:</div>
+                            <div class="keywords-label">ðŸ”‘ Keywords per riconoscimento vocale:</div>
                             <div>
                                 ${att.keywords && att.keywords.length > 0 
                                     ? att.keywords.map(kw => `<span class="keyword-tag">${kw}</span>`).join('') 
@@ -801,19 +894,19 @@
                 document.getElementById('attivita-list').innerHTML = html;
 
             } catch (error) {
-                console.error('Errore caricamento attività:', error);
-                showMessage('❌ Errore caricamento attività', 'error');
+                console.error('Errore caricamento attivitÃ :', error);
+                showMessage('âŒ Errore caricamento attivitÃ ', 'error');
             }
         }
 
         // ==========================================
-        // NUOVA/MODIFICA ATTIVITÀ
+        // NUOVA/MODIFICA ATTIVITÃ€
         // ==========================================
         function openNewAttivitaModal() {
-            document.getElementById('attivita-modal-title').textContent = '➕ Nuova Attività';
+            document.getElementById('attivita-modal-title').textContent = 'âž• Nuova AttivitÃ ';
             document.getElementById('edit-attivita-id').value = '';
             document.getElementById('new-attivita-nome').value = '';
-            document.getElementById('new-attivita-icona').value = '📋';
+            document.getElementById('new-attivita-icona').value = 'ðŸ“‹';
             document.getElementById('new-attivita-keywords').value = '';
             document.getElementById('new-attivita-colore').value = '#3b82f6';
             openModal('modal-new-attivita');
@@ -823,7 +916,7 @@
             const att = attivita.find(a => a.id === id);
             if (!att) return;
 
-            document.getElementById('attivita-modal-title').textContent = '✏️ Modifica Attività';
+            document.getElementById('attivita-modal-title').textContent = 'âœï¸ Modifica AttivitÃ ';
             document.getElementById('edit-attivita-id').value = id;
             document.getElementById('new-attivita-nome').value = att.nome;
             document.getElementById('new-attivita-icona').value = att.icona;
@@ -840,7 +933,7 @@
             const colore = document.getElementById('new-attivita-colore').value;
 
             if (!nome) {
-                showMessage('⚠️ Inserisci il nome dell\'attività', 'error');
+                showMessage('âš ï¸ Inserisci il nome dell\'attivitÃ ', 'error');
                 return;
             }
 
@@ -853,7 +946,7 @@
             try {
                 const dataToSave = {
                     nome,
-                    icona: icona || '📋',
+                    icona: icona || 'ðŸ“‹',
                     keywords,
                     colore
                 };
@@ -866,7 +959,7 @@
                         .eq('id', id);
 
                     if (error) throw error;
-                    showMessage('✅ Attività aggiornata!', 'success');
+                    showMessage('âœ… AttivitÃ  aggiornata!', 'success');
                 } else {
                     // Insert
                     const { error } = await supabaseClient
@@ -874,7 +967,7 @@
                         .insert(dataToSave);
 
                     if (error) throw error;
-                    showMessage('✅ Attività creata!', 'success');
+                    showMessage('âœ… AttivitÃ  creata!', 'success');
                 }
 
                 closeModal('modal-new-attivita');
@@ -882,8 +975,8 @@
                 await loadStats();
 
             } catch (error) {
-                console.error('Errore salvataggio attività:', error);
-                showMessage('❌ Errore nel salvataggio', 'error');
+                console.error('Errore salvataggio attivitÃ :', error);
+                showMessage('âŒ Errore nel salvataggio', 'error');
             }
         }
 
@@ -896,13 +989,13 @@
 
                 if (error) throw error;
 
-                showMessage(`✅ Attività ${newStatus ? 'attivata' : 'disattivata'}`, 'success');
+                showMessage(`âœ… AttivitÃ  ${newStatus ? 'attivata' : 'disattivata'}`, 'success');
                 await loadAttivita();
                 await loadStats();
 
             } catch (error) {
                 console.error('Errore aggiornamento stato:', error);
-                showMessage('❌ Errore aggiornamento', 'error');
+                showMessage('âŒ Errore aggiornamento', 'error');
             }
         }
 
@@ -970,7 +1063,7 @@
                     }
                 });
 
-                // Report per attività
+                // Report per attivitÃ 
                 const { data: oreAttData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('*, attivita(*)')
@@ -985,7 +1078,7 @@
                     activityHours[name] += parseFloat(item.ore);
                 });
 
-                // Grafico attività
+                // Grafico attivitÃ 
                 const ctx2 = document.getElementById('activity-chart');
                 if (activityChart) activityChart.destroy();
 
@@ -1030,7 +1123,9 @@
             event.target.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
 
-            if (tabName === 'report') {
+            if (tabName === 'storico') {
+                initStoricoFilters();
+            } else if (tabName === 'report') {
                 loadReport();
             }
         }
@@ -1051,9 +1146,9 @@
         // ==========================================
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                showMessage('✅ Link copiato negli appunti!', 'success');
+                showMessage('âœ… Link copiato negli appunti!', 'success');
             }).catch(() => {
-                showMessage('❌ Errore copia link', 'error');
+                showMessage('âŒ Errore copia link', 'error');
             });
         }
 
@@ -1069,7 +1164,7 @@
         // ==========================================
         async function exportToExcel() {
             try {
-                showMessage('⏳ Generando Excel...', 'info');
+                showMessage('â³ Generando Excel...', 'info');
                 
                 // Preleva tutti i dati
                 const { data: oreData } = await supabaseClient
@@ -1078,7 +1173,7 @@
                     .order('data', { ascending: true });
 
                 if (!oreData || oreData.length === 0) {
-                    showMessage('⚠️ Nessun dato da esportare', 'error');
+                    showMessage('âš ï¸ Nessun dato da esportare', 'error');
                     return;
                 }
 
@@ -1156,6 +1251,368 @@
                 // Scarica file
                 const today = new Date().toISOString().split('T')[0];
                 XLSX.writeFile(wb, `presenze_${today}.xlsx`);
+                
+                showMessage('âœ… Excel scaricato con successo!', 'success');
+
+            } catch (error) {
+                console.error('Errore export Excel:', error);
+                showMessage('âŒ Errore durante l\'export', 'error');
+            }
+        }
+
+
+        // ==========================================
+        // STORICO DETTAGLIATO
+        // ==========================================
+        let storicoChartDaily = null;
+        let storicoChartOperai = null;
+        let storicoChartAttivita = null;
+        let storicoData = [];
+
+        async function initStoricoFilters() {
+            // Popola filtro operai
+            const selectOperai = document.getElementById('filter-operaio');
+            selectOperai.innerHTML = '<option value="">Tutti gli operai</option>';
+            operai.forEach(op => {
+                selectOperai.innerHTML += `<option value="${op.id}">${op.nome} ${op.cognome}</option>`;
+            });
+
+            // Popola filtro attività
+            const selectAttivita = document.getElementById('filter-attivita');
+            selectAttivita.innerHTML = '<option value="">Tutte le attività</option>';
+            attivita.forEach(att => {
+                selectAttivita.innerHTML += `<option value="${att.id}">${att.icona} ${att.nome}</option>`;
+            });
+
+            // Imposta date di default (ultimo mese)
+            const today = new Date();
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            document.getElementById('filter-end-date').valueAsDate = today;
+            document.getElementById('filter-start-date').valueAsDate = monthAgo;
+
+            await loadStoricoDettagliato();
+        }
+
+        async function resetFiltersStorico() {
+            document.getElementById('filter-operaio').value = '';
+            document.getElementById('filter-attivita').value = '';
+            const today = new Date();
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            document.getElementById('filter-end-date').valueAsDate = today;
+            document.getElementById('filter-start-date').valueAsDate = monthAgo;
+            await loadStoricoDettagliato();
+        }
+
+        async function loadStoricoDettagliato() {
+            try {
+                const operaioId = document.getElementById('filter-operaio')?.value || '';
+                const attivitaId = document.getElementById('filter-attivita')?.value || '';
+                const startDate = document.getElementById('filter-start-date')?.value;
+                const endDate = document.getElementById('filter-end-date')?.value;
+
+                if (!startDate || !endDate) {
+                    return;
+                }
+
+                // Query base
+                let query = supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, operai(*), attivita(*)')
+                    .gte('data', startDate)
+                    .lte('data', endDate)
+                    .order('data', { ascending: false });
+
+                // Applica filtri
+                if (operaioId) {
+                    query = query.eq('operaio_id', operaioId);
+                }
+                if (attivitaId) {
+                    query = query.eq('attivita_id', attivitaId);
+                }
+
+                const { data, error } = await query;
+                if (error) throw error;
+
+                storicoData = data || [];
+
+                // Aggiorna statistiche
+                updateStoricoStats(storicoData);
+
+                // Aggiorna grafici
+                updateStoricoCharts(storicoData);
+
+                // Aggiorna tabella
+                updateStoricoTable(storicoData);
+
+            } catch (error) {
+                console.error('Errore caricamento storico:', error);
+                showMessage('❌ Errore caricamento storico', 'error');
+            }
+        }
+
+        function updateStoricoStats(data) {
+            const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+            const uniqueDays = new Set(data.map(item => item.data)).size;
+            const avgHours = uniqueDays > 0 ? totalHours / uniqueDays : 0;
+
+            document.getElementById('storico-stat-total').textContent = `${totalHours.toFixed(1)}h`;
+            document.getElementById('storico-stat-records').textContent = data.length;
+            document.getElementById('storico-stat-days').textContent = uniqueDays;
+            document.getElementById('storico-stat-avg').textContent = `${avgHours.toFixed(1)}h`;
+        }
+
+        function updateStoricoCharts(data) {
+            if (data.length === 0) {
+                if (storicoChartDaily) storicoChartDaily.destroy();
+                if (storicoChartOperai) storicoChartOperai.destroy();
+                if (storicoChartAttivita) storicoChartAttivita.destroy();
+                return;
+            }
+
+            // Grafico giornaliero
+            const dailyData = {};
+            data.forEach(item => {
+                if (!dailyData[item.data]) {
+                    dailyData[item.data] = 0;
+                }
+                dailyData[item.data] += parseFloat(item.ore);
+            });
+
+            const sortedDates = Object.keys(dailyData).sort();
+            const dailyLabels = sortedDates.map(date => {
+                const d = new Date(date + 'T00:00:00');
+                return d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+            });
+            const dailyValues = sortedDates.map(date => dailyData[date]);
+
+            const ctx1 = document.getElementById('storico-chart-daily');
+            if (storicoChartDaily) storicoChartDaily.destroy();
+
+            storicoChartDaily = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: dailyLabels,
+                    datasets: [{
+                        label: 'Ore',
+                        data: dailyValues,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // Grafico per operaio
+            const operaiData = {};
+            data.forEach(item => {
+                const name = `${item.operai.nome} ${item.operai.cognome}`;
+                if (!operaiData[name]) {
+                    operaiData[name] = 0;
+                }
+                operaiData[name] += parseFloat(item.ore);
+            });
+
+            const ctx2 = document.getElementById('storico-chart-operai');
+            if (storicoChartOperai) storicoChartOperai.destroy();
+
+            storicoChartOperai = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(operaiData),
+                    datasets: [{
+                        label: 'Ore',
+                        data: Object.values(operaiData),
+                        backgroundColor: '#10b981',
+                        borderColor: '#059669',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // Grafico per attività
+            const attivitaData = {};
+            const attivitaColors = {};
+            data.forEach(item => {
+                const name = item.attivita.nome;
+                if (!attivitaData[name]) {
+                    attivitaData[name] = 0;
+                    attivitaColors[name] = item.attivita.colore;
+                }
+                attivitaData[name] += parseFloat(item.ore);
+            });
+
+            const ctx3 = document.getElementById('storico-chart-attivita');
+            if (storicoChartAttivita) storicoChartAttivita.destroy();
+
+            storicoChartAttivita = new Chart(ctx3, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(attivitaData),
+                    datasets: [{
+                        data: Object.values(attivitaData),
+                        backgroundColor: Object.values(attivitaColors),
+                        borderWidth: 2,
+                        borderColor: '#1e293b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', padding: 10 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateStoricoTable(data) {
+            if (data.length === 0) {
+                document.getElementById('storico-table-container').innerHTML = 
+                    '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna registrazione trovata</div>';
+                return;
+            }
+
+            let html = `
+                <table style="width: 100%; border-collapse: collapse; color: white;">
+                    <thead>
+                        <tr style="background: rgba(15, 23, 42, 0.8); border-bottom: 2px solid #3b82f6;">
+                            <th style="padding: 15px; text-align: left;">Data</th>
+                            <th style="padding: 15px; text-align: left;">Operaio</th>
+                            <th style="padding: 15px; text-align: left;">Attività</th>
+                            <th style="padding: 15px; text-align: center;">Ore</th>
+                            <th style="padding: 15px; text-align: left;">Note</th>
+                            <th style="padding: 15px; text-align: center;">Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach((item, index) => {
+                const bgColor = index % 2 === 0 ? 'rgba(15, 23, 42, 0.4)' : 'rgba(30, 41, 59, 0.4)';
+                const date = new Date(item.data + 'T00:00:00');
+                const dateStr = date.toLocaleDateString('it-IT', { 
+                    weekday: 'short', 
+                    day: 'numeric', 
+                    month: 'short', 
+                    year: 'numeric' 
+                });
+
+                html += `
+                    <tr style="background: ${bgColor}; border-bottom: 1px solid rgba(59, 130, 246, 0.1);">
+                        <td style="padding: 12px;">${dateStr}</td>
+                        <td style="padding: 12px;">${item.operai.nome} ${item.operai.cognome}</td>
+                        <td style="padding: 12px;">${item.attivita.icona} ${item.attivita.nome}</td>
+                        <td style="padding: 12px; text-align: center; font-weight: bold; color: #10b981;">${item.ore}h</td>
+                        <td style="padding: 12px; font-style: italic; color: #cbd5e1;">${item.note || '-'}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            <button class="btn btn-danger btn-small" onclick="deleteStoricoRecord('${item.id}')" style="padding: 6px 12px;">
+                                🗑️ Elimina
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('storico-table-container').innerHTML = html;
+        }
+
+        async function deleteStoricoRecord(id) {
+            if (!confirm('Sei sicuro di voler eliminare questa registrazione?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                showMessage('✅ Registrazione eliminata', 'success');
+                await loadStoricoDettagliato();
+                await loadStats();
+
+            } catch (error) {
+                console.error('Errore eliminazione:', error);
+                showMessage('❌ Errore eliminazione', 'error');
+            }
+        }
+
+        async function exportStoricoToExcel() {
+            if (storicoData.length === 0) {
+                showMessage('⚠️ Nessun dato da esportare', 'error');
+                return;
+            }
+
+            try {
+                showMessage('⏳ Generando Excel...', 'info');
+
+                const excelData = storicoData.map(item => ({
+                    'Data': new Date(item.data + 'T00:00:00').toLocaleDateString('it-IT'),
+                    'Operaio': `${item.operai.nome} ${item.operai.cognome}`,
+                    'Attività': item.attivita.nome,
+                    'Ore': item.ore,
+                    'Note': item.note || ''
+                }));
+
+                const ws = XLSX.utils.json_to_sheet(excelData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Storico');
+
+                const startDate = document.getElementById('filter-start-date').value;
+                const endDate = document.getElementById('filter-end-date').value;
+                const filename = `storico_${startDate}_${endDate}.xlsx`;
+                
+                XLSX.writeFile(wb, filename);
                 
                 showMessage('✅ Excel scaricato con successo!', 'success');
 
