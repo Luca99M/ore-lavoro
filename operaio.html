@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registra Ore Lavoro</title>
-    <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -19,11 +18,11 @@
             color: white;
             min-height: 100vh;
             padding: 15px;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
@@ -32,32 +31,18 @@
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
+            text-align: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
         }
 
-        .tab {
-            flex: 1;
-            padding: 12px;
-            background: rgba(30, 41, 59, 0.8);
-            border: 2px solid rgba(37, 99, 235, 0.2);
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            border-color: #3b82f6;
-            transform: scale(1.05);
+        .header .subtitle {
+            font-size: 1em;
+            opacity: 0.9;
         }
 
         .card {
@@ -65,7 +50,42 @@
             border: 1px solid rgba(37, 99, 235, 0.2);
             border-radius: 12px;
             padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #60a5fa;
             margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .today-summary {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .today-total {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .activity-list {
+            list-style: none;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            margin-bottom: 8px;
         }
 
         .form-group {
@@ -80,7 +100,7 @@
             font-size: 0.9em;
         }
 
-        .form-input, .form-select, .form-textarea {
+        .form-input, .form-select {
             width: 100%;
             background: rgba(15, 23, 42, 0.9);
             border: 2px solid rgba(37, 99, 235, 0.2);
@@ -90,87 +110,101 @@
             font-size: 16px;
         }
 
-        .form-textarea {
-            resize: vertical;
-            min-height: 80px;
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
         }
 
         .btn {
-            width: 100%;
-            padding: 16px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1em;
-            font-weight: 700;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
+            display: inline-block;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
+            width: 100%;
         }
 
         .btn-secondary {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
+            width: 100%;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
         }
 
         .btn:active {
             transform: scale(0.98);
         }
 
-        .activity-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .activity-btn {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid rgba(37, 99, 235, 0.3);
-            color: white;
-            padding: 20px 10px;
-            border-radius: 12px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .activity-btn.selected {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            border-color: #3b82f6;
-            transform: scale(1.05);
-        }
-
-        .pending-list {
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
         .pending-item {
-            background: rgba(37, 99, 235, 0.1);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
 
-        .remove-btn {
-            background: #ef4444;
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+        .pending-item-info {
+            flex: 1;
+        }
+
+        .pending-item-hours {
+            font-weight: bold;
+            color: #10b981;
+            font-size: 1.1em;
+            margin-right: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-radius: 8px;
+            text-align: center;
             cursor: pointer;
-            font-size: 0.9em;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-color: #3b82f6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .message {
@@ -178,6 +212,7 @@
             border-radius: 8px;
             margin: 10px 0;
             text-align: center;
+            font-size: 0.9em;
         }
 
         .message-success {
@@ -192,570 +227,582 @@
             color: #fca5a5;
         }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .absence-item {
-            background: rgba(37, 99, 235, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-
-        .absence-item.approved {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid #10b981;
-        }
-
-        .absence-item.pending {
-            background: rgba(245, 158, 11, 0.1);
-            border-left: 4px solid #f59e0b;
-        }
-
-        .notification-card {
+        .message-info {
             background: rgba(59, 130, 246, 0.1);
             border: 2px solid #3b82f6;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
+            color: #93c5fd;
         }
 
-        .notification-card h3 {
-            color: #60a5fa;
-            margin-bottom: 10px;
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2em;
+            }
+            
+            .today-total {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- HEADER -->
         <div class="header">
-            <h1>⏱️ Ore Lavoro</h1>
-            <p id="worker-name">Caricamento...</p>
+            <h1>⏱️ Registra Ore Lavoro</h1>
+            <div class="subtitle" id="user-name">Caricamento...</div>
         </div>
 
-        <div id="status-message"></div>
+        <div id="error-message"></div>
 
         <!-- TABS -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('add')">➕ Aggiungi</div>
+            <div class="tab active" onclick="switchTab('home')">🏠 Oggi</div>
             <div class="tab" onclick="switchTab('history')">📊 Storico</div>
-            <div class="tab" onclick="switchTab('absences')">📅 Ferie</div>
         </div>
 
-        <!-- TAB: AGGIUNGI ORE -->
-        <div id="tab-add" class="tab-content active">
+        <!-- TAB: HOME -->
+        <div id="tab-home" class="tab-content active">
+            <!-- OGGI -->
             <div class="card">
-                <h2 style="margin-bottom: 15px;">📝 Registra Ore</h2>
+                <h2>📅 Oggi: <span id="today-date"></span></h2>
+                <div class="today-summary">
+                    <div class="today-total" id="today-total">0h</div>
+                    <ul class="activity-list" id="today-activities">
+                        <li style="text-align: center; color: #94a3b8;">Nessuna ora registrata</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- AGGIUNGI ORE -->
+            <div class="card">
+                <h2>➕ Aggiungi Ore</h2>
                 
                 <div class="form-group">
                     <label>📅 Data</label>
-                    <input type="date" id="data" class="form-input">
+                    <input type="date" id="input-date" class="form-input">
                 </div>
 
-                <div class="form-group">
-                    <label>🔧 Attività</label>
-                    <div id="attivita-grid" class="activity-grid">
-                        <div class="activity-btn">Caricamento...</div>
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <div class="form-group">
+                        <label>🔧 Attività</label>
+                        <select id="input-activity" class="form-select">
+                            <option value="">Caricamento attività...</option>
+                        </select>
                     </div>
+
+                    <div class="form-group">
+                        <label>⏱️ Ore</label>
+                        <input type="number" id="input-hours" class="form-input" step="0.5" min="0.5" max="24" placeholder="Es: 8 o 4.5">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>📝 Note (opzionale)</label>
+                        <input type="text" id="input-notes" class="form-input" placeholder="Aggiungi eventuali note...">
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="addToList()" style="margin-top: 15px;">➕ Aggiungi alla Lista</button>
                 </div>
 
-                <div class="form-group">
-                    <label>⏱️ Ore</label>
-                    <input type="number" id="ore" class="form-input" step="0.5" min="0" max="24" placeholder="Es: 8">
+                <!-- LISTA ATTIVITÀ DA SALVARE -->
+                <div id="pending-container" style="display: none; margin-bottom: 15px;">
+                    <h3 style="color: #60a5fa; font-size: 1.1em; margin-bottom: 10px;">📋 Attività da salvare:</h3>
+                    <div id="pending-list"></div>
                 </div>
 
-                <div class="form-group">
-                    <label>📝 Note (opzionale)</label>
-                    <textarea id="note" class="form-textarea" placeholder="Aggiungi dettagli..."></textarea>
-                </div>
+                <button class="btn btn-primary" onclick="saveAllHours()" id="btn-save-all" style="display: none; margin-bottom: 10px;">💾 SALVA TUTTE LE ORE</button>
+                <button class="btn btn-secondary" onclick="startVoiceRecognition()">🎤 Usa Voce (più attività)</button>
 
-                <button class="btn btn-primary" onclick="addToList()">➕ Aggiungi alla Lista</button>
-
-                <div id="pending-container" style="display: none;">
-                    <h3 style="color: #60a5fa; margin: 20px 0 10px;">📋 Da Salvare</h3>
-                    <div class="pending-list" id="pending-list"></div>
-                    <button class="btn btn-secondary" onclick="saveAllHours()">💾 SALVA TUTTE LE ORE</button>
-                </div>
+                <div id="voice-result"></div>
             </div>
         </div>
 
         <!-- TAB: STORICO -->
         <div id="tab-history" class="tab-content">
             <div class="card">
-                <h2>📊 Le Tue Ore</h2>
+                <h2>📊 Storico Ore</h2>
+                
                 <div class="form-group">
-                    <label>Filtra per periodo</label>
+                    <label>Periodo</label>
                     <select id="history-period" class="form-select" onchange="loadHistory()">
                         <option value="7">Ultimi 7 giorni</option>
                         <option value="30" selected>Ultimi 30 giorni</option>
                         <option value="90">Ultimi 90 giorni</option>
                     </select>
                 </div>
-                <div id="history-container"></div>
-            </div>
-        </div>
 
-        <!-- TAB: FERIE/ASSENZE -->
-        <div id="tab-absences" class="tab-content">
-            <!-- NOTIFICHE -->
-            <div class="card">
-                <div class="notification-card">
-                    <h3>🔔 Notifiche Promemoria</h3>
-                    <p style="color: #94a3b8; margin-bottom: 10px;">
-                        Ricevi un promemoria alle 20:00 se non hai registrato ore
-                    </p>
-                    <button id="enable-notifications-btn" class="btn btn-secondary" onclick="enableNotifications()">
-                        Attiva Notifiche
-                    </button>
-                </div>
-            </div>
-
-            <!-- RICHIEDI ASSENZA -->
-            <div class="card">
-                <h2>📅 Richiedi Assenza</h2>
-                
-                <div class="form-group">
-                    <label>Tipo</label>
-                    <select id="absence-type" class="form-select">
-                        <option value="ferie">🏖️ Ferie</option>
-                        <option value="malattia">🏥 Malattia</option>
-                        <option value="permesso">📝 Permesso</option>
-                        <option value="altro">❓ Altro</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Data Inizio</label>
-                    <input type="date" id="absence-start" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label>Data Fine</label>
-                    <input type="date" id="absence-end" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label>Motivo (opzionale)</label>
-                    <textarea id="absence-reason" class="form-textarea" placeholder="Motivo dell'assenza..."></textarea>
-                </div>
-
-                <button class="btn btn-primary" onclick="submitAbsence()">📤 Invia Richiesta</button>
-            </div>
-
-            <!-- LE MIE RICHIESTE -->
-            <div class="card">
-                <h2>📋 Le Mie Richieste</h2>
-                <div id="my-absences-container">
-                    <div class="message message-error">Caricamento...</div>
+                <div id="history-content">
+                    <div style="text-align: center; padding: 20px; color: #94a3b8;">Caricamento...</div>
                 </div>
             </div>
         </div>
+
+        <div id="status-message"></div>
     </div>
 
     <script>
+        // ==========================================
+        // CONFIGURAZIONE SUPABASE
+        // ==========================================
         const SUPABASE_URL = 'https://xxzyhzalfqyqseedsuub.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2ODgxNjMsImV4cCI6MjA4MzI2NDE2M30.7o18J8g0tcWX2qyrQl-zGBU10AerbHlG-R_WMkjRn7s';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzY4ODE2MywiZXhwIjoyMDgzMjY0MTYzfQ.Y1fUlGwzlzjYc-zJnOIF7X-7V7FrcRzfJJN5ZNhgi2s';
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let currentWorker = null;
-        let selectedActivity = null;
-        let pendingList = [];
+        // ==========================================
+        // VARIABILI GLOBALI
+        // ==========================================
+        let currentUser = null;
+        let attivita = [];
+        let pendingActivities = []; // NUOVO: Lista attività da salvare
 
         // ==========================================
         // INIZIALIZZAZIONE
         // ==========================================
         document.addEventListener('DOMContentLoaded', async function() {
             const urlParams = new URLSearchParams(window.location.search);
-            const workerId = urlParams.get('id');
+            const token = urlParams.get('token');
 
-            if (!workerId) {
-                alert('ID operaio non fornito!');
+            if (!token) {
+                showError('⚠️ Link non valido. Contatta l\'amministratore.');
                 return;
             }
 
-            await loadWorkerInfo(workerId);
-            await loadActivities();
-            await loadHistory();
-            await loadMyAbsences();
-            checkNotificationPermission();
-            
-            // Imposta data odierna
-            document.getElementById('data').valueAsDate = new Date();
-
-            // Registra service worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(() => console.log('Service Worker registrato'))
-                    .catch(err => console.error('Service Worker errore:', err));
+            await loadUser(token);
+            if (currentUser) {
+                await loadAttivita();
+                setTodayDate();
+                await loadTodaySummary();
             }
-
-            // Controlla ore alle 20:00
-            setupDailyCheck();
         });
 
         // ==========================================
-        // WORKER INFO
+        // CARICA UTENTE
         // ==========================================
-        async function loadWorkerInfo(id) {
-            const { data, error } = await supabaseClient
-                .from('operai')
-                .select('*')
-                .eq('id', id)
-                .single();
+        async function loadUser(token) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('operai')
+                    .select('*')
+                    .eq('token_personale', token)
+                    .eq('attivo', true)
+                    .single();
 
-            if (!error && data) {
-                currentWorker = data;
-                document.getElementById('worker-name').textContent = `${data.nome} ${data.cognome}`;
+                if (error) throw error;
+
+                if (!data) {
+                    showError('❌ Operaio non trovato o non attivo');
+                    return;
+                }
+
+                currentUser = data;
+                document.getElementById('user-name').textContent = `👤 ${data.nome} ${data.cognome}`;
+            } catch (error) {
+                console.error('Errore caricamento utente:', error);
+                showError('❌ Errore nel caricamento. Riprova.');
             }
         }
 
         // ==========================================
-        // ATTIVITÀ
+        // CARICA ATTIVITÀ
         // ==========================================
-        async function loadActivities() {
-            const { data, error } = await supabaseClient
-                .from('attivita')
-                .select('*')
-                .eq('attiva', true)
-                .order('ordine');
+        async function loadAttivita() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('attivita')
+                    .select('*')
+                    .eq('attiva', true)
+                    .order('ordine', { ascending: true });
 
-            if (!error && data) {
-                const grid = document.getElementById('attivita-grid');
-                grid.innerHTML = '';
+                if (error) throw error;
 
-                data.forEach(att => {
-                    const btn = document.createElement('div');
-                    btn.className = 'activity-btn';
-                    btn.textContent = `${att.icona} ${att.nome}`;
-                    btn.onclick = () => selectActivity(att.id, btn);
-                    btn.dataset.id = att.id;
-                    grid.appendChild(btn);
+                attivita = data || [];
+
+                const select = document.getElementById('input-activity');
+                select.innerHTML = '<option value="">Seleziona attività...</option>';
+                
+                attivita.forEach(att => {
+                    select.innerHTML += `<option value="${att.id}">${att.icona} ${att.nome}</option>`;
                 });
+            } catch (error) {
+                console.error('Errore caricamento attività:', error);
             }
         }
 
-        function selectActivity(id, element) {
-            document.querySelectorAll('.activity-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            element.classList.add('selected');
-            selectedActivity = id;
+        // ==========================================
+        // SET DATA OGGI
+        // ==========================================
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('input-date').value = today;
+            
+            const dateObj = new Date();
+            const days = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+            
+            document.getElementById('today-date').textContent = 
+                `${days[dateObj.getDay()]} ${dateObj.getDate()} ${months[dateObj.getMonth()]}`;
         }
 
         // ==========================================
-        // PENDING LIST
+        // CARICA RIEPILOGO OGGI
+        // ==========================================
+        async function loadTodaySummary() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                const { data, error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, attivita(*)')
+                    .eq('operaio_id', currentUser.id)
+                    .eq('data', today);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('today-total').textContent = '0h';
+                    document.getElementById('today-activities').innerHTML = 
+                        '<li style="text-align: center; color: #94a3b8;">Nessuna ora registrata</li>';
+                    return;
+                }
+
+                // Calcola totale
+                const total = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+                document.getElementById('today-total').textContent = `${total}h`;
+
+                // Raggruppa per attività
+                const grouped = {};
+                data.forEach(item => {
+                    const actName = item.attivita.nome;
+                    if (!grouped[actName]) {
+                        grouped[actName] = {
+                            ore: 0,
+                            icona: item.attivita.icona
+                        };
+                    }
+                    grouped[actName].ore += parseFloat(item.ore);
+                });
+
+                // Mostra lista
+                const list = Object.entries(grouped)
+                    .map(([name, info]) => `
+                        <li class="activity-item">
+                            <span>${info.icona} ${name}</span>
+                            <span style="font-weight: bold; color: #10b981;">${info.ore}h</span>
+                        </li>
+                    `).join('');
+
+                document.getElementById('today-activities').innerHTML = list;
+            } catch (error) {
+                console.error('Errore caricamento oggi:', error);
+            }
+        }
+
+        // ==========================================
+        // AGGIUNGI ALLA LISTA (NUOVO)
         // ==========================================
         function addToList() {
-            const data = document.getElementById('data').value;
-            const ore = parseFloat(document.getElementById('ore').value);
-            const note = document.getElementById('note').value;
+            const activityId = document.getElementById('input-activity').value;
+            const hours = parseFloat(document.getElementById('input-hours').value);
+            const notes = document.getElementById('input-notes').value;
 
-            if (!data || !ore || !selectedActivity) {
-                showMessage('Compila tutti i campi obbligatori!', 'error');
+            // Validazione
+            if (!activityId || !hours) {
+                showMessage('⚠️ Seleziona attività e inserisci le ore', 'error');
                 return;
             }
 
-            if (ore <= 0 || ore > 24) {
-                showMessage('Le ore devono essere tra 0 e 24', 'error');
+            if (hours <= 0 || hours > 24) {
+                showMessage('⚠️ Le ore devono essere tra 0.5 e 24', 'error');
                 return;
             }
 
-            // Trova nome attività
-            const actBtn = document.querySelector(`.activity-btn[data-id="${selectedActivity}"]`);
-            const actName = actBtn ? actBtn.textContent : 'Attività';
+            // Trova attività
+            const activity = attivita.find(a => a.id === activityId);
+            if (!activity) return;
 
-            pendingList.push({
-                data,
-                attivita_id: selectedActivity,
-                attivita_nome: actName,
-                ore,
-                note
+            // Aggiungi alla lista pending
+            pendingActivities.push({
+                activityId: activityId,
+                activityName: activity.nome,
+                activityIcon: activity.icona,
+                hours: hours,
+                notes: notes
             });
 
-            renderPendingList();
-            
             // Reset form
-            document.getElementById('ore').value = '';
-            document.getElementById('note').value = '';
-            document.querySelectorAll('.activity-btn').forEach(btn => btn.classList.remove('selected'));
-            selectedActivity = null;
+            document.getElementById('input-activity').value = '';
+            document.getElementById('input-hours').value = '';
+            document.getElementById('input-notes').value = '';
 
-            showMessage('✅ Aggiunto alla lista!', 'success');
+            // Mostra lista
+            renderPendingList();
+            showMessage('✅ Attività aggiunta alla lista!', 'success');
         }
 
+        // ==========================================
+        // MOSTRA LISTA PENDING
+        // ==========================================
         function renderPendingList() {
-            const container = document.getElementById('pending-container');
-            const list = document.getElementById('pending-list');
-
-            if (pendingList.length === 0) {
-                container.style.display = 'none';
+            if (pendingActivities.length === 0) {
+                document.getElementById('pending-container').style.display = 'none';
+                document.getElementById('btn-save-all').style.display = 'none';
                 return;
             }
 
-            container.style.display = 'block';
-            list.innerHTML = '';
+            document.getElementById('pending-container').style.display = 'block';
+            document.getElementById('btn-save-all').style.display = 'block';
 
-            pendingList.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'pending-item';
-                div.innerHTML = `
-                    <div>
-                        <strong>${item.data}</strong> - ${item.attivita_nome}<br>
-                        <span style="color: #10b981; font-weight: bold;">${item.ore}h</span>
-                        ${item.note ? `<br><small>${item.note}</small>` : ''}
+            const html = pendingActivities.map((item, index) => `
+                <div class="pending-item">
+                    <div class="pending-item-info">
+                        <div style="font-weight: bold;">${item.activityIcon} ${item.activityName}</div>
+                        ${item.notes ? `<div style="font-size: 0.85em; color: #94a3b8; margin-top: 3px;">${item.notes}</div>` : ''}
                     </div>
-                    <button class="remove-btn" onclick="removeFromList(${index})">🗑️</button>
-                `;
-                list.appendChild(div);
-            });
+                    <span class="pending-item-hours">${item.hours}h</span>
+                    <button class="btn btn-danger" onclick="removeFromList(${index})">❌</button>
+                </div>
+            `).join('');
+
+            document.getElementById('pending-list').innerHTML = html;
         }
 
+        // ==========================================
+        // RIMUOVI DALLA LISTA
+        // ==========================================
         function removeFromList(index) {
-            pendingList.splice(index, 1);
+            pendingActivities.splice(index, 1);
             renderPendingList();
+            showMessage('✅ Attività rimossa dalla lista', 'info');
         }
 
+        // ==========================================
+        // SALVA TUTTE LE ORE (NUOVO)
+        // ==========================================
         async function saveAllHours() {
-            if (pendingList.length === 0) {
-                showMessage('Nessuna ora da salvare!', 'error');
+            if (pendingActivities.length === 0) {
+                showMessage('⚠️ Nessuna attività da salvare', 'error');
                 return;
             }
 
-            const records = pendingList.map(item => ({
-                operaio_id: currentWorker.id,
-                data: item.data,
-                attivita_id: item.attivita_id,
-                ore: item.ore,
-                note: item.note || null,
-                metodo_inserimento: 'manuale'
-            }));
+            const date = document.getElementById('input-date').value;
+            if (!date) {
+                showMessage('⚠️ Seleziona una data', 'error');
+                return;
+            }
 
-            const { error } = await supabaseClient
-                .from('ore_lavorate')
-                .insert(records);
+            try {
+                // Prepara i dati
+                const dataToInsert = pendingActivities.map(item => ({
+                    operaio_id: currentUser.id,
+                    data: date,
+                    attivita_id: item.activityId,
+                    ore: item.hours,
+                    note: item.notes || null,
+                    metodo_inserimento: 'manuale'
+                }));
 
-            if (error) {
-                console.error('Errore:', error);
+                // Inserisci tutto insieme
+                const { error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .insert(dataToInsert);
+
+                if (error) throw error;
+
+                showMessage(`✅ ${pendingActivities.length} attività salvate con successo!`, 'success');
+
+                // Reset
+                pendingActivities = [];
+                renderPendingList();
+
+                // Ricarica riepilogo
+                await loadTodaySummary();
+
+            } catch (error) {
+                console.error('Errore salvataggio:', error);
                 showMessage('❌ Errore nel salvataggio', 'error');
+            }
+        }
+
+        // ==========================================
+        // VOICE RECOGNITION
+        // ==========================================
+        function startVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showMessage('❌ Riconoscimento vocale non supportato su questo browser', 'error');
                 return;
             }
 
-            showMessage(`✅ ${pendingList.length} ore salvate con successo!`, 'success');
-            pendingList = [];
-            renderPendingList();
-            loadHistory();
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+
+            recognition.lang = 'it-IT';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            document.getElementById('voice-result').innerHTML = 
+                '<div class="message message-info">🎤 Sto ascoltando... Parla ora!</div>';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                console.log('Riconosciuto:', transcript);
+
+                const parsed = parseVoiceInput(transcript);
+                
+                if (parsed.length === 0) {
+                    document.getElementById('voice-result').innerHTML = 
+                        '<div class="message message-error">❌ Non ho capito. Riprova dicendo ad esempio: "4 ore trattore e 3 ore stalla"</div>';
+                    return;
+                }
+
+                // Aggiungi tutte le attività alla lista pending
+                parsed.forEach(item => {
+                    pendingActivities.push({
+                        activityId: item.activityId,
+                        activityName: item.activityName,
+                        activityIcon: item.activityIcon,
+                        hours: item.hours,
+                        notes: 'Inserito con voce'
+                    });
+                });
+
+                renderPendingList();
+
+                document.getElementById('voice-result').innerHTML = 
+                    `<div class="message message-success">✅ Ho capito ${parsed.length} attività! Controlla e poi salva.</div>`;
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Errore riconoscimento:', event.error);
+                document.getElementById('voice-result').innerHTML = 
+                    '<div class="message message-error">❌ Errore riconoscimento vocale. Riprova.</div>';
+            };
+
+            recognition.start();
+        }
+
+        // ==========================================
+        // PARSE VOICE INPUT
+        // ==========================================
+        function parseVoiceInput(text) {
+            const results = [];
+            
+            // Numeri in parole
+            const numberWords = {
+                'zero': 0, 'mezza': 0.5, 'mezzo': 0.5,
+                'uno': 1, 'una': 1, 'due': 2, 'tre': 3, 'quattro': 4,
+                'cinque': 5, 'sei': 6, 'sette': 7, 'otto': 8, 'nove': 9, 'dieci': 10
+            };
+
+            // Split per "e" o virgola
+            const segments = text.split(/\se\s|,\s*/);
+
+            segments.forEach(segment => {
+                segment = segment.trim();
+                
+                // Cerca numero (cifra o parola)
+                let hours = null;
+                const numberMatch = segment.match(/(\d+(?:[.,]\d+)?)/);
+                if (numberMatch) {
+                    hours = parseFloat(numberMatch[1].replace(',', '.'));
+                } else {
+                    for (const [word, value] of Object.entries(numberWords)) {
+                        if (segment.includes(word)) {
+                            hours = value;
+                            break;
+                        }
+                    }
+                }
+
+                if (!hours) return;
+
+                // Cerca attività per keywords
+                for (const att of attivita) {
+                    if (!att.keywords || att.keywords.length === 0) continue;
+
+                    for (const keyword of att.keywords) {
+                        if (segment.includes(keyword.toLowerCase())) {
+                            results.push({
+                                activityId: att.id,
+                                activityName: att.nome,
+                                activityIcon: att.icona,
+                                hours: hours
+                            });
+                            return; // Trova solo una corrispondenza per segment
+                        }
+                    }
+                }
+            });
+
+            return results;
         }
 
         // ==========================================
         // STORICO
         // ==========================================
         async function loadHistory() {
-            const period = parseInt(document.getElementById('history-period').value);
+            const days = parseInt(document.getElementById('history-period').value);
             const startDate = new Date();
-            startDate.setDate(startDate.getDate() - period);
+            startDate.setDate(startDate.getDate() - days);
 
-            const { data, error } = await supabaseClient
-                .from('ore_lavorate')
-                .select('*, attivita(nome, icona)')
-                .eq('operaio_id', currentWorker.id)
-                .gte('data', startDate.toISOString().split('T')[0])
-                .order('data', { ascending: false });
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, attivita(*)')
+                    .eq('operaio_id', currentUser.id)
+                    .gte('data', startDate.toISOString().split('T')[0])
+                    .order('data', { ascending: false });
 
-            const container = document.getElementById('history-container');
+                if (error) throw error;
 
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="message message-error">Nessuna ora registrata</div>';
-                return;
-            }
+                if (!data || data.length === 0) {
+                    document.getElementById('history-content').innerHTML = 
+                        '<div style="text-align: center; padding: 20px; color: #94a3b8;">Nessuna ora registrata</div>';
+                    return;
+                }
 
-            let html = '';
-            let currentDate = '';
-            let dayTotal = 0;
-
-            data.forEach((item, index) => {
-                if (item.data !== currentDate) {
-                    if (currentDate) {
-                        html += `<div style="text-align: right; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; margin-bottom: 15px;">
-                            <strong>Totale: ${dayTotal.toFixed(1)}h</strong>
-                        </div>`;
+                // Raggruppa per data
+                const grouped = {};
+                data.forEach(item => {
+                    if (!grouped[item.data]) {
+                        grouped[item.data] = [];
                     }
-                    currentDate = item.data;
-                    dayTotal = 0;
-                    html += `<h3 style="color: #60a5fa; margin: 20px 0 10px;">${item.data}</h3>`;
-                }
-
-                dayTotal += parseFloat(item.ore);
-
-                html += `<div class="pending-item">
-                    <div>
-                        <strong>${item.attivita.icona} ${item.attivita.nome}</strong><br>
-                        <span style="color: #10b981; font-weight: bold; font-size: 1.2em;">${item.ore}h</span>
-                        ${item.note ? `<br><small style="color: #94a3b8;">${item.note}</small>` : ''}
-                    </div>
-                </div>`;
-            });
-
-            if (currentDate) {
-                html += `<div style="text-align: right; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
-                    <strong>Totale: ${dayTotal.toFixed(1)}h</strong>
-                </div>`;
-            }
-
-            container.innerHTML = html;
-        }
-
-        // ==========================================
-        // ASSENZE
-        // ==========================================
-        async function submitAbsence() {
-            const type = document.getElementById('absence-type').value;
-            const start = document.getElementById('absence-start').value;
-            const end = document.getElementById('absence-end').value;
-            const reason = document.getElementById('absence-reason').value;
-
-            if (!start || !end) {
-                showMessage('Compila le date!', 'error');
-                return;
-            }
-
-            if (new Date(start) > new Date(end)) {
-                showMessage('La data fine deve essere dopo la data inizio!', 'error');
-                return;
-            }
-
-            const { error } = await supabaseClient
-                .from('assenze')
-                .insert({
-                    operaio_id: currentWorker.id,
-                    tipo: type,
-                    data_inizio: start,
-                    data_fine: end,
-                    motivo: reason || null,
-                    approvata: false
+                    grouped[item.data].push(item);
                 });
 
-            if (error) {
-                console.error('Errore:', error);
-                showMessage('❌ Errore nell\'invio', 'error');
-                return;
-            }
-
-            showMessage('✅ Richiesta inviata! In attesa di approvazione', 'success');
-            
-            // Reset form
-            document.getElementById('absence-start').value = '';
-            document.getElementById('absence-end').value = '';
-            document.getElementById('absence-reason').value = '';
-            
-            loadMyAbsences();
-        }
-
-        async function loadMyAbsences() {
-            const { data, error } = await supabaseClient
-                .from('assenze')
-                .select('*')
-                .eq('operaio_id', currentWorker.id)
-                .order('created_at', { ascending: false });
-
-            const container = document.getElementById('my-absences-container');
-
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="message message-error">Nessuna richiesta</div>';
-                return;
-            }
-
-            let html = '';
-            data.forEach(abs => {
-                const status = abs.approvata ? '✅ Approvata' : '⏳ In attesa';
-                const className = abs.approvata ? 'approved' : 'pending';
-                const icon = abs.tipo === 'ferie' ? '🏖️' : abs.tipo === 'malattia' ? '🏥' : '📝';
-
-                html += `<div class="absence-item ${className}">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong>${icon} ${abs.tipo.toUpperCase()}</strong><br>
-                            Dal ${abs.data_inizio} al ${abs.data_fine}
-                            ${abs.motivo ? `<br><small style="color: #94a3b8;">${abs.motivo}</small>` : ''}
-                        </div>
-                        <div style="text-align: right;">
-                            <strong>${status}</strong>
-                        </div>
-                    </div>
-                </div>`;
-            });
-
-            container.innerHTML = html;
-        }
-
-        // ==========================================
-        // NOTIFICHE
-        // ==========================================
-        function checkNotificationPermission() {
-            if (!('Notification' in window)) {
-                document.getElementById('enable-notifications-btn').style.display = 'none';
-                return;
-            }
-
-            if (Notification.permission === 'granted') {
-                document.getElementById('enable-notifications-btn').textContent = '✅ Notifiche Attive';
-                document.getElementById('enable-notifications-btn').disabled = true;
-            }
-        }
-
-        async function enableNotifications() {
-            if (!('Notification' in window)) {
-                showMessage('Il tuo browser non supporta le notifiche', 'error');
-                return;
-            }
-
-            const permission = await Notification.requestPermission();
-            
-            if (permission === 'granted') {
-                showMessage('✅ Notifiche attivate!', 'success');
-                document.getElementById('enable-notifications-btn').textContent = '✅ Notifiche Attive';
-                document.getElementById('enable-notifications-btn').disabled = true;
-                
-                // Test notifica
-                new Notification('🔔 Notifiche Attivate!', {
-                    body: 'Riceverai promemoria alle 20:00 se non hai registrato ore',
-                    icon: '/icon-192.png'
-                });
-            }
-        }
-
-        function setupDailyCheck() {
-            // Controlla ogni ora se sono le 20:00
-            setInterval(async () => {
-                const now = new Date();
-                if (now.getHours() === 20 && now.getMinutes() < 5) {
-                    await checkAndNotify();
-                }
-            }, 5 * 60 * 1000); // Ogni 5 minuti
-        }
-
-        async function checkAndNotify() {
-            const today = new Date().toISOString().split('T')[0];
-            
-            const { data } = await supabaseClient
-                .from('ore_lavorate')
-                .select('id')
-                .eq('operaio_id', currentWorker.id)
-                .eq('data', today);
-
-            if (!data || data.length === 0) {
-                if (Notification.permission === 'granted') {
-                    new Notification('⏱️ Ricorda di segnare le ore!', {
-                        body: 'Non hai ancora registrato le ore di oggi',
-                        icon: '/icon-192.png',
-                        requireInteraction: true
+                // Genera HTML
+                let html = '';
+                Object.entries(grouped).forEach(([date, items]) => {
+                    const dateObj = new Date(date + 'T00:00:00');
+                    const dateStr = dateObj.toLocaleDateString('it-IT', { 
+                        weekday: 'short', 
+                        day: 'numeric', 
+                        month: 'short' 
                     });
-                }
+
+                    const total = items.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+
+                    html += `
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(37, 99, 235, 0.1); border-radius: 8px; margin-bottom: 10px;">
+                                <strong>${dateStr}</strong>
+                                <strong style="color: #10b981;">${total}h</strong>
+                            </div>
+                            <ul class="activity-list">
+                                ${items.map(item => `
+                                    <li class="activity-item">
+                                        <span>${item.attivita.icona} ${item.attivita.nome}</span>
+                                        <span style="font-weight: bold; color: #10b981;">${item.ore}h</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('history-content').innerHTML = html;
+
+            } catch (error) {
+                console.error('Errore caricamento storico:', error);
             }
         }
 
@@ -771,8 +818,6 @@
 
             if (tabName === 'history') {
                 loadHistory();
-            } else if (tabName === 'absences') {
-                loadMyAbsences();
             }
         }
 
@@ -783,6 +828,11 @@
             const container = document.getElementById('status-message');
             container.innerHTML = `<div class="message message-${type}">${message}</div>`;
             setTimeout(() => container.innerHTML = '', 3000);
+        }
+
+        function showError(message) {
+            document.getElementById('error-message').innerHTML = 
+                `<div class="message message-error">${message}</div>`;
         }
     </script>
 </body>
