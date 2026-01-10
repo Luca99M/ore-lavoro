@@ -365,7 +365,7 @@
     <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <h1>ðŸ¢ Gestionale Ore Lavoro</h1>
+            <h1>Ã°Å¸ÂÂ¢ Gestionale Ore Lavoro</h1>
             <div class="subtitle">Pannello Amministratore</div>
         </div>
 
@@ -385,35 +385,37 @@
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="stat-activities">0</div>
-                <div class="stat-label">AttivitÃ </div>
+                <div class="stat-label">AttivitÃÂ </div>
             </div>
         </div>
 
         <!-- TABS -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('operai')">ðŸ‘¥ Operai</div>
-            <div class="tab" onclick="switchTab('attivita')">ðŸ”§ AttivitÃ </div>
-            <div class="tab" onclick="switchTab('report')">ðŸ“Š Report</div>
+            <div class="tab active" onclick="switchTab('operai')">Ã°Å¸âÂ¥ Operai</div>
+            <div class="tab" onclick="switchTab('attivita')">Ã°Å¸âÂ§ AttivitÃÂ </div>
+            <div class="tab" onclick="switchTab('report')">Ã°Å¸âÅ  Report</div>
+            <div class="tab" onclick="switchTab('storico')">ð Storico</div>
+            <div class="tab" onclick="switchTab('analisi')">ð¤ Analisi</div>
         </div>
 
         <!-- TAB: OPERAI -->
         <div id="tab-operai" class="tab-content active">
             <div class="card">
-                <h2>ðŸ‘¥ Gestione Operai</h2>
-                <button class="btn btn-primary" onclick="openNewOperaioModal()">âž• Nuovo Operaio</button>
+                <h2>Ã°Å¸âÂ¥ Gestione Operai</h2>
+                <button class="btn btn-primary" onclick="openNewOperaioModal()">Ã¢Å¾â¢ Nuovo Operaio</button>
                 <div id="operai-list" style="margin-top: 25px;">
                     <div style="text-align: center; color: #94a3b8; padding: 20px;">Caricamento operai...</div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB: ATTIVITÃ€ -->
+        <!-- TAB: ATTIVITÃâ¬ -->
         <div id="tab-attivita" class="tab-content">
             <div class="card">
-                <h2>ðŸ”§ Gestione AttivitÃ </h2>
-                <button class="btn btn-primary" onclick="openNewAttivitaModal()">âž• Nuova AttivitÃ </button>
+                <h2>Ã°Å¸âÂ§ Gestione AttivitÃÂ </h2>
+                <button class="btn btn-primary" onclick="openNewAttivitaModal()">Ã¢Å¾â¢ Nuova AttivitÃÂ </button>
                 <div id="attivita-list" style="margin-top: 25px;">
-                    <div style="text-align: center; color: #94a3b8; padding: 20px;">Caricamento attivitÃ ...</div>
+                    <div style="text-align: center; color: #94a3b8; padding: 20px;">Caricamento attivitÃÂ ...</div>
                 </div>
             </div>
         </div>
@@ -422,7 +424,7 @@
         <div id="tab-storico" class="tab-content">
             <!-- FILTRI -->
             <div class="card">
-                <h2>🔍 Filtri Ricerca</h2>
+                <h2>ð Filtri Ricerca</h2>
                 <div class="form-group">
                     <label>Operaio</label>
                     <select id="filter-operaio" class="form-select" onchange="loadStoricoDettagliato()">
@@ -430,9 +432,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Attività</label>
+                    <label>AttivitÃ </label>
                     <select id="filter-attivita" class="form-select" onchange="loadStoricoDettagliato()">
-                        <option value="">Tutte le attività</option>
+                        <option value="">Tutte le attivitÃ </option>
                     </select>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -445,12 +447,12 @@
                         <input type="date" id="filter-end-date" class="form-input" onchange="loadStoricoDettagliato()">
                     </div>
                 </div>
-                <button class="btn btn-secondary" onclick="resetFiltersStorico()" style="width: 100%;">🔄 Reset Filtri</button>
+                <button class="btn btn-secondary" onclick="resetFiltersStorico()" style="width: 100%;">ð Reset Filtri</button>
             </div>
 
             <!-- STATISTICHE FILTRATE -->
             <div class="card">
-                <h2>📊 Statistiche Periodo Filtrato</h2>
+                <h2>ð Statistiche Periodo Filtrato</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value" id="storico-stat-total">0h</div>
@@ -473,7 +475,7 @@
 
             <!-- GRAFICI -->
             <div class="card">
-                <h2>📈 Andamento Ore Giornaliere</h2>
+                <h2>ð Andamento Ore Giornaliere</h2>
                 <div class="chart-container" style="height: 350px;">
                     <canvas id="storico-chart-daily"></canvas>
                 </div>
@@ -481,13 +483,13 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="card">
-                    <h2>👥 Ore per Operaio</h2>
+                    <h2>ð¥ Ore per Operaio</h2>
                     <div class="chart-container" style="height: 300px;">
                         <canvas id="storico-chart-operai"></canvas>
                     </div>
                 </div>
                 <div class="card">
-                    <h2>🔧 Ore per Attività</h2>
+                    <h2>ð§ Ore per AttivitÃ </h2>
                     <div class="chart-container" style="height: 300px;">
                         <canvas id="storico-chart-attivita"></canvas>
                     </div>
@@ -496,10 +498,10 @@
 
             <!-- TABELLA REGISTRAZIONI -->
             <div class="card">
-                <h2>📋 Registrazioni Dettagliate</h2>
+                <h2>ð Registrazioni Dettagliate</h2>
                 <div style="margin-bottom: 15px; display: flex; gap: 10px;">
                     <button class="btn btn-primary" onclick="exportStoricoToExcel()" style="flex: 1;">
-                        📥 Export Excel Filtrato
+                        ð¥ Export Excel Filtrato
                     </button>
                 </div>
                 <div id="storico-table-container" style="overflow-x: auto;">
@@ -514,7 +516,7 @@
         <!-- TAB: REPORT -->
         <div id="tab-report" class="tab-content">
             <div class="card">
-                <h2>ðŸ“Š Report Ore per Operaio</h2>
+                <h2>Ã°Å¸âÅ  Report Ore per Operaio</h2>
                 <div class="form-group">
                     <label>Periodo</label>
                     <select id="report-period" class="form-select" onchange="loadReport()">
@@ -529,7 +531,7 @@
             </div>
 
             <div class="card">
-                <h2>ðŸ“Š Report Ore per AttivitÃ </h2>
+                <h2>Ã°Å¸âÅ  Report Ore per AttivitÃÂ </h2>
                 <div class="chart-container">
                     <canvas id="activity-chart"></canvas>
                 </div>
@@ -537,9 +539,107 @@
 
             <!-- EXPORT EXCEL -->
             <div class="card">
-                <h2>ðŸ“¥ Export Dati</h2>
+                <h2>Ã°Å¸âÂ¥ Export Dati</h2>
                 <p style="color: #94a3b8; margin-bottom: 15px;">Esporta tutti i dati in formato Excel (compatibile con il tuo foglio presenze)</p>
-                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;">ðŸ“¥ EXPORT EXCEL</button>
+                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;">Ã°Å¸âÂ¥ EXPORT EXCEL</button>
+            </div>
+        </div>
+
+
+        <!-- TAB: ANALISI OPERAIO -->
+        <div id="tab-analisi" class="tab-content">
+            <!-- SELEZIONE OPERAIO -->
+            <div class="card">
+                <h2>ð¤ Seleziona Operaio da Analizzare</h2>
+                <div class="form-group">
+                    <label>Operaio</label>
+                    <select id="analisi-operaio" class="form-select" onchange="loadAnalisiOperaio()">
+                        <option value="">-- Seleziona un operaio --</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Data Inizio</label>
+                        <input type="date" id="analisi-start-date" class="form-input" onchange="loadAnalisiOperaio()">
+                    </div>
+                    <div class="form-group">
+                        <label>Data Fine</label>
+                        <input type="date" id="analisi-end-date" class="form-input" onchange="loadAnalisiOperaio()">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="resetAnalisiPeriod()" style="width: 100%;">ð Ultimo Mese</button>
+            </div>
+
+            <div id="analisi-content" style="display: none;">
+                <!-- STATISTICHE OPERAIO -->
+                <div class="card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1)); border: 2px solid #3b82f6;">
+                    <h2>ð Statistiche <span id="analisi-operaio-name"></span></h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="analisi-stat-total">0h</div>
+                            <div class="stat-label">Totale Ore</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="analisi-stat-days">0</div>
+                            <div class="stat-label">Giorni Lavorati</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="analisi-stat-avg">0h</div>
+                            <div class="stat-label">Media Giornaliera</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="analisi-stat-max">0h</div>
+                            <div class="stat-label">Max in un Giorno</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRAFICI TREND -->
+                <div class="card">
+                    <h2>ð Trend Ore Giornaliere</h2>
+                    <p style="color: #94a3b8; margin-bottom: 15px;">Andamento delle ore lavorate nel periodo selezionato</p>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="analisi-chart-trend"></canvas>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="card">
+                        <h2>ð§ Distribuzione AttivitÃ </h2>
+                        <p style="color: #94a3b8; margin-bottom: 15px;">Tempo dedicato per tipo di attivitÃ </p>
+                        <div class="chart-container" style="height: 350px;">
+                            <canvas id="analisi-chart-attivita"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2>ð Ore per Settimana</h2>
+                        <p style="color: #94a3b8; margin-bottom: 15px;">Confronto settimanale</p>
+                        <div class="chart-container" style="height: 350px;">
+                            <canvas id="analisi-chart-weekly"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABELLA DETTAGLIO -->
+                <div class="card">
+                    <h2>ð Dettaglio Registrazioni</h2>
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="exportAnalisiToExcel()" style="width: 100%;">
+                            ð¥ Export Excel Periodo Operaio
+                        </button>
+                    </div>
+                    <div id="analisi-table-container" style="overflow-x: auto;">
+                        <!-- Tabella verrÃ  popolata dinamicamente -->
+                    </div>
+                </div>
+
+                <!-- BADGE ACHIEVEMENTS -->
+                <div class="card">
+                    <h2>ð Achievements & Performance</h2>
+                    <div id="analisi-badges" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <!-- Badges dinamici -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -549,7 +649,7 @@
     <!-- MODAL: NUOVO OPERAIO -->
     <div id="modal-new-operaio" class="modal">
         <div class="modal-content">
-            <div class="modal-header">âž• Crea Nuovo Operaio</div>
+            <div class="modal-header">Ã¢Å¾â¢ Crea Nuovo Operaio</div>
             
             <div class="form-group">
                 <label>Nome *</label>
@@ -561,15 +661,15 @@
                 <input type="text" id="new-operaio-cognome" class="form-input" placeholder="Rossi">
             </div>
 
-            <button class="btn btn-primary" onclick="createOperaio()" style="width: 100%; margin-bottom: 10px;">âœ… Crea Operaio</button>
-            <button class="btn btn-secondary" onclick="closeModal('modal-new-operaio')" style="width: 100%;">âŒ Annulla</button>
+            <button class="btn btn-primary" onclick="createOperaio()" style="width: 100%; margin-bottom: 10px;">Ã¢Åâ¦ Crea Operaio</button>
+            <button class="btn btn-secondary" onclick="closeModal('modal-new-operaio')" style="width: 100%;">Ã¢ÂÅ Annulla</button>
         </div>
     </div>
 
     <!-- MODAL: MOSTRA LINK -->
     <div id="modal-show-link" class="modal">
         <div class="modal-content">
-            <div class="modal-header">ðŸ”— Link Personale Operaio</div>
+            <div class="modal-header">Ã°Å¸ââ Link Personale Operaio</div>
             
             <div id="link-content"></div>
 
@@ -577,28 +677,28 @@
         </div>
     </div>
 
-    <!-- MODAL: NUOVA ATTIVITÃ€ -->
+    <!-- MODAL: NUOVA ATTIVITÃâ¬ -->
     <div id="modal-new-attivita" class="modal">
         <div class="modal-content">
-            <div class="modal-header" id="attivita-modal-title">âž• Nuova AttivitÃ </div>
+            <div class="modal-header" id="attivita-modal-title">Ã¢Å¾â¢ Nuova AttivitÃÂ </div>
             
             <input type="hidden" id="edit-attivita-id">
 
             <div class="form-group">
-                <label>Nome AttivitÃ  *</label>
+                <label>Nome AttivitÃÂ  *</label>
                 <input type="text" id="new-attivita-nome" class="form-input" placeholder="Es: Taglio legna">
             </div>
 
             <div class="form-group">
                 <label>Icona (emoji)</label>
-                <input type="text" id="new-attivita-icona" class="form-input" placeholder="ðŸª“" maxlength="5">
+                <input type="text" id="new-attivita-icona" class="form-input" placeholder="Ã°Å¸Âªâ" maxlength="5">
             </div>
 
             <div class="form-group">
                 <label>Keywords (parole chiave per riconoscimento vocale)</label>
                 <textarea id="new-attivita-keywords" class="form-textarea" placeholder="Inserisci le parole separate da virgola.&#10;Es: legna, bosco, motosega, tagliare, taglio"></textarea>
                 <div style="color: #94a3b8; font-size: 0.85em; margin-top: 8px;">
-                    ðŸ’¡ Quando l'operaio dice una di queste parole, il sistema associa automaticamente questa attivitÃ 
+                    Ã°Å¸âÂ¡ Quando l'operaio dice una di queste parole, il sistema associa automaticamente questa attivitÃÂ 
                 </div>
             </div>
 
@@ -607,8 +707,8 @@
                 <input type="color" id="new-attivita-colore" class="form-input" value="#3b82f6">
             </div>
 
-            <button class="btn btn-primary" onclick="saveAttivita()" style="width: 100%; margin-bottom: 10px;">âœ… Salva</button>
-            <button class="btn btn-secondary" onclick="closeModal('modal-new-attivita')" style="width: 100%;">âŒ Annulla</button>
+            <button class="btn btn-primary" onclick="saveAttivita()" style="width: 100%; margin-bottom: 10px;">Ã¢Åâ¦ Salva</button>
+            <button class="btn btn-secondary" onclick="closeModal('modal-new-attivita')" style="width: 100%;">Ã¢ÂÅ Annulla</button>
         </div>
     </div>
 
@@ -674,7 +774,7 @@
 
                 document.getElementById('stat-active-workers').textContent = operaiData ? operaiData.length : 0;
 
-                // AttivitÃ 
+                // AttivitÃÂ 
                 const { data: attivitaData } = await supabaseClient
                     .from('attivita')
                     .select('*')
@@ -727,19 +827,19 @@
                         <div class="operaio-info">
                             <div class="operaio-name">${op.nome} ${op.cognome}</div>
                             <div class="operaio-stats">
-                                Oggi: <strong>${op.todayHours}h</strong> â€¢ 
-                                ${op.attivo ? 'âœ… Attivo' : 'âŒ Non attivo'}
+                                Oggi: <strong>${op.todayHours}h</strong> Ã¢â¬Â¢ 
+                                ${op.attivo ? 'Ã¢Åâ¦ Attivo' : 'Ã¢ÂÅ Non attivo'}
                             </div>
                         </div>
                         <div class="operaio-actions">
                             <button class="btn btn-secondary" onclick="showLink('${op.token_personale}', '${op.nome} ${op.cognome}')">
-                                ðŸ”— Vedi Link
+                                Ã°Å¸ââ Vedi Link
                             </button>
                             <button class="btn btn-primary" onclick="openOperaioLink('${op.token_personale}')">
-                                ðŸ‘¤ Gestisci Ore
+                                Ã°Å¸âÂ¤ Gestisci Ore
                             </button>
                             <button class="btn ${op.attivo ? 'btn-danger' : 'btn-primary'}" onclick="toggleOperaioStatus('${op.id}', ${!op.attivo})">
-                                ${op.attivo ? 'ðŸ”’ Disattiva' : 'âœ… Attiva'}
+                                ${op.attivo ? 'Ã°Å¸ââ Disattiva' : 'Ã¢Åâ¦ Attiva'}
                             </button>
                         </div>
                     </div>
@@ -749,7 +849,7 @@
 
             } catch (error) {
                 console.error('Errore caricamento operai:', error);
-                showMessage('âŒ Errore caricamento operai', 'error');
+                showMessage('Ã¢ÂÅ Errore caricamento operai', 'error');
             }
         }
 
@@ -767,7 +867,7 @@
             const cognome = document.getElementById('new-operaio-cognome').value.trim();
 
             if (!nome || !cognome) {
-                showMessage('âš ï¸ Inserisci nome e cognome', 'error');
+                showMessage('Ã¢Å¡Â Ã¯Â¸Â Inserisci nome e cognome', 'error');
                 return;
             }
 
@@ -781,7 +881,7 @@
                 if (error) throw error;
 
                 closeModal('modal-new-operaio');
-                showMessage(`âœ… Operaio ${nome} ${cognome} creato!`, 'success');
+                showMessage(`Ã¢Åâ¦ Operaio ${nome} ${cognome} creato!`, 'success');
                 
                 // Mostra subito il link
                 showLink(data.token_personale, `${nome} ${cognome}`);
@@ -791,7 +891,7 @@
 
             } catch (error) {
                 console.error('Errore creazione operaio:', error);
-                showMessage('âŒ Errore nella creazione', 'error');
+                showMessage('Ã¢ÂÅ Errore nella creazione', 'error');
             }
         }
 
@@ -808,13 +908,13 @@
                 </p>
                 <div class="link-display">${fullLink}</div>
                 <button class="btn btn-primary" onclick="copyToClipboard('${fullLink}')" style="width: 100%; margin-bottom: 10px;">
-                    ðŸ“‹ Copia Link
+                    Ã°Å¸ââ¹ Copia Link
                 </button>
                 <button class="btn btn-secondary" onclick="window.open('${fullLink}', '_blank')" style="width: 100%;">
-                    ðŸ”— Apri Link
+                    Ã°Å¸ââ Apri Link
                 </button>
                 <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 0.9em; color: #94a3b8;">
-                    ðŸ’¡ Invia questo link all'operaio tramite WhatsApp, Email o SMS. L'operaio deve salvarlo nei preferiti del browser per accesso rapido.
+                    Ã°Å¸âÂ¡ Invia questo link all'operaio tramite WhatsApp, Email o SMS. L'operaio deve salvarlo nei preferiti del browser per accesso rapido.
                 </div>
             `;
 
@@ -839,18 +939,18 @@
 
                 if (error) throw error;
 
-                showMessage(`âœ… Operaio ${newStatus ? 'attivato' : 'disattivato'}`, 'success');
+                showMessage(`Ã¢Åâ¦ Operaio ${newStatus ? 'attivato' : 'disattivato'}`, 'success');
                 await loadOperai();
                 await loadStats();
 
             } catch (error) {
                 console.error('Errore aggiornamento stato:', error);
-                showMessage('âŒ Errore aggiornamento', 'error');
+                showMessage('Ã¢ÂÅ Errore aggiornamento', 'error');
             }
         }
 
         // ==========================================
-        // CARICA ATTIVITÃ€
+        // CARICA ATTIVITÃâ¬
         // ==========================================
         async function loadAttivita() {
             try {
@@ -865,7 +965,7 @@
 
                 if (attivita.length === 0) {
                     document.getElementById('attivita-list').innerHTML = 
-                        '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna attivitÃ </div>';
+                        '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna attivitÃÂ </div>';
                     return;
                 }
 
@@ -874,14 +974,14 @@
                         <div class="attivita-header">
                             <div class="attivita-name">${att.icona} ${att.nome}</div>
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-secondary" onclick="editAttivita('${att.id}')">âœï¸ Modifica</button>
+                                <button class="btn btn-secondary" onclick="editAttivita('${att.id}')">Ã¢ÅÂÃ¯Â¸Â Modifica</button>
                                 <button class="btn ${att.attiva ? 'btn-danger' : 'btn-primary'}" onclick="toggleAttivitaStatus('${att.id}', ${!att.attiva})">
-                                    ${att.attiva ? 'ðŸ”’ Disattiva' : 'âœ… Attiva'}
+                                    ${att.attiva ? 'Ã°Å¸ââ Disattiva' : 'Ã¢Åâ¦ Attiva'}
                                 </button>
                             </div>
                         </div>
                         <div class="keywords-container">
-                            <div class="keywords-label">ðŸ”‘ Keywords per riconoscimento vocale:</div>
+                            <div class="keywords-label">Ã°Å¸ââ Keywords per riconoscimento vocale:</div>
                             <div>
                                 ${att.keywords && att.keywords.length > 0 
                                     ? att.keywords.map(kw => `<span class="keyword-tag">${kw}</span>`).join('') 
@@ -894,19 +994,19 @@
                 document.getElementById('attivita-list').innerHTML = html;
 
             } catch (error) {
-                console.error('Errore caricamento attivitÃ :', error);
-                showMessage('âŒ Errore caricamento attivitÃ ', 'error');
+                console.error('Errore caricamento attivitÃÂ :', error);
+                showMessage('Ã¢ÂÅ Errore caricamento attivitÃÂ ', 'error');
             }
         }
 
         // ==========================================
-        // NUOVA/MODIFICA ATTIVITÃ€
+        // NUOVA/MODIFICA ATTIVITÃâ¬
         // ==========================================
         function openNewAttivitaModal() {
-            document.getElementById('attivita-modal-title').textContent = 'âž• Nuova AttivitÃ ';
+            document.getElementById('attivita-modal-title').textContent = 'Ã¢Å¾â¢ Nuova AttivitÃÂ ';
             document.getElementById('edit-attivita-id').value = '';
             document.getElementById('new-attivita-nome').value = '';
-            document.getElementById('new-attivita-icona').value = 'ðŸ“‹';
+            document.getElementById('new-attivita-icona').value = 'Ã°Å¸ââ¹';
             document.getElementById('new-attivita-keywords').value = '';
             document.getElementById('new-attivita-colore').value = '#3b82f6';
             openModal('modal-new-attivita');
@@ -916,7 +1016,7 @@
             const att = attivita.find(a => a.id === id);
             if (!att) return;
 
-            document.getElementById('attivita-modal-title').textContent = 'âœï¸ Modifica AttivitÃ ';
+            document.getElementById('attivita-modal-title').textContent = 'Ã¢ÅÂÃ¯Â¸Â Modifica AttivitÃÂ ';
             document.getElementById('edit-attivita-id').value = id;
             document.getElementById('new-attivita-nome').value = att.nome;
             document.getElementById('new-attivita-icona').value = att.icona;
@@ -933,7 +1033,7 @@
             const colore = document.getElementById('new-attivita-colore').value;
 
             if (!nome) {
-                showMessage('âš ï¸ Inserisci il nome dell\'attivitÃ ', 'error');
+                showMessage('Ã¢Å¡Â Ã¯Â¸Â Inserisci il nome dell\'attivitÃÂ ', 'error');
                 return;
             }
 
@@ -946,7 +1046,7 @@
             try {
                 const dataToSave = {
                     nome,
-                    icona: icona || 'ðŸ“‹',
+                    icona: icona || 'Ã°Å¸ââ¹',
                     keywords,
                     colore
                 };
@@ -959,7 +1059,7 @@
                         .eq('id', id);
 
                     if (error) throw error;
-                    showMessage('âœ… AttivitÃ  aggiornata!', 'success');
+                    showMessage('Ã¢Åâ¦ AttivitÃÂ  aggiornata!', 'success');
                 } else {
                     // Insert
                     const { error } = await supabaseClient
@@ -967,7 +1067,7 @@
                         .insert(dataToSave);
 
                     if (error) throw error;
-                    showMessage('âœ… AttivitÃ  creata!', 'success');
+                    showMessage('Ã¢Åâ¦ AttivitÃÂ  creata!', 'success');
                 }
 
                 closeModal('modal-new-attivita');
@@ -975,8 +1075,8 @@
                 await loadStats();
 
             } catch (error) {
-                console.error('Errore salvataggio attivitÃ :', error);
-                showMessage('âŒ Errore nel salvataggio', 'error');
+                console.error('Errore salvataggio attivitÃÂ :', error);
+                showMessage('Ã¢ÂÅ Errore nel salvataggio', 'error');
             }
         }
 
@@ -989,13 +1089,13 @@
 
                 if (error) throw error;
 
-                showMessage(`âœ… AttivitÃ  ${newStatus ? 'attivata' : 'disattivata'}`, 'success');
+                showMessage(`Ã¢Åâ¦ AttivitÃÂ  ${newStatus ? 'attivata' : 'disattivata'}`, 'success');
                 await loadAttivita();
                 await loadStats();
 
             } catch (error) {
                 console.error('Errore aggiornamento stato:', error);
-                showMessage('âŒ Errore aggiornamento', 'error');
+                showMessage('Ã¢ÂÅ Errore aggiornamento', 'error');
             }
         }
 
@@ -1063,7 +1163,7 @@
                     }
                 });
 
-                // Report per attivitÃ 
+                // Report per attivitÃÂ 
                 const { data: oreAttData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('*, attivita(*)')
@@ -1078,7 +1178,7 @@
                     activityHours[name] += parseFloat(item.ore);
                 });
 
-                // Grafico attivitÃ 
+                // Grafico attivitÃÂ 
                 const ctx2 = document.getElementById('activity-chart');
                 if (activityChart) activityChart.destroy();
 
@@ -1116,6 +1216,485 @@
         // ==========================================
         // TABS
         // ==========================================
+
+        // ==========================================
+        // ANALISI OPERAIO INDIVIDUALE
+        // ==========================================
+        let analisiChartTrend = null;
+        let analisiChartAttivita = null;
+        let analisiChartWeekly = null;
+        let analisiData = [];
+        let currentAnalisiOperaio = null;
+
+        async function initAnalisiOperaio() {
+            // Popola select operai
+            const select = document.getElementById('analisi-operaio');
+            select.innerHTML = '<option value="">-- Seleziona un operaio --</option>';
+            operai.forEach(op => {
+                select.innerHTML += `<option value="${op.id}">${op.nome} ${op.cognome}</option>`;
+            });
+
+            // Imposta date di default (ultimo mese)
+            resetAnalisiPeriod();
+        }
+
+        function resetAnalisiPeriod() {
+            const today = new Date();
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            document.getElementById('analisi-end-date').valueAsDate = today;
+            document.getElementById('analisi-start-date').valueAsDate = monthAgo;
+            
+            if (document.getElementById('analisi-operaio').value) {
+                loadAnalisiOperaio();
+            }
+        }
+
+        async function loadAnalisiOperaio() {
+            const operaioId = document.getElementById('analisi-operaio').value;
+            const startDate = document.getElementById('analisi-start-date').value;
+            const endDate = document.getElementById('analisi-end-date').value;
+
+            if (!operaioId || !startDate || !endDate) {
+                document.getElementById('analisi-content').style.display = 'none';
+                return;
+            }
+
+            try {
+                // Trova operaio
+                currentAnalisiOperaio = operai.find(op => op.id === operaioId);
+                document.getElementById('analisi-operaio-name').textContent = 
+                    `${currentAnalisiOperaio.nome} ${currentAnalisiOperaio.cognome}`;
+
+                // Carica dati
+                const { data, error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, attivita(*)')
+                    .eq('operaio_id', operaioId)
+                    .gte('data', startDate)
+                    .lte('data', endDate)
+                    .order('data', { ascending: true });
+
+                if (error) throw error;
+
+                analisiData = data || [];
+
+                if (analisiData.length === 0) {
+                    document.getElementById('analisi-content').style.display = 'block';
+                    showMessage('â ï¸ Nessun dato per questo operaio nel periodo selezionato', 'error');
+                    resetAnalisiCharts();
+                    return;
+                }
+
+                document.getElementById('analisi-content').style.display = 'block';
+
+                // Aggiorna tutto
+                updateAnalisiStats(analisiData);
+                updateAnalisiCharts(analisiData);
+                updateAnalisiTable(analisiData);
+                updateAnalisiBadges(analisiData);
+
+            } catch (error) {
+                console.error('Errore caricamento analisi:', error);
+                showMessage('â Errore caricamento dati', 'error');
+            }
+        }
+
+        function updateAnalisiStats(data) {
+            const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+            const uniqueDays = new Set(data.map(item => item.data)).size;
+            const avgHours = uniqueDays > 0 ? totalHours / uniqueDays : 0;
+            
+            // Trova il giorno con piÃ¹ ore
+            const dailyHours = {};
+            data.forEach(item => {
+                if (!dailyHours[item.data]) {
+                    dailyHours[item.data] = 0;
+                }
+                dailyHours[item.data] += parseFloat(item.ore);
+            });
+            const maxHours = Math.max(...Object.values(dailyHours));
+
+            document.getElementById('analisi-stat-total').textContent = `${totalHours.toFixed(1)}h`;
+            document.getElementById('analisi-stat-days').textContent = uniqueDays;
+            document.getElementById('analisi-stat-avg').textContent = `${avgHours.toFixed(1)}h`;
+            document.getElementById('analisi-stat-max').textContent = `${maxHours.toFixed(1)}h`;
+        }
+
+        function updateAnalisiCharts(data) {
+            // GRAFICO 1: TREND GIORNALIERO (linea con area)
+            const dailyData = {};
+            data.forEach(item => {
+                if (!dailyData[item.data]) {
+                    dailyData[item.data] = 0;
+                }
+                dailyData[item.data] += parseFloat(item.ore);
+            });
+
+            const sortedDates = Object.keys(dailyData).sort();
+            const dailyLabels = sortedDates.map(date => {
+                const d = new Date(date + 'T00:00:00');
+                return d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+            });
+            const dailyValues = sortedDates.map(date => dailyData[date]);
+
+            const ctx1 = document.getElementById('analisi-chart-trend');
+            if (analisiChartTrend) analisiChartTrend.destroy();
+
+            analisiChartTrend = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: dailyLabels,
+                    datasets: [{
+                        label: 'Ore',
+                        data: dailyValues,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#60a5fa',
+                            bodyColor: '#fff',
+                            borderColor: '#3b82f6',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return value + 'h';
+                                }
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // GRAFICO 2: DISTRIBUZIONE ATTIVITÃ (torta)
+            const attivitaData = {};
+            const attivitaColors = {};
+            data.forEach(item => {
+                const name = item.attivita.nome;
+                if (!attivitaData[name]) {
+                    attivitaData[name] = 0;
+                    attivitaColors[name] = item.attivita.colore;
+                }
+                attivitaData[name] += parseFloat(item.ore);
+            });
+
+            const ctx2 = document.getElementById('analisi-chart-attivita');
+            if (analisiChartAttivita) analisiChartAttivita.destroy();
+
+            analisiChartAttivita = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(attivitaData),
+                    datasets: [{
+                        data: Object.values(attivitaData),
+                        backgroundColor: Object.values(attivitaColors),
+                        borderWidth: 3,
+                        borderColor: '#1e293b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { 
+                                color: '#94a3b8', 
+                                padding: 15,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#60a5fa',
+                            bodyColor: '#fff',
+                            borderColor: '#3b82f6',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value.toFixed(1)}h (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // GRAFICO 3: ORE PER SETTIMANA (barre)
+            const weeklyData = {};
+            data.forEach(item => {
+                const date = new Date(item.data + 'T00:00:00');
+                const year = date.getFullYear();
+                const week = getWeekNumber(date);
+                const weekKey = `${year}-W${week}`;
+                
+                if (!weeklyData[weekKey]) {
+                    weeklyData[weekKey] = 0;
+                }
+                weeklyData[weekKey] += parseFloat(item.ore);
+            });
+
+            const weekKeys = Object.keys(weeklyData).sort();
+            const weekLabels = weekKeys.map(key => {
+                const [year, week] = key.split('-W');
+                return `Sett. ${week}`;
+            });
+            const weekValues = weekKeys.map(key => weeklyData[key]);
+
+            const ctx3 = document.getElementById('analisi-chart-weekly');
+            if (analisiChartWeekly) analisiChartWeekly.destroy();
+
+            analisiChartWeekly = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: weekLabels,
+                    datasets: [{
+                        label: 'Ore',
+                        data: weekValues,
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: '#10b981',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#60a5fa',
+                            bodyColor: '#fff',
+                            borderColor: '#10b981',
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return value + 'h';
+                                }
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        }
+
+        function updateAnalisiTable(data) {
+            if (data.length === 0) {
+                document.getElementById('analisi-table-container').innerHTML = 
+                    '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna registrazione</div>';
+                return;
+            }
+
+            let html = `
+                <table style="width: 100%; border-collapse: collapse; color: white;">
+                    <thead>
+                        <tr style="background: rgba(15, 23, 42, 0.8); border-bottom: 2px solid #3b82f6;">
+                            <th style="padding: 15px; text-align: left;">Data</th>
+                            <th style="padding: 15px; text-align: left;">AttivitÃ </th>
+                            <th style="padding: 15px; text-align: center;">Ore</th>
+                            <th style="padding: 15px; text-align: left;">Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach((item, index) => {
+                const bgColor = index % 2 === 0 ? 'rgba(15, 23, 42, 0.4)' : 'rgba(30, 41, 59, 0.4)';
+                const date = new Date(item.data + 'T00:00:00');
+                const dateStr = date.toLocaleDateString('it-IT', { 
+                    weekday: 'short', 
+                    day: 'numeric', 
+                    month: 'short' 
+                });
+
+                html += `
+                    <tr style="background: ${bgColor}; border-bottom: 1px solid rgba(59, 130, 246, 0.1);">
+                        <td style="padding: 12px;">${dateStr}</td>
+                        <td style="padding: 12px;">${item.attivita.icona} ${item.attivita.nome}</td>
+                        <td style="padding: 12px; text-align: center; font-weight: bold; color: #10b981;">${item.ore}h</td>
+                        <td style="padding: 12px; font-style: italic; color: #cbd5e1;">${item.note || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('analisi-table-container').innerHTML = html;
+        }
+
+        function updateAnalisiBadges(data) {
+            const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+            const uniqueDays = new Set(data.map(item => item.data)).size;
+            const avgHours = uniqueDays > 0 ? totalHours / uniqueDays : 0;
+
+            const badges = [];
+
+            // Badge ore totali
+            if (totalHours >= 200) {
+                badges.push({ icon: 'ð¥', title: 'Super Lavoratore', desc: `${totalHours.toFixed(0)} ore totali!`, color: '#ef4444' });
+            } else if (totalHours >= 100) {
+                badges.push({ icon: 'ðª', title: 'Gran Lavoratore', desc: `${totalHours.toFixed(0)} ore totali`, color: '#f59e0b' });
+            } else if (totalHours >= 50) {
+                badges.push({ icon: 'ð', title: 'Buon Lavoro', desc: `${totalHours.toFixed(0)} ore totali`, color: '#10b981' });
+            }
+
+            // Badge costanza
+            if (uniqueDays >= 30) {
+                badges.push({ icon: 'â­', title: 'Costante', desc: `${uniqueDays} giorni lavorati`, color: '#3b82f6' });
+            }
+
+            // Badge media alta
+            if (avgHours >= 8) {
+                badges.push({ icon: 'ð¯', title: 'Full Time', desc: `Media ${avgHours.toFixed(1)}h/giorno`, color: '#8b5cf6' });
+            } else if (avgHours >= 6) {
+                badges.push({ icon: 'â°', title: 'Buona Media', desc: `Media ${avgHours.toFixed(1)}h/giorno`, color: '#06b6d4' });
+            }
+
+            // Badge streak (giorni consecutivi)
+            const streak = calculateStreak(data);
+            if (streak >= 10) {
+                badges.push({ icon: 'ð¥', title: `${streak} Giorni di Fila!`, desc: 'Record consecutivo', color: '#f59e0b' });
+            }
+
+            if (badges.length === 0) {
+                badges.push({ icon: 'ð', title: 'In Crescita', desc: 'Continua cosÃ¬!', color: '#94a3b8' });
+            }
+
+            const html = badges.map(badge => `
+                <div style="background: rgba(15, 23, 42, 0.6); border-left: 4px solid ${badge.color}; padding: 20px; border-radius: 10px;">
+                    <div style="font-size: 2.5em; margin-bottom: 10px;">${badge.icon}</div>
+                    <div style="font-size: 1.2em; font-weight: bold; color: ${badge.color}; margin-bottom: 5px;">${badge.title}</div>
+                    <div style="color: #94a3b8;">${badge.desc}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('analisi-badges').innerHTML = html;
+        }
+
+        function calculateStreak(data) {
+            if (data.length === 0) return 0;
+
+            const dates = [...new Set(data.map(item => item.data))].sort().reverse();
+            let streak = 1;
+            
+            for (let i = 0; i < dates.length - 1; i++) {
+                const current = new Date(dates[i]);
+                const next = new Date(dates[i + 1]);
+                const diffDays = (current - next) / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+
+        function resetAnalisiCharts() {
+            if (analisiChartTrend) analisiChartTrend.destroy();
+            if (analisiChartAttivita) analisiChartAttivita.destroy();
+            if (analisiChartWeekly) analisiChartWeekly.destroy();
+            
+            document.getElementById('analisi-stat-total').textContent = '0h';
+            document.getElementById('analisi-stat-days').textContent = '0';
+            document.getElementById('analisi-stat-avg').textContent = '0h';
+            document.getElementById('analisi-stat-max').textContent = '0h';
+            document.getElementById('analisi-table-container').innerHTML = '';
+            document.getElementById('analisi-badges').innerHTML = '';
+        }
+
+        async function exportAnalisiToExcel() {
+            if (analisiData.length === 0) {
+                showMessage('â ï¸ Nessun dato da esportare', 'error');
+                return;
+            }
+
+            try {
+                showMessage('â³ Generando Excel...', 'info');
+
+                const excelData = analisiData.map(item => ({
+                    'Data': new Date(item.data + 'T00:00:00').toLocaleDateString('it-IT'),
+                    'AttivitÃ ': item.attivita.nome,
+                    'Ore': item.ore,
+                    'Note': item.note || ''
+                }));
+
+                const ws = XLSX.utils.json_to_sheet(excelData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Analisi');
+
+                const operaioName = `${currentAnalisiOperaio.nome}_${currentAnalisiOperaio.cognome}`;
+                const startDate = document.getElementById('analisi-start-date').value;
+                const endDate = document.getElementById('analisi-end-date').value;
+                const filename = `analisi_${operaioName}_${startDate}_${endDate}.xlsx`;
+                
+                XLSX.writeFile(wb, filename);
+                
+                showMessage('â Excel scaricato con successo!', 'success');
+
+            } catch (error) {
+                console.error('Errore export Excel:', error);
+                showMessage('â Errore durante l\'export', 'error');
+            }
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -1125,6 +1704,8 @@
 
             if (tabName === 'storico') {
                 initStoricoFilters();
+            } else if (tabName === 'analisi') {
+                initAnalisiOperaio();
             } else if (tabName === 'report') {
                 loadReport();
             }
@@ -1146,9 +1727,9 @@
         // ==========================================
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                showMessage('âœ… Link copiato negli appunti!', 'success');
+                showMessage('Ã¢Åâ¦ Link copiato negli appunti!', 'success');
             }).catch(() => {
-                showMessage('âŒ Errore copia link', 'error');
+                showMessage('Ã¢ÂÅ Errore copia link', 'error');
             });
         }
 
@@ -1164,7 +1745,7 @@
         // ==========================================
         async function exportToExcel() {
             try {
-                showMessage('â³ Generando Excel...', 'info');
+                showMessage('Ã¢ÂÂ³ Generando Excel...', 'info');
                 
                 // Preleva tutti i dati
                 const { data: oreData } = await supabaseClient
@@ -1173,7 +1754,7 @@
                     .order('data', { ascending: true });
 
                 if (!oreData || oreData.length === 0) {
-                    showMessage('âš ï¸ Nessun dato da esportare', 'error');
+                    showMessage('Ã¢Å¡Â Ã¯Â¸Â Nessun dato da esportare', 'error');
                     return;
                 }
 
@@ -1252,11 +1833,11 @@
                 const today = new Date().toISOString().split('T')[0];
                 XLSX.writeFile(wb, `presenze_${today}.xlsx`);
                 
-                showMessage('âœ… Excel scaricato con successo!', 'success');
+                showMessage('Ã¢Åâ¦ Excel scaricato con successo!', 'success');
 
             } catch (error) {
                 console.error('Errore export Excel:', error);
-                showMessage('âŒ Errore durante l\'export', 'error');
+                showMessage('Ã¢ÂÅ Errore durante l\'export', 'error');
             }
         }
 
@@ -1277,9 +1858,9 @@
                 selectOperai.innerHTML += `<option value="${op.id}">${op.nome} ${op.cognome}</option>`;
             });
 
-            // Popola filtro attività
+            // Popola filtro attivitÃ 
             const selectAttivita = document.getElementById('filter-attivita');
-            selectAttivita.innerHTML = '<option value="">Tutte le attività</option>';
+            selectAttivita.innerHTML = '<option value="">Tutte le attivitÃ </option>';
             attivita.forEach(att => {
                 selectAttivita.innerHTML += `<option value="${att.id}">${att.icona} ${att.nome}</option>`;
             });
@@ -1348,7 +1929,7 @@
 
             } catch (error) {
                 console.error('Errore caricamento storico:', error);
-                showMessage('❌ Errore caricamento storico', 'error');
+                showMessage('â Errore caricamento storico', 'error');
             }
         }
 
@@ -1469,7 +2050,7 @@
                 }
             });
 
-            // Grafico per attività
+            // Grafico per attivitÃ 
             const attivitaData = {};
             const attivitaColors = {};
             data.forEach(item => {
@@ -1521,7 +2102,7 @@
                         <tr style="background: rgba(15, 23, 42, 0.8); border-bottom: 2px solid #3b82f6;">
                             <th style="padding: 15px; text-align: left;">Data</th>
                             <th style="padding: 15px; text-align: left;">Operaio</th>
-                            <th style="padding: 15px; text-align: left;">Attività</th>
+                            <th style="padding: 15px; text-align: left;">AttivitÃ </th>
                             <th style="padding: 15px; text-align: center;">Ore</th>
                             <th style="padding: 15px; text-align: left;">Note</th>
                             <th style="padding: 15px; text-align: center;">Azioni</th>
@@ -1549,7 +2130,7 @@
                         <td style="padding: 12px; font-style: italic; color: #cbd5e1;">${item.note || '-'}</td>
                         <td style="padding: 12px; text-align: center;">
                             <button class="btn btn-danger btn-small" onclick="deleteStoricoRecord('${item.id}')" style="padding: 6px 12px;">
-                                🗑️ Elimina
+                                ðï¸ Elimina
                             </button>
                         </td>
                     </tr>
@@ -1577,29 +2158,29 @@
 
                 if (error) throw error;
 
-                showMessage('✅ Registrazione eliminata', 'success');
+                showMessage('â Registrazione eliminata', 'success');
                 await loadStoricoDettagliato();
                 await loadStats();
 
             } catch (error) {
                 console.error('Errore eliminazione:', error);
-                showMessage('❌ Errore eliminazione', 'error');
+                showMessage('â Errore eliminazione', 'error');
             }
         }
 
         async function exportStoricoToExcel() {
             if (storicoData.length === 0) {
-                showMessage('⚠️ Nessun dato da esportare', 'error');
+                showMessage('â ï¸ Nessun dato da esportare', 'error');
                 return;
             }
 
             try {
-                showMessage('⏳ Generando Excel...', 'info');
+                showMessage('â³ Generando Excel...', 'info');
 
                 const excelData = storicoData.map(item => ({
                     'Data': new Date(item.data + 'T00:00:00').toLocaleDateString('it-IT'),
                     'Operaio': `${item.operai.nome} ${item.operai.cognome}`,
-                    'Attività': item.attivita.nome,
+                    'AttivitÃ ': item.attivita.nome,
                     'Ore': item.ore,
                     'Note': item.note || ''
                 }));
@@ -1614,11 +2195,11 @@
                 
                 XLSX.writeFile(wb, filename);
                 
-                showMessage('✅ Excel scaricato con successo!', 'success');
+                showMessage('â Excel scaricato con successo!', 'success');
 
             } catch (error) {
                 console.error('Errore export Excel:', error);
-                showMessage('❌ Errore durante l\'export', 'error');
+                showMessage('â Errore durante l\'export', 'error');
             }
         }
 
