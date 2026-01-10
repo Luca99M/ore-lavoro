@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registra Ore - Operaio</title>
-    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2563eb">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -297,6 +296,7 @@
             color: white;
             cursor: pointer;
             transition: all 0.3s ease;
+            border: none;
         }
 
         .filter-btn.active {
@@ -391,6 +391,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .voice-feedback {
@@ -427,7 +429,7 @@
         }
 
         @media (max-width: 768px) {
-            .storico-item {
+            .storico-item, .oggi-reg-item {
                 flex-direction: column;
                 align-items: flex-start;
             }
@@ -446,7 +448,7 @@
     <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <h1>👷 Ore Lavoro</h1>
+            <h1>Ore Lavoro</h1>
             <div class="subtitle" id="operaio-name">Caricamento...</div>
         </div>
 
@@ -468,32 +470,32 @@
 
         <!-- TABS -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('registra')">✍️ Registra</div>
-            <div class="tab" onclick="switchTab('storico')">📅 Storico</div>
+            <div class="tab active" onclick="switchTab('registra')">REGISTRA</div>
+            <div class="tab" onclick="switchTab('storico')">STORICO</div>
         </div>
 
         <!-- TAB: REGISTRA ORE -->
         <div id="tab-registra" class="tab-content active">
             <!-- RICONOSCIMENTO VOCALE -->
             <div class="card">
-                <h2>🎤 Registrazione Vocale</h2>
+                <h2>Registrazione Vocale</h2>
                 <p style="color: #94a3b8; margin-bottom: 15px;">
                     Clicca e parla: "5 ore pecore" oppure "3 ore taglio legna"
                 </p>
                 <button class="btn btn-voice" id="voice-btn" onclick="toggleVoiceRecognition()">
-                    <span id="voice-icon">🎤</span>
+                    <span id="voice-icon">MIC</span>
                     <span id="voice-text">Registra con Voce</span>
                 </button>
                 
                 <div id="voice-feedback" class="voice-feedback">
-                    <div class="listening-text">🎤 In ascolto...</div>
+                    <div class="listening-text">In ascolto...</div>
                     <div class="transcript" id="voice-transcript">...</div>
                 </div>
             </div>
 
             <!-- REGISTRAZIONE MANUALE -->
             <div class="card">
-                <h2>📋 Registrazione Manuale</h2>
+                <h2>Registrazione Manuale</h2>
 
                 <div class="form-group">
                     <label>Data</label>
@@ -501,10 +503,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Seleziona Attività</label>
+                    <label>Seleziona Attivita</label>
                     <div id="attivita-grid" class="attivita-grid">
                         <div style="text-align: center; color: #94a3b8; padding: 20px; grid-column: 1/-1;">
-                            Caricamento attività...
+                            Caricamento attivita...
                         </div>
                     </div>
                 </div>
@@ -519,15 +521,15 @@
                     <textarea id="input-note" class="form-textarea" placeholder="Aggiungi eventuali note..."></textarea>
                 </div>
 
-                <button class="btn btn-primary" onclick="registraOre()">✅ REGISTRA ORE</button>
+                <button class="btn btn-primary" onclick="registraOre()">REGISTRA ORE</button>
             </div>
 
             <!-- REGISTRAZIONI DI OGGI -->
             <div id="oggi-registrazioni" class="oggi-registrazioni" style="display: none;">
-                <h3>📋 Ore Registrate Oggi</h3>
+                <h3>Ore Registrate Oggi</h3>
                 <div id="oggi-list"></div>
                 <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 0.9em; color: #94a3b8;">
-                    💡 Puoi registrare più attività nello stesso giorno!
+                    Puoi registrare piu attivita nello stesso giorno!
                 </div>
             </div>
         </div>
@@ -536,7 +538,7 @@
         <div id="tab-storico" class="tab-content">
             <!-- FILTRI PERIODO -->
             <div class="card">
-                <h2>🔍 Filtra Periodo</h2>
+                <h2>Filtra Periodo</h2>
                 <div class="filter-buttons">
                     <button class="filter-btn active" onclick="setFilter('oggi')">Oggi</button>
                     <button class="filter-btn" onclick="setFilter('settimana')">Settimana</button>
@@ -559,7 +561,7 @@
 
             <!-- STATISTICHE PERIODO -->
             <div class="card">
-                <h2>📊 Statistiche Periodo</h2>
+                <h2>Statistiche Periodo</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value" id="stat-period-total">0h</div>
@@ -578,14 +580,14 @@
 
             <!-- GRAFICI -->
             <div class="card">
-                <h2>📈 Grafico Ore Giornaliere</h2>
+                <h2>Grafico Ore Giornaliere</h2>
                 <div class="chart-container">
                     <canvas id="chart-daily"></canvas>
                 </div>
             </div>
 
             <div class="card">
-                <h2>🎯 Grafico Ore per Attività</h2>
+                <h2>Grafico Ore per Attivita</h2>
                 <div class="chart-container">
                     <canvas id="chart-activities"></canvas>
                 </div>
@@ -593,7 +595,7 @@
 
             <!-- LISTA REGISTRAZIONI -->
             <div class="card">
-                <h2>📋 Elenco Registrazioni</h2>
+                <h2>Elenco Registrazioni</h2>
                 <div id="storico-list">
                     <div style="text-align: center; color: #94a3b8; padding: 20px;">
                         Nessuna registrazione in questo periodo
@@ -606,76 +608,72 @@
     </div>
 
     <script>
-        // ==========================================
         // CONFIGURAZIONE SUPABASE
-        // ==========================================
         const SUPABASE_URL = 'https://xxzyhzalfqyqseedsuub.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjY4ODE2MywiZXhwIjoyMDgzMjY0MTYzfQ.Y1fUlGwzlzjYc-zJnOIF7X-7V7FrcRzfJJN5ZNhgi2s';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzY4ODE2MywiZXhwIjoyMDgzMjY0MTYzfQ.Y1fUlGwzlzjYc-zJnOIF7X-7V7FrcRzfJJN5ZNhgi2s';
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ==========================================
         // VARIABILI GLOBALI
-        // ==========================================
         let operaio = null;
         let attivita = [];
         let selectedAttivitaId = null;
         let currentFilter = 'oggi';
         let chartDaily = null;
         let chartActivities = null;
-
-        // RICONOSCIMENTO VOCALE
         let recognition = null;
         let isListening = false;
 
-        // ==========================================
         // INIZIALIZZAZIONE
-        // ==========================================
         document.addEventListener('DOMContentLoaded', async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
 
             if (!token) {
-                showMessage('❌ Token non valido. Contatta l\'amministratore.', 'error');
+                showMessage('Token non valido. Contatta amministratore.', 'error');
                 return;
             }
 
-            // Carica operaio
-            const { data: operaioData, error: operaioError } = await supabaseClient
-                .from('operai')
-                .select('*')
-                .eq('token_personale', token)
-                .single();
+            try {
+                const { data: operaioData, error: operaioError } = await supabaseClient
+                    .from('operai')
+                    .select('*')
+                    .eq('token_personale', token)
+                    .single();
 
-            if (operaioError || !operaioData) {
-                showMessage('❌ Operaio non trovato', 'error');
-                return;
+                if (operaioError) {
+                    console.error('Errore Supabase:', operaioError);
+                    showMessage('Errore: ' + operaioError.message, 'error');
+                    return;
+                }
+
+                if (!operaioData) {
+                    showMessage('Operaio non trovato', 'error');
+                    return;
+                }
+
+                if (!operaioData.attivo) {
+                    showMessage('Account non attivo. Contatta amministratore.', 'error');
+                    return;
+                }
+
+                operaio = operaioData;
+                document.getElementById('operaio-name').textContent = operaio.nome + ' ' + operaio.cognome;
+
+                document.getElementById('input-data').valueAsDate = new Date();
+
+                initVoiceRecognition();
+                await loadAttivita();
+                await loadStats();
+                await loadOggiRegistrazioni();
+                await loadStorico();
+            } catch (err) {
+                console.error('Errore inizializzazione:', err);
+                showMessage('Errore connessione: ' + err.message, 'error');
             }
-
-            if (!operaioData.attivo) {
-                showMessage('❌ Account non attivo. Contatta l\'amministratore.', 'error');
-                return;
-            }
-
-            operaio = operaioData;
-            document.getElementById('operaio-name').textContent = `${operaio.nome} ${operaio.cognome}`;
-
-            // Imposta data odierna
-            document.getElementById('input-data').valueAsDate = new Date();
-
-            // Inizializza riconoscimento vocale
-            initVoiceRecognition();
-
-            // Carica dati
-            await loadAttivita();
-            await loadStats();
-            await loadOggiRegistrazioni();
-            await loadStorico();
         });
 
-        // ==========================================
         // RICONOSCIMENTO VOCALE
-        // ==========================================
         function initVoiceRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 console.log('Riconoscimento vocale non supportato');
@@ -693,7 +691,7 @@
             recognition.onstart = function() {
                 isListening = true;
                 document.getElementById('voice-btn').classList.add('listening');
-                document.getElementById('voice-icon').textContent = '🔴';
+                document.getElementById('voice-icon').textContent = 'REC';
                 document.getElementById('voice-text').textContent = 'In ascolto...';
                 document.getElementById('voice-feedback').classList.add('active');
                 document.getElementById('voice-transcript').textContent = '...';
@@ -711,7 +709,7 @@
             recognition.onerror = function(event) {
                 console.error('Errore riconoscimento:', event.error);
                 stopVoiceRecognition();
-                showMessage('❌ Errore nel riconoscimento vocale', 'error');
+                showMessage('Errore nel riconoscimento vocale', 'error');
             };
 
             recognition.onend = function() {
@@ -721,7 +719,7 @@
 
         function toggleVoiceRecognition() {
             if (!recognition) {
-                showMessage('❌ Riconoscimento vocale non disponibile', 'error');
+                showMessage('Riconoscimento vocale non disponibile', 'error');
                 return;
             }
 
@@ -735,7 +733,7 @@
         function stopVoiceRecognition() {
             isListening = false;
             document.getElementById('voice-btn').classList.remove('listening');
-            document.getElementById('voice-icon').textContent = '🎤';
+            document.getElementById('voice-icon').textContent = 'MIC';
             document.getElementById('voice-text').textContent = 'Registra con Voce';
             document.getElementById('voice-feedback').classList.remove('active');
         }
@@ -743,16 +741,14 @@
         function processVoiceInput(transcript) {
             console.log('Processando:', transcript);
             
-            // Estrai ore dal testo
             const oreMatch = transcript.match(/(\d+(?:[.,]\d+)?)\s*(?:ore|ora|h)/i);
             if (!oreMatch) {
-                showMessage('⚠️ Non ho capito le ore. Riprova dicendo il numero di ore.', 'error');
+                showMessage('Non ho capito le ore. Riprova dicendo il numero di ore.', 'error');
                 return;
             }
 
             const ore = parseFloat(oreMatch[1].replace(',', '.'));
             
-            // Trova attività dalle keywords
             const transcriptLower = transcript.toLowerCase();
             let matchedAttivita = null;
             let maxMatches = 0;
@@ -774,15 +770,14 @@
             });
 
             if (!matchedAttivita) {
-                showMessage('⚠️ Non ho capito l\'attività. Prova a dire una parola chiave.', 'error');
+                showMessage('Non ho capito attivita. Prova a dire una parola chiave.', 'error');
                 return;
             }
 
-            // Registra automaticamente
-            showMessage(`🎤 Ho capito: ${ore}h per ${matchedAttivita.icona} ${matchedAttivita.nome}`, 'info');
+            showMessage('Ho capito: ' + ore + 'h per ' + matchedAttivita.nome, 'info');
             
             setTimeout(async () => {
-                await registraOreVocale(matchedAttivita.id, ore, `Registrato tramite voce: "${transcript}"`);
+                await registraOreVocale(matchedAttivita.id, ore, 'Registrato tramite voce: "' + transcript + '"');
             }, 1000);
         }
 
@@ -795,27 +790,25 @@
                     .insert({
                         operaio_id: operaio.id,
                         attivita_id: attivitaId,
-                        data,
-                        ore,
-                        note
+                        data: data,
+                        ore: ore,
+                        note: note
                     });
 
                 if (error) throw error;
 
-                showMessage('✅ Ore registrate con successo!', 'success');
+                showMessage('Ore registrate con successo!', 'success');
                 
                 await loadStats();
                 await loadOggiRegistrazioni();
 
             } catch (error) {
                 console.error('Errore registrazione:', error);
-                showMessage('❌ Errore nella registrazione', 'error');
+                showMessage('Errore nella registrazione', 'error');
             }
         }
 
-        // ==========================================
-        // CARICA ATTIVITÀ
-        // ==========================================
+        // CARICA ATTIVITA
         async function loadAttivita() {
             try {
                 const { data, error } = await supabaseClient
@@ -830,37 +823,35 @@
 
                 if (attivita.length === 0) {
                     document.getElementById('attivita-grid').innerHTML = 
-                        '<div style="text-align: center; color: #94a3b8; padding: 20px; grid-column: 1/-1;">Nessuna attività disponibile</div>';
+                        '<div style="text-align: center; color: #94a3b8; padding: 20px; grid-column: 1/-1;">Nessuna attivita disponibile</div>';
                     return;
                 }
 
-                const html = attivita.map(att => `
-                    <div class="attivita-btn" onclick="selectAttivita('${att.id}')" id="att-${att.id}">
-                        <div class="attivita-icon">${att.icona}</div>
-                        <div>${att.nome}</div>
-                    </div>
-                `).join('');
+                const html = attivita.map(att => 
+                    '<div class="attivita-btn" onclick="selectAttivita(\'' + att.id + '\')" id="att-' + att.id + '">' +
+                        '<div class="attivita-icon">' + att.icona + '</div>' +
+                        '<div>' + att.nome + '</div>' +
+                    '</div>'
+                ).join('');
 
                 document.getElementById('attivita-grid').innerHTML = html;
 
             } catch (error) {
-                console.error('Errore caricamento attività:', error);
-                showMessage('❌ Errore caricamento attività', 'error');
+                console.error('Errore caricamento attivita:', error);
+                showMessage('Errore caricamento attivita', 'error');
             }
         }
 
         function selectAttivita(id) {
             selectedAttivitaId = id;
             document.querySelectorAll('.attivita-btn').forEach(btn => btn.classList.remove('selected'));
-            document.getElementById(`att-${id}`).classList.add('selected');
+            document.getElementById('att-' + id).classList.add('selected');
         }
 
-        // ==========================================
         // REGISTRA ORE MANUALE
-        // ==========================================
         async function registraOre() {
             if (!selectedAttivitaId) {
-                showMessage('⚠️ Seleziona un\'attività', 'error');
+                showMessage('Seleziona una attivita', 'error');
                 return;
             }
 
@@ -869,12 +860,12 @@
             const note = document.getElementById('input-note').value.trim();
 
             if (!data) {
-                showMessage('⚠️ Seleziona una data', 'error');
+                showMessage('Seleziona una data', 'error');
                 return;
             }
 
             if (!ore || ore <= 0) {
-                showMessage('⚠️ Inserisci le ore lavorate', 'error');
+                showMessage('Inserisci le ore lavorate', 'error');
                 return;
             }
 
@@ -884,16 +875,15 @@
                     .insert({
                         operaio_id: operaio.id,
                         attivita_id: selectedAttivitaId,
-                        data,
-                        ore,
+                        data: data,
+                        ore: ore,
                         note: note || null
                     });
 
                 if (error) throw error;
 
-                showMessage('✅ Ore registrate con successo!', 'success');
+                showMessage('Ore registrate con successo!', 'success');
                 
-                // Reset form
                 document.getElementById('input-ore').value = '';
                 document.getElementById('input-note').value = '';
                 selectedAttivitaId = null;
@@ -904,13 +894,11 @@
 
             } catch (error) {
                 console.error('Errore registrazione:', error);
-                showMessage('❌ Errore nella registrazione', 'error');
+                showMessage('Errore nella registrazione', 'error');
             }
         }
 
-        // ==========================================
         // CARICA REGISTRAZIONI DI OGGI
-        // ==========================================
         async function loadOggiRegistrazioni() {
             if (!operaio) return;
 
@@ -931,18 +919,16 @@
                     return;
                 }
 
-                const totalOggi = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
-
-                const html = data.map(item => `
-                    <div class="oggi-reg-item">
-                        <div>
-                            <strong>${item.attivita.icona} ${item.attivita.nome}</strong> - 
-                            <span style="color: #10b981; font-weight: bold;">${item.ore}h</span>
-                            ${item.note ? `<div style="font-size: 0.9em; color: #94a3b8; margin-top: 5px;">📝 ${item.note}</div>` : ''}
-                        </div>
-                        <button class="btn btn-danger btn-small" onclick="deleteRegistrazione('${item.id}')">🗑️</button>
-                    </div>
-                `).join('');
+                const html = data.map(item => 
+                    '<div class="oggi-reg-item">' +
+                        '<div>' +
+                            '<strong>' + item.attivita.icona + ' ' + item.attivita.nome + '</strong> - ' +
+                            '<span style="color: #10b981; font-weight: bold;">' + item.ore + 'h</span>' +
+                            (item.note ? '<div style="font-size: 0.9em; color: #94a3b8; margin-top: 5px;">' + item.note + '</div>' : '') +
+                        '</div>' +
+                        '<button class="btn btn-danger btn-small" onclick="deleteRegistrazione(\'' + item.id + '\')">Elimina</button>' +
+                    '</div>'
+                ).join('');
 
                 document.getElementById('oggi-list').innerHTML = html;
                 document.getElementById('oggi-registrazioni').style.display = 'block';
@@ -952,9 +938,7 @@
             }
         }
 
-        // ==========================================
         // CARICA STATISTICHE
-        // ==========================================
         async function loadStats() {
             if (!operaio) return;
 
@@ -965,7 +949,6 @@
                 const monthAgo = new Date();
                 monthAgo.setMonth(monthAgo.getMonth() - 1);
 
-                // Ore oggi
                 const { data: todayData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('ore')
@@ -973,9 +956,8 @@
                     .eq('data', today);
 
                 const todayHours = todayData ? todayData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
-                document.getElementById('stat-today').textContent = `${todayHours.toFixed(1)}h`;
+                document.getElementById('stat-today').textContent = todayHours.toFixed(1) + 'h';
 
-                // Ore settimana
                 const { data: weekData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('ore')
@@ -983,9 +965,8 @@
                     .gte('data', weekAgo.toISOString().split('T')[0]);
 
                 const weekHours = weekData ? weekData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
-                document.getElementById('stat-week').textContent = `${weekHours.toFixed(1)}h`;
+                document.getElementById('stat-week').textContent = weekHours.toFixed(1) + 'h';
 
-                // Ore mese
                 const { data: monthData } = await supabaseClient
                     .from('ore_lavorate')
                     .select('ore')
@@ -993,16 +974,14 @@
                     .gte('data', monthAgo.toISOString().split('T')[0]);
 
                 const monthHours = monthData ? monthData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
-                document.getElementById('stat-month').textContent = `${monthHours.toFixed(1)}h`;
+                document.getElementById('stat-month').textContent = monthHours.toFixed(1) + 'h';
 
             } catch (error) {
                 console.error('Errore caricamento statistiche:', error);
             }
         }
 
-        // ==========================================
         // STORICO - FILTRI
-        // ==========================================
         function setFilter(filter) {
             currentFilter = filter;
             
@@ -1063,9 +1042,7 @@
             };
         }
 
-        // ==========================================
         // CARICA STORICO
-        // ==========================================
         async function loadStorico() {
             if (!operaio) return;
 
@@ -1093,27 +1070,25 @@
                 updatePeriodStats(storicoData);
                 updateCharts(storicoData);
 
-                const html = storicoData.map(item => `
-                    <div class="storico-item">
-                        <div class="storico-info">
-                            <div class="storico-date">📅 ${formatDate(item.data)}</div>
-                            <div class="storico-attivita">${item.attivita.icona} ${item.attivita.nome}</div>
-                            <div class="storico-ore">${item.ore}h</div>
-                            ${item.note ? `<div class="storico-note">📝 ${item.note}</div>` : ''}
-                        </div>
-                        <div class="storico-actions">
-                            <button class="btn btn-danger btn-small" onclick="deleteRegistrazione('${item.id}')">
-                                🗑️ Elimina
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
+                const html = storicoData.map(item => 
+                    '<div class="storico-item">' +
+                        '<div class="storico-info">' +
+                            '<div class="storico-date">' + formatDate(item.data) + '</div>' +
+                            '<div class="storico-attivita">' + item.attivita.icona + ' ' + item.attivita.nome + '</div>' +
+                            '<div class="storico-ore">' + item.ore + 'h</div>' +
+                            (item.note ? '<div class="storico-note">' + item.note + '</div>' : '') +
+                        '</div>' +
+                        '<div class="storico-actions">' +
+                            '<button class="btn btn-danger btn-small" onclick="deleteRegistrazione(\'' + item.id + '\')">Elimina</button>' +
+                        '</div>' +
+                    '</div>'
+                ).join('');
 
                 document.getElementById('storico-list').innerHTML = html;
 
             } catch (error) {
                 console.error('Errore caricamento storico:', error);
-                showMessage('❌ Errore caricamento storico', 'error');
+                showMessage('Errore caricamento storico', 'error');
             }
         }
 
@@ -1122,13 +1097,12 @@
             const uniqueDays = new Set(data.map(item => item.data)).size;
             const avgHours = uniqueDays > 0 ? totalHours / uniqueDays : 0;
 
-            document.getElementById('stat-period-total').textContent = `${totalHours.toFixed(1)}h`;
+            document.getElementById('stat-period-total').textContent = totalHours.toFixed(1) + 'h';
             document.getElementById('stat-period-days').textContent = uniqueDays;
-            document.getElementById('stat-period-avg').textContent = `${avgHours.toFixed(1)}h`;
+            document.getElementById('stat-period-avg').textContent = avgHours.toFixed(1) + 'h';
         }
 
         function updateCharts(data) {
-            // Grafico giornaliero
             const dailyData = {};
             data.forEach(item => {
                 if (!dailyData[item.data]) {
@@ -1176,7 +1150,6 @@
                 }
             });
 
-            // Grafico attività
             const activityData = {};
             const activityColors = {};
             data.forEach(item => {
@@ -1215,9 +1188,7 @@
             });
         }
 
-        // ==========================================
         // ELIMINA REGISTRAZIONE
-        // ==========================================
         async function deleteRegistrazione(id) {
             if (!confirm('Sei sicuro di voler eliminare questa registrazione?')) {
                 return;
@@ -1231,26 +1202,24 @@
 
                 if (error) throw error;
 
-                showMessage('✅ Registrazione eliminata', 'success');
+                showMessage('Registrazione eliminata', 'success');
                 await loadStats();
                 await loadOggiRegistrazioni();
                 await loadStorico();
 
             } catch (error) {
                 console.error('Errore eliminazione:', error);
-                showMessage('❌ Errore eliminazione', 'error');
+                showMessage('Errore eliminazione', 'error');
             }
         }
 
-        // ==========================================
         // UTILITY
-        // ==========================================
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
 
             event.target.classList.add('active');
-            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
 
             if (tabName === 'storico') {
                 loadStorico();
@@ -1278,11 +1247,10 @@
 
         function showMessage(message, type) {
             const container = document.getElementById('status-message');
-            container.innerHTML = `<div class="message message-${type}">${message}</div>`;
-            setTimeout(() => container.innerHTML = '', 4000);
+            container.innerHTML = '<div class="message message-' + type + '">' + message + '</div>';
+            setTimeout(function() { container.innerHTML = ''; }, 4000);
         }
 
-        // Custom date change
         document.addEventListener('change', function(e) {
             if (e.target.id === 'custom-start' || e.target.id === 'custom-end') {
                 loadStorico();
