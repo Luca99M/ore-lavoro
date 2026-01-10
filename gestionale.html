@@ -390,13 +390,15 @@
         </div>
 
         <!-- TABS -->
+
+        <!-- TABS -->
         <div class="tabs">
             <div class="tab active" onclick="switchTab('operai')">👥 Operai</div>
             <div class="tab" onclick="switchTab('attivita')">🔧 Attività</div>
             <div class="tab" onclick="switchTab('report')">📊 Report</div>
+            <div class="tab" onclick="switchTab('analisi-operaio')">📊 Analisi Operaio</div>
+            <div class="tab" onclick="switchTab('analisi-attivita')">🔧 Analisi Attività</div>
         </div>
-
-        <!-- TAB: OPERAI -->
         <div id="tab-operai" class="tab-content active">
             <div class="card">
                 <h2>👥 Gestione Operai</h2>
@@ -457,7 +459,133 @@
     <div id="modal-new-operaio" class="modal">
         <div class="modal-content">
             <div class="modal-header">➕ Crea Nuovo Operaio</div>
-            
+
+        <!-- TAB: ANALISI OPERAIO -->
+        <div id="tab-analisi-operaio" class="tab-content">
+            <div class="card">
+                <h2>📊 Analisi per Operaio</h2>
+                
+                <div class="form-group">
+                    <label>👤 Seleziona Operaio</label>
+                    <select id="analisi-operaio-select" class="form-select">
+                        <option value="">Caricamento...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>📅 Periodo</label>
+                    <select id="analisi-operaio-period" class="form-select">
+                        <option value="7">Ultimi 7 giorni</option>
+                        <option value="30" selected>Ultimi 30 giorni</option>
+                        <option value="90">Ultimi 90 giorni</option>
+                        <option value="year">Anno corrente</option>
+                        <option value="custom">Personalizzato</option>
+                    </select>
+                </div>
+
+                <div id="analisi-operaio-custom-dates" style="display: none;">
+                    <div class="form-group">
+                        <label>Data Inizio</label>
+                        <input type="date" id="analisi-operaio-start" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Data Fine</label>
+                        <input type="date" id="analisi-operaio-end" class="form-input">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="loadAnalisiOperaio()" style="margin-right: 10px;">📊 Carica Analisi</button>
+                <button class="btn btn-secondary" onclick="exportOperaioToExcel()">📥 Export Excel</button>
+
+                <div id="analisi-operaio-stats" style="display: none; margin-top: 20px;">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="analisi-operaio-total">0</div>
+                            <div class="stat-label">Ore Totali</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="analisi-operaio-avg">0</div>
+                            <div class="stat-label">Media Giornaliera</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="analisi-operaio-trend-chart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="analisi-operaio-pie-chart"></canvas>
+                </div>
+
+                <div id="analisi-operaio-table"></div>
+            </div>
+        </div>
+
+        <!-- TAB: ANALISI ATTIVITÀ -->
+        <div id="tab-analisi-attivita" class="tab-content">
+            <div class="card">
+                <h2>🔧 Analisi per Attività</h2>
+                
+                <div class="form-group">
+                    <label>🔧 Seleziona Attività</label>
+                    <select id="analisi-attivita-select" class="form-select">
+                        <option value="">Caricamento...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>📅 Periodo</label>
+                    <select id="analisi-attivita-period" class="form-select">
+                        <option value="7">Ultimi 7 giorni</option>
+                        <option value="30" selected>Ultimi 30 giorni</option>
+                        <option value="90">Ultimi 90 giorni</option>
+                        <option value="year">Anno corrente</option>
+                        <option value="custom">Personalizzato</option>
+                    </select>
+                </div>
+
+                <div id="analisi-attivita-custom-dates" style="display: none;">
+                    <div class="form-group">
+                        <label>Data Inizio</label>
+                        <input type="date" id="analisi-attivita-start" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Data Fine</label>
+                        <input type="date" id="analisi-attivita-end" class="form-input">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="loadAnalisiAttivita()" style="margin-right: 10px;">📊 Carica Analisi</button>
+                <button class="btn btn-secondary" onclick="exportAttivitaToExcel()">📥 Export Excel</button>
+
+                <div id="analisi-attivita-stats" style="display: none; margin-top: 20px;">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="analisi-attivita-total">0</div>
+                            <div class="stat-label">Ore Totali</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="analisi-attivita-workers">0</div>
+                            <div class="stat-label">Operai Coinvolti</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="analisi-attivita-trend-chart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="analisi-attivita-pie-chart"></canvas>
+                </div>
+
+                <div id="analisi-attivita-table"></div>
+            </div>
+        </div>
+
+        <div id="status-message"></div>
+    </div>
             <div class="form-group">
                 <label>Nome *</label>
                 <input type="text" id="new-operaio-nome" class="form-input" placeholder="Mario">
@@ -543,7 +671,6 @@
             await loadStats();
             await loadOperai();
             await loadAttivita();
-        });
 
         // ==========================================
         // CARICA STATISTICHE
@@ -1022,6 +1149,545 @@
 
         // ==========================================
         // TABS
+
+        // ==========================================
+        // ANALISI OPERAIO
+        // ==========================================
+        let analisiOperaioTrendChart = null;
+        let analisiOperaioPieChart = null;
+        let currentAnalisiOperaioData = null;
+
+        async function loadOperaiForAnalisi() {
+            const { data } = await supabaseClient
+                .from('operai')
+                .select('*')
+                .eq('attivo', true)
+                .order('cognome');
+
+            const select = document.getElementById('analisi-operaio-select');
+            select.innerHTML = '<option value="">Seleziona operaio...</option>';
+            if (data) {
+                data.forEach(op => {
+                    select.innerHTML += `<option value="${op.id}">${op.nome} ${op.cognome}</option>`;
+                });
+            }
+        }
+
+        async function loadAnalisiOperaio() {
+            const operaioId = document.getElementById('analisi-operaio-select').value;
+            const period = document.getElementById('analisi-operaio-period').value;
+
+            if (!operaioId) {
+                showMessage('⚠️ Seleziona un operaio', 'error');
+                return;
+            }
+
+            const { startDate, endDate } = calculateAnalisiDateRange(period, 'operaio');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, attivita(nome, icona)')
+                    .eq('operaio_id', operaioId)
+                    .gte('data', startDate)
+                    .lte('data', endDate)
+                    .order('data');
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    showMessage('ℹ️ Nessun dato trovato per il periodo selezionato', 'error');
+                    return;
+                }
+
+                currentAnalisiOperaioData = data;
+
+                // Statistiche
+                document.getElementById('analisi-operaio-stats').style.display = 'block';
+                const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+                const daysCount = new Set(data.map(item => item.data)).size;
+                const avgHours = totalHours / daysCount;
+
+                document.getElementById('analisi-operaio-total').textContent = totalHours.toFixed(1);
+                document.getElementById('analisi-operaio-avg').textContent = avgHours.toFixed(1);
+
+                // Trend giornaliero
+                const dailyData = {};
+                const activityData = {};
+
+                data.forEach(item => {
+                    if (!dailyData[item.data]) dailyData[item.data] = 0;
+                    dailyData[item.data] += parseFloat(item.ore);
+
+                    const actName = item.attivita.nome;
+                    if (!activityData[actName]) activityData[actName] = 0;
+                    activityData[actName] += parseFloat(item.ore);
+                });
+
+                updateAnalisiOperaioTrendChart(dailyData);
+                updateAnalisiOperaioPieChart(activityData);
+                updateAnalisiOperaioTable(data);
+
+                showMessage('✅ Analisi caricata!', 'success');
+
+            } catch (error) {
+                console.error('Errore:', error);
+                showMessage('❌ Errore nel caricamento', 'error');
+            }
+        }
+
+        function updateAnalisiOperaioTrendChart(dailyData) {
+            const ctx = document.getElementById('analisi-operaio-trend-chart');
+            if (analisiOperaioTrendChart) analisiOperaioTrendChart.destroy();
+
+            analisiOperaioTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(dailyData),
+                    datasets: [{
+                        label: 'Ore Giornaliere',
+                        data: Object.values(dailyData),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } },
+                        title: {
+                            display: true,
+                            text: 'Trend Ore Giornaliere',
+                            color: '#60a5fa'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAnalisiOperaioPieChart(activityData) {
+            const ctx = document.getElementById('analisi-operaio-pie-chart');
+            if (analisiOperaioPieChart) analisiOperaioPieChart.destroy();
+
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+
+            analisiOperaioPieChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(activityData),
+                    datasets: [{
+                        data: Object.values(activityData),
+                        backgroundColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8' }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribuzione Ore per Attività (%)',
+                            color: '#60a5fa'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value}h (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAnalisiOperaioTable(data) {
+            const container = document.getElementById('analisi-operaio-table');
+            let html = '<h3 style="color: #60a5fa; margin-top: 30px;">📋 Dettaglio Ore</h3>';
+            html += '<table><thead><tr><th>Data</th><th>Attività</th><th>Ore</th><th>Note</th></tr></thead><tbody>';
+
+            data.forEach(item => {
+                html += `<tr>
+                    <td>${item.data}</td>
+                    <td>${item.attivita.icona} ${item.attivita.nome}</td>
+                    <td><strong>${item.ore}h</strong></td>
+                    <td>${item.note || '-'}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        async function exportOperaioToExcel() {
+            if (!currentAnalisiOperaioData || currentAnalisiOperaioData.length === 0) {
+                showMessage('⚠️ Carica prima l\'analisi', 'error');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+            const operaioName = `${currentAnalisiOperaioData[0].operai?.nome || 'Operaio'} ${currentAnalisiOperaioData[0].operai?.cognome || ''}`.trim();
+
+            // Se non abbiamo il nome dell'operaio, lo prendiamo dal select
+            const select = document.getElementById('analisi-operaio-select');
+            const displayName = operaioName || select.options[select.selectedIndex].text;
+
+            const period = document.getElementById('analisi-operaio-period').value;
+            const { startDate, endDate } = calculateAnalisiDateRange(period, 'operaio');
+
+            const sheetData = [
+                ['ANALISI ORE OPERAIO'],
+                [`Operaio: ${displayName}`],
+                [`Periodo: ${startDate} - ${endDate}`],
+                [],
+                ['Data', 'Attività', 'Ore', 'Note']
+            ];
+
+            currentAnalisiOperaioData.forEach(item => {
+                sheetData.push([
+                    item.data,
+                    item.attivita.nome,
+                    item.ore,
+                    item.note || ''
+                ]);
+            });
+
+            const totalOre = currentAnalisiOperaioData.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+            const activityStats = {};
+            currentAnalisiOperaioData.forEach(item => {
+                const actName = item.attivita.nome;
+                if (!activityStats[actName]) activityStats[actName] = 0;
+                activityStats[actName] += parseFloat(item.ore);
+            });
+
+            sheetData.push([]);
+            sheetData.push(['TOTALE ORE', '', totalOre.toFixed(1)]);
+            sheetData.push([]);
+            sheetData.push(['DISTRIBUZIONE ATTIVITÀ']);
+
+            Object.entries(activityStats).forEach(([nome, ore]) => {
+                const perc = ((ore / totalOre) * 100).toFixed(1);
+                sheetData.push([nome, ore.toFixed(1), `${perc}%`]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(sheetData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Analisi Operaio');
+
+            const filename = `Analisi_${displayName.replace(/\s+/g, '_')}_${startDate}_${endDate}.xlsx`;
+            XLSX.writeFile(wb, filename);
+            showMessage('✅ Excel esportato!', 'success');
+        }
+
+        // ==========================================
+        // ANALISI ATTIVITÀ
+        // ==========================================
+        let analisiAttivitaTrendChart = null;
+        let analisiAttivitaPieChart = null;
+        let currentAnalisiAttivitaData = null;
+
+        async function loadAttivitaForAnalisi() {
+            const { data } = await supabaseClient
+                .from('attivita')
+                .select('*')
+                .eq('attiva', true)
+                .order('ordine');
+
+            const select = document.getElementById('analisi-attivita-select');
+            select.innerHTML = '<option value="">Seleziona attività...</option>';
+            if (data) {
+                data.forEach(att => {
+                    select.innerHTML += `<option value="${att.id}">${att.icona} ${att.nome}</option>`;
+                });
+            }
+        }
+
+        async function loadAnalisiAttivita() {
+            const attivitaId = document.getElementById('analisi-attivita-select').value;
+            const period = document.getElementById('analisi-attivita-period').value;
+
+            if (!attivitaId) {
+                showMessage('⚠️ Seleziona un\'attività', 'error');
+                return;
+            }
+
+            const { startDate, endDate } = calculateAnalisiDateRange(period, 'attivita');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, operai(nome, cognome)')
+                    .eq('attivita_id', attivitaId)
+                    .gte('data', startDate)
+                    .lte('data', endDate)
+                    .order('data');
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    showMessage('ℹ️ Nessun dato trovato', 'error');
+                    return;
+                }
+
+                currentAnalisiAttivitaData = data;
+
+                // Statistiche
+                document.getElementById('analisi-attivita-stats').style.display = 'block';
+                const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+                const uniqueWorkers = new Set(data.map(item => item.operaio_id)).size;
+
+                document.getElementById('analisi-attivita-total').textContent = totalHours.toFixed(1);
+                document.getElementById('analisi-attivita-workers').textContent = uniqueWorkers;
+
+                // Dati per grafici
+                const dailyData = {};
+                const workerData = {};
+
+                data.forEach(item => {
+                    if (!dailyData[item.data]) dailyData[item.data] = 0;
+                    dailyData[item.data] += parseFloat(item.ore);
+
+                    const workerName = `${item.operai.nome} ${item.operai.cognome}`.trim();
+                    if (!workerData[workerName]) workerData[workerName] = 0;
+                    workerData[workerName] += parseFloat(item.ore);
+                });
+
+                updateAnalisiAttivitaTrendChart(dailyData);
+                updateAnalisiAttivitaPieChart(workerData);
+                updateAnalisiAttivitaTable(data);
+
+                showMessage('✅ Analisi caricata!', 'success');
+
+            } catch (error) {
+                console.error('Errore:', error);
+                showMessage('❌ Errore nel caricamento', 'error');
+            }
+        }
+
+        function updateAnalisiAttivitaTrendChart(dailyData) {
+            const ctx = document.getElementById('analisi-attivita-trend-chart');
+            if (analisiAttivitaTrendChart) analisiAttivitaTrendChart.destroy();
+
+            analisiAttivitaTrendChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(dailyData),
+                    datasets: [{
+                        label: 'Ore Totali',
+                        data: Object.values(dailyData),
+                        backgroundColor: '#10b981',
+                        borderWidth: 2,
+                        borderColor: '#1e293b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } },
+                        title: {
+                            display: true,
+                            text: 'Trend Ore Attività',
+                            color: '#60a5fa'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAnalisiAttivitaPieChart(workerData) {
+            const ctx = document.getElementById('analisi-attivita-pie-chart');
+            if (analisiAttivitaPieChart) analisiAttivitaPieChart.destroy();
+
+            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+
+            analisiAttivitaPieChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(workerData),
+                    datasets: [{
+                        data: Object.values(workerData),
+                        backgroundColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8' }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Contributo Operai (%)',
+                            color: '#60a5fa'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value}h (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAnalisiAttivitaTable(data) {
+            const container = document.getElementById('analisi-attivita-table');
+            let html = '<h3 style="color: #60a5fa; margin-top: 30px;">📋 Dettaglio Ore</h3>';
+            html += '<table><thead><tr><th>Data</th><th>Operaio</th><th>Ore</th><th>Note</th></tr></thead><tbody>';
+
+            data.forEach(item => {
+                const workerName = `${item.operai.nome} ${item.operai.cognome}`.trim();
+                html += `<tr>
+                    <td>${item.data}</td>
+                    <td>${workerName}</td>
+                    <td><strong>${item.ore}h</strong></td>
+                    <td>${item.note || '-'}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        async function exportAttivitaToExcel() {
+            if (!currentAnalisiAttivitaData || currentAnalisiAttivitaData.length === 0) {
+                showMessage('⚠️ Carica prima l\'analisi', 'error');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+            const select = document.getElementById('analisi-attivita-select');
+            const attivitaName = select.options[select.selectedIndex].text;
+
+            const period = document.getElementById('analisi-attivita-period').value;
+            const { startDate, endDate } = calculateAnalisiDateRange(period, 'attivita');
+
+            const sheetData = [
+                ['ANALISI ORE ATTIVITÀ'],
+                [`Attività: ${attivitaName}`],
+                [`Periodo: ${startDate} - ${endDate}`],
+                [],
+                ['Data', 'Operaio', 'Ore', 'Note']
+            ];
+
+            currentAnalisiAttivitaData.forEach(item => {
+                const workerName = `${item.operai.nome} ${item.operai.cognome}`.trim();
+                sheetData.push([
+                    item.data,
+                    workerName,
+                    item.ore,
+                    item.note || ''
+                ]);
+            });
+
+            const totalOre = currentAnalisiAttivitaData.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+            const workerStats = {};
+            currentAnalisiAttivitaData.forEach(item => {
+                const workerName = `${item.operai.nome} ${item.operai.cognome}`.trim();
+                if (!workerStats[workerName]) workerStats[workerName] = 0;
+                workerStats[workerName] += parseFloat(item.ore);
+            });
+
+            sheetData.push([]);
+            sheetData.push(['TOTALE ORE', '', totalOre.toFixed(1)]);
+            sheetData.push([]);
+            sheetData.push(['DISTRIBUZIONE OPERAI']);
+
+            Object.entries(workerStats).forEach(([nome, ore]) => {
+                const perc = ((ore / totalOre) * 100).toFixed(1);
+                sheetData.push([nome, ore.toFixed(1), `${perc}%`]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(sheetData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Analisi Attività');
+
+            const filename = `Analisi_${attivitaName.replace(/\s+/g, '_')}_${startDate}_${endDate}.xlsx`;
+            XLSX.writeFile(wb, filename);
+            showMessage('✅ Excel esportato!', 'success');
+        }
+
+        // ==========================================
+        // CALCOLO DATE RANGE
+        // ==========================================
+        function calculateAnalisiDateRange(period, type) {
+            const today = new Date();
+            let startDate, endDate;
+
+            if (period === 'custom') {
+                const startInput = type === 'operaio' ? 'analisi-operaio-start' : 'analisi-attivita-start';
+                const endInput = type === 'operaio' ? 'analisi-operaio-end' : 'analisi-attivita-end';
+                
+                startDate = new Date(document.getElementById(startInput).value);
+                endDate = new Date(document.getElementById(endInput).value);
+            } else {
+                endDate = today;
+                startDate = new Date(today);
+                
+                switch(period) {
+                    case '7':
+                        startDate.setDate(startDate.getDate() - 7);
+                        break;
+                    case '30':
+                        startDate.setDate(startDate.getDate() - 30);
+                        break;
+                    case '90':
+                        startDate.setDate(startDate.getDate() - 90);
+                        break;
+                    case 'year':
+                        startDate = new Date(today.getFullYear(), 0, 1);
+                        break;
+                }
+            }
+
+            return {
+                startDate: startDate.toISOString().split('T')[0],
+                endDate: endDate.toISOString().split('T')[0]
+            };
+        }
+
+        // ==========================================
+        // TABS (MODIFICATO)
         // ==========================================
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1029,6 +1695,26 @@
 
             event.target.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            if (tabName === 'report') {
+                loadReport();
+            } else if (tabName === 'analisi-operaio') {
+                loadOperaiForAnalisi();
+                // Listener per periodo custom
+                document.getElementById('analisi-operaio-period').onchange = function() {
+                    document.getElementById('analisi-operaio-custom-dates').style.display = 
+                        this.value === 'custom' ? 'block' : 'none';
+                };
+            } else if (tabName === 'analisi-attivita') {
+                loadAttivitaForAnalisi();
+                // Listener per periodo custom
+                document.getElementById('analisi-attivita-period').onchange = function() {
+                    document.getElementById('analisi-attivita-custom-dates').style.display = 
+                        this.value === 'custom' ? 'block' : 'none';
+                };
+            }
+        }
+
 
             if (tabName === 'report') {
                 loadReport();
