@@ -187,6 +187,26 @@
             color: white;
         }
 
+        .btn-voice {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.2em;
+        }
+
+        .btn-voice.listening {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         .btn:hover {
             transform: scale(1.05);
         }
@@ -248,6 +268,12 @@
             background: rgba(239, 68, 68, 0.1);
             border: 2px solid #ef4444;
             color: #fca5a5;
+        }
+
+        .message-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid #3b82f6;
+            color: #93c5fd;
         }
 
         .chart-container {
@@ -343,6 +369,63 @@
             display: grid;
         }
 
+        .oggi-registrazioni {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .oggi-registrazioni h3 {
+            color: #10b981;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .oggi-reg-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .voice-feedback {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid #8b5cf6;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+
+        .voice-feedback.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .voice-feedback .listening-text {
+            font-size: 1.2em;
+            color: #c4b5fd;
+            margin-bottom: 10px;
+        }
+
+        .voice-feedback .transcript {
+            font-size: 1.5em;
+            color: #a78bfa;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
         @media (max-width: 768px) {
             .storico-item {
                 flex-direction: column;
@@ -391,8 +474,26 @@
 
         <!-- TAB: REGISTRA ORE -->
         <div id="tab-registra" class="tab-content active">
+            <!-- RICONOSCIMENTO VOCALE -->
             <div class="card">
-                <h2>📋 Registra Ore Lavorate</h2>
+                <h2>🎤 Registrazione Vocale</h2>
+                <p style="color: #94a3b8; margin-bottom: 15px;">
+                    Clicca e parla: "5 ore pecore" oppure "3 ore taglio legna"
+                </p>
+                <button class="btn btn-voice" id="voice-btn" onclick="toggleVoiceRecognition()">
+                    <span id="voice-icon">🎤</span>
+                    <span id="voice-text">Registra con Voce</span>
+                </button>
+                
+                <div id="voice-feedback" class="voice-feedback">
+                    <div class="listening-text">🎤 In ascolto...</div>
+                    <div class="transcript" id="voice-transcript">...</div>
+                </div>
+            </div>
+
+            <!-- REGISTRAZIONE MANUALE -->
+            <div class="card">
+                <h2>📋 Registrazione Manuale</h2>
 
                 <div class="form-group">
                     <label>Data</label>
@@ -419,6 +520,15 @@
                 </div>
 
                 <button class="btn btn-primary" onclick="registraOre()">✅ REGISTRA ORE</button>
+            </div>
+
+            <!-- REGISTRAZIONI DI OGGI -->
+            <div id="oggi-registrazioni" class="oggi-registrazioni" style="display: none;">
+                <h3>📋 Ore Registrate Oggi</h3>
+                <div id="oggi-list"></div>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 0.9em; color: #94a3b8;">
+                    💡 Puoi registrare più attività nello stesso giorno!
+                </div>
             </div>
         </div>
 
@@ -500,7 +610,7 @@
         // CONFIGURAZIONE SUPABASE
         // ==========================================
         const SUPABASE_URL = 'https://xxzyhzalfqyqseedsuub.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzY4ODE2MywiZXhwIjoyMDgzMjY0MTYzfQ.Y1fUlGwzlzjYc-zJnOIF7X-7V7FrcRzfJJN5ZNhgi2s';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjY4ODE2MywiZXhwIjoyMDgzMjY0MTYzfQ.Y1fUlGwzlzjYc-zJnOIF7X-7V7FrcRzfJJN5ZNhgi2s';
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -513,6 +623,10 @@
         let currentFilter = 'oggi';
         let chartDaily = null;
         let chartActivities = null;
+
+        // RICONOSCIMENTO VOCALE
+        let recognition = null;
+        let isListening = false;
 
         // ==========================================
         // INIZIALIZZAZIONE
@@ -549,11 +663,155 @@
             // Imposta data odierna
             document.getElementById('input-data').valueAsDate = new Date();
 
+            // Inizializza riconoscimento vocale
+            initVoiceRecognition();
+
             // Carica dati
             await loadAttivita();
             await loadStats();
+            await loadOggiRegistrazioni();
             await loadStorico();
         });
+
+        // ==========================================
+        // RICONOSCIMENTO VOCALE
+        // ==========================================
+        function initVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.log('Riconoscimento vocale non supportato');
+                document.getElementById('voice-btn').disabled = true;
+                document.getElementById('voice-text').textContent = 'Vocale non supportato';
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'it-IT';
+            recognition.continuous = false;
+            recognition.interimResults = true;
+
+            recognition.onstart = function() {
+                isListening = true;
+                document.getElementById('voice-btn').classList.add('listening');
+                document.getElementById('voice-icon').textContent = '🔴';
+                document.getElementById('voice-text').textContent = 'In ascolto...';
+                document.getElementById('voice-feedback').classList.add('active');
+                document.getElementById('voice-transcript').textContent = '...';
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('voice-transcript').textContent = transcript;
+                
+                if (event.results[0].isFinal) {
+                    processVoiceInput(transcript);
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Errore riconoscimento:', event.error);
+                stopVoiceRecognition();
+                showMessage('❌ Errore nel riconoscimento vocale', 'error');
+            };
+
+            recognition.onend = function() {
+                stopVoiceRecognition();
+            };
+        }
+
+        function toggleVoiceRecognition() {
+            if (!recognition) {
+                showMessage('❌ Riconoscimento vocale non disponibile', 'error');
+                return;
+            }
+
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        function stopVoiceRecognition() {
+            isListening = false;
+            document.getElementById('voice-btn').classList.remove('listening');
+            document.getElementById('voice-icon').textContent = '🎤';
+            document.getElementById('voice-text').textContent = 'Registra con Voce';
+            document.getElementById('voice-feedback').classList.remove('active');
+        }
+
+        function processVoiceInput(transcript) {
+            console.log('Processando:', transcript);
+            
+            // Estrai ore dal testo
+            const oreMatch = transcript.match(/(\d+(?:[.,]\d+)?)\s*(?:ore|ora|h)/i);
+            if (!oreMatch) {
+                showMessage('⚠️ Non ho capito le ore. Riprova dicendo il numero di ore.', 'error');
+                return;
+            }
+
+            const ore = parseFloat(oreMatch[1].replace(',', '.'));
+            
+            // Trova attività dalle keywords
+            const transcriptLower = transcript.toLowerCase();
+            let matchedAttivita = null;
+            let maxMatches = 0;
+
+            attivita.forEach(att => {
+                if (!att.keywords || att.keywords.length === 0) return;
+                
+                let matches = 0;
+                att.keywords.forEach(keyword => {
+                    if (transcriptLower.includes(keyword.toLowerCase())) {
+                        matches++;
+                    }
+                });
+
+                if (matches > maxMatches) {
+                    maxMatches = matches;
+                    matchedAttivita = att;
+                }
+            });
+
+            if (!matchedAttivita) {
+                showMessage('⚠️ Non ho capito l\'attività. Prova a dire una parola chiave.', 'error');
+                return;
+            }
+
+            // Registra automaticamente
+            showMessage(`🎤 Ho capito: ${ore}h per ${matchedAttivita.icona} ${matchedAttivita.nome}`, 'info');
+            
+            setTimeout(async () => {
+                await registraOreVocale(matchedAttivita.id, ore, `Registrato tramite voce: "${transcript}"`);
+            }, 1000);
+        }
+
+        async function registraOreVocale(attivitaId, ore, note) {
+            try {
+                const data = document.getElementById('input-data').value;
+
+                const { error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .insert({
+                        operaio_id: operaio.id,
+                        attivita_id: attivitaId,
+                        data,
+                        ore,
+                        note
+                    });
+
+                if (error) throw error;
+
+                showMessage('✅ Ore registrate con successo!', 'success');
+                
+                await loadStats();
+                await loadOggiRegistrazioni();
+
+            } catch (error) {
+                console.error('Errore registrazione:', error);
+                showMessage('❌ Errore nella registrazione', 'error');
+            }
+        }
 
         // ==========================================
         // CARICA ATTIVITÀ
@@ -598,7 +856,7 @@
         }
 
         // ==========================================
-        // REGISTRA ORE
+        // REGISTRA ORE MANUALE
         // ==========================================
         async function registraOre() {
             if (!selectedAttivitaId) {
@@ -642,10 +900,55 @@
                 document.querySelectorAll('.attivita-btn').forEach(btn => btn.classList.remove('selected'));
 
                 await loadStats();
+                await loadOggiRegistrazioni();
 
             } catch (error) {
                 console.error('Errore registrazione:', error);
                 showMessage('❌ Errore nella registrazione', 'error');
+            }
+        }
+
+        // ==========================================
+        // CARICA REGISTRAZIONI DI OGGI
+        // ==========================================
+        async function loadOggiRegistrazioni() {
+            if (!operaio) return;
+
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                const { data, error } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, attivita(*)')
+                    .eq('operaio_id', operaio.id)
+                    .eq('data', today)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('oggi-registrazioni').style.display = 'none';
+                    return;
+                }
+
+                const totalOggi = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
+
+                const html = data.map(item => `
+                    <div class="oggi-reg-item">
+                        <div>
+                            <strong>${item.attivita.icona} ${item.attivita.nome}</strong> - 
+                            <span style="color: #10b981; font-weight: bold;">${item.ore}h</span>
+                            ${item.note ? `<div style="font-size: 0.9em; color: #94a3b8; margin-top: 5px;">📝 ${item.note}</div>` : ''}
+                        </div>
+                        <button class="btn btn-danger btn-small" onclick="deleteRegistrazione('${item.id}')">🗑️</button>
+                    </div>
+                `).join('');
+
+                document.getElementById('oggi-list').innerHTML = html;
+                document.getElementById('oggi-registrazioni').style.display = 'block';
+
+            } catch (error) {
+                console.error('Errore caricamento registrazioni oggi:', error);
             }
         }
 
@@ -709,7 +1012,6 @@
             const customRange = document.getElementById('custom-date-range');
             if (filter === 'custom') {
                 customRange.classList.add('active');
-                // Imposta date di default
                 const today = new Date();
                 const monthAgo = new Date();
                 monthAgo.setMonth(monthAgo.getMonth() - 1);
@@ -788,13 +1090,9 @@
                     return;
                 }
 
-                // Aggiorna statistiche periodo
                 updatePeriodStats(storicoData);
-
-                // Aggiorna grafici
                 updateCharts(storicoData);
 
-                // Mostra lista
                 const html = storicoData.map(item => `
                     <div class="storico-item">
                         <div class="storico-info">
@@ -819,9 +1117,6 @@
             }
         }
 
-        // ==========================================
-        // STATISTICHE PERIODO
-        // ==========================================
         function updatePeriodStats(data) {
             const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
             const uniqueDays = new Set(data.map(item => item.data)).size;
@@ -832,9 +1127,6 @@
             document.getElementById('stat-period-avg').textContent = `${avgHours.toFixed(1)}h`;
         }
 
-        // ==========================================
-        // AGGIORNA GRAFICI
-        // ==========================================
         function updateCharts(data) {
             // Grafico giornaliero
             const dailyData = {};
@@ -941,6 +1233,7 @@
 
                 showMessage('✅ Registrazione eliminata', 'success');
                 await loadStats();
+                await loadOggiRegistrazioni();
                 await loadStorico();
 
             } catch (error) {
