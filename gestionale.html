@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionale Ore Lavoro - SUPER</title>
+    <title>Gestionale Ore Lavoro - Admin</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -20,6 +20,7 @@
             color: white;
             min-height: 100vh;
             padding: 20px;
+            padding-bottom: 100px;
         }
 
         .container {
@@ -29,106 +30,80 @@
 
         .header {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            padding: 20px;
+            padding: 25px;
             border-radius: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            text-align: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .header h1 {
-            font-size: 1.8em;
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .header .subtitle {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
         }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            flex: 1;
-            min-width: 150px;
-            padding: 12px;
-            background: rgba(30, 41, 59, 0.8);
-            border: 2px solid rgba(37, 99, 235, 0.2);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            border-color: #3b82f6;
-        }
-
-        .tab:hover {
-            transform: scale(1.02);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
+        .stat-label {
+            font-size: 0.9em;
+            color: #94a3b8;
         }
 
         .card {
             background: rgba(30, 41, 59, 0.95);
             border: 1px solid rgba(37, 99, 235, 0.2);
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
         }
 
         .card h2 {
             color: #60a5fa;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #94a3b8;
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9em;
-        }
-
-        .form-input, .form-select {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid rgba(37, 99, 235, 0.2);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+            margin-bottom: 20px;
+            font-size: 1.4em;
         }
 
         .btn {
-            padding: 14px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 1em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-right: 10px;
-            margin-bottom: 10px;
         }
 
         .btn-primary {
@@ -141,70 +116,185 @@
             color: white;
         }
 
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
         .btn:hover {
-            transform: scale(1.02);
+            transform: scale(1.05);
         }
 
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 20px 0;
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .operaio-item {
             background: rgba(15, 23, 42, 0.6);
-            padding: 20px;
             border-radius: 10px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
             gap: 15px;
-            margin: 20px 0;
         }
 
-        .stat-card {
+        .operaio-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .operaio-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 5px;
+        }
+
+        .operaio-stats {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .operaio-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .attivita-item {
             background: rgba(15, 23, 42, 0.6);
-            padding: 20px;
             border-radius: 10px;
-            text-align: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #10b981;
         }
 
-        .stat-value {
-            font-size: 2em;
+        .attivita-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .attivita-name {
+            font-size: 1.2em;
             font-weight: bold;
             color: #10b981;
         }
 
-        .stat-label {
+        .keywords-container {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .keywords-label {
             color: #94a3b8;
-            margin-top: 5px;
+            font-size: 0.9em;
+            margin-bottom: 8px;
         }
 
-        table {
+        .keyword-tag {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 3px;
+            font-size: 0.85em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        .modal.active {
+            display: flex;
         }
 
-        th {
-            background: rgba(37, 99, 235, 0.1);
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid rgba(37, 99, 235, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            font-size: 1.5em;
             color: #60a5fa;
-            font-weight: 600;
+            margin-bottom: 20px;
         }
 
-        tr:hover {
-            background: rgba(37, 99, 235, 0.05);
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .link-display {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            word-break: break-all;
+            color: #6ee7b7;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
         }
 
         .message {
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
-            margin: 10px 0;
+            margin: 15px 0;
             text-align: center;
         }
 
@@ -220,298 +310,715 @@
             color: #fca5a5;
         }
 
-        .message-info {
-            background: rgba(59, 130, 246, 0.1);
-            border: 2px solid #3b82f6;
-            color: #93c5fd;
-        }
-
-        .absent-item {
-            padding: 15px;
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 4px solid #ef4444;
-            margin-bottom: 10px;
-            border-radius: 8px;
-        }
-
-        .absent-item.justified {
-            background: rgba(16, 185, 129, 0.1);
-            border-left-color: #10b981;
-        }
-
-        .request-item {
-            padding: 15px;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 8px;
-            margin-bottom: 10px;
+        .tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-color: #3b82f6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-top: 20px;
         }
 
         @media (max-width: 768px) {
-            .tabs {
+            .operaio-item {
                 flex-direction: column;
-            }
-            
-            .tab {
-                min-width: 100%;
+                align-items: flex-start;
             }
 
-            .chart-container {
-                height: 300px;
+            .operaio-actions {
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- HEADER -->
         <div class="header">
-            <h1>📊 Gestionale Ore Lavoro SUPER</h1>
-            <p>Dashboard amministrativa con analisi avanzate</p>
+            <h1>🏢 Gestionale Ore Lavoro</h1>
+            <div class="subtitle">Pannello Amministratore</div>
         </div>
 
-        <div id="status-message"></div>
+        <!-- STATISTICHE GENERALI -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-today-hours">0h</div>
+                <div class="stat-label">Ore Oggi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-week-hours">0h</div>
+                <div class="stat-label">Ore Settimana</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-active-workers">0</div>
+                <div class="stat-label">Operai Attivi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-activities">0</div>
+                <div class="stat-label">Attività</div>
+            </div>
+        </div>
 
         <!-- TABS -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('dashboard')">🏠 Dashboard</div>
-            <div class="tab" onclick="switchTab('person-analysis')">📊 Analisi Persona</div>
-            <div class="tab" onclick="switchTab('activity-analysis')">🔧 Analisi Attività</div>
-            <div class="tab" onclick="switchTab('absences')">📅 Assenze</div>
-            <div class="tab" onclick="switchTab('workers')">👷 Operai</div>
-            <div class="tab" onclick="switchTab('activities')">⚙️ Attività</div>
-        </div>
-
-        <!-- TAB: DASHBOARD -->
-        <div id="tab-dashboard" class="tab-content active">
-            <div class="card">
-                <h2>📈 Statistiche Generali</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="stat-total-hours">0</div>
-                        <div class="stat-label">Ore Totali (Mese)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="stat-active-workers">0</div>
-                        <div class="stat-label">Operai Attivi</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="stat-activities">0</div>
-                        <div class="stat-label">Attività Totali</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="stat-today">0h</div>
-                        <div class="stat-label">Ore Oggi</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: ANALISI PERSONA -->
-        <div id="tab-person-analysis" class="tab-content">
-            <div class="card">
-                <h2>📊 Analisi per Persona</h2>
-                
-                <div class="form-group">
-                    <label>👤 Operaio</label>
-                    <select id="person-select" class="form-select">
-                        <option value="">Caricamento...</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>📅 Periodo</label>
-                    <select id="person-period" class="form-select">
-                        <option value="7">Ultimi 7 giorni</option>
-                        <option value="30" selected>Ultimi 30 giorni</option>
-                        <option value="90">Ultimi 90 giorni</option>
-                        <option value="year">Anno corrente</option>
-                        <option value="custom">Personalizzato</option>
-                    </select>
-                </div>
-
-                <div id="person-custom-dates" style="display: none;">
-                    <div class="form-group">
-                        <label>Data Inizio</label>
-                        <input type="date" id="person-start-date" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Data Fine</label>
-                        <input type="date" id="person-end-date" class="form-input">
-                    </div>
-                </div>
-
-                <button class="btn btn-primary" onclick="loadPersonAnalysis()">📊 Carica Analisi</button>
-                <button class="btn btn-secondary" onclick="exportPersonToExcel()">📥 Export Excel</button>
-
-                <div id="person-stats" style="display: none;" class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="person-total-hours">0</div>
-                        <div class="stat-label">Ore Totali</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="person-avg-hours">0</div>
-                        <div class="stat-label">Media Giornaliera</div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="person-trend-chart"></canvas>
-                </div>
-
-                <div class="chart-container" style="height: 400px;">
-                    <canvas id="person-pie-chart"></canvas>
-                </div>
-
-                <div id="person-table-container"></div>
-            </div>
-        </div>
-
-        <!-- TAB: ANALISI ATTIVITÀ -->
-        <div id="tab-activity-analysis" class="tab-content">
-            <div class="card">
-                <h2>🔧 Analisi per Attività</h2>
-                
-                <div class="form-group">
-                    <label>🔧 Attività</label>
-                    <select id="activity-select" class="form-select">
-                        <option value="">Caricamento...</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>📅 Periodo</label>
-                    <select id="activity-period" class="form-select">
-                        <option value="7">Ultimi 7 giorni</option>
-                        <option value="30" selected>Ultimi 30 giorni</option>
-                        <option value="90">Ultimi 90 giorni</option>
-                        <option value="year">Anno corrente</option>
-                        <option value="custom">Personalizzato</option>
-                    </select>
-                </div>
-
-                <div id="activity-custom-dates" style="display: none;">
-                    <div class="form-group">
-                        <label>Data Inizio</label>
-                        <input type="date" id="activity-start-date" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label>Data Fine</label>
-                        <input type="date" id="activity-end-date" class="form-input">
-                    </div>
-                </div>
-
-                <button class="btn btn-primary" onclick="loadActivityAnalysis()">📊 Carica Analisi</button>
-                <button class="btn btn-secondary" onclick="exportActivityToExcel()">📥 Export Excel</button>
-
-                <div id="activity-stats" style="display: none;" class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="activity-total-hours">0</div>
-                        <div class="stat-label">Ore Totali</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="activity-workers">0</div>
-                        <div class="stat-label">Operai Coinvolti</div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="activity-trend-chart"></canvas>
-                </div>
-
-                <div class="chart-container" style="height: 400px;">
-                    <canvas id="activity-pie-chart"></canvas>
-                </div>
-
-                <div id="activity-table-container"></div>
-            </div>
-        </div>
-
-        <!-- TAB: ASSENZE -->
-        <div id="tab-absences" class="tab-content">
-            <div class="card">
-                <h2>⚠️ Operai Senza Ore Oggi</h2>
-                <div id="missing-today-container">
-                    <div class="message message-info">Caricamento...</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>📝 Richieste Assenze in Sospeso</h2>
-                <div id="pending-requests-container">
-                    <div class="message message-info">Caricamento...</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>📅 Tutte le Assenze</h2>
-                <div class="form-group">
-                    <label>Filtra per periodo</label>
-                    <select id="absences-filter" class="form-select" onchange="loadAllAbsences()">
-                        <option value="30">Ultimi 30 giorni</option>
-                        <option value="90">Ultimi 90 giorni</option>
-                        <option value="all">Tutte</option>
-                    </select>
-                </div>
-                <div id="all-absences-container"></div>
-            </div>
+            <div class="tab active" onclick="switchTab('operai')">👥 Operai</div>
+            <div class="tab" onclick="switchTab('attivita')">🔧 Attività</div>
+            <div class="tab" onclick="switchTab('report')">📊 Report</div>
         </div>
 
         <!-- TAB: OPERAI -->
-        <div id="tab-workers" class="tab-content">
+        <div id="tab-operai" class="tab-content active">
             <div class="card">
-                <h2>👷 Gestione Operai</h2>
-                <button class="btn btn-primary" onclick="openNewWorkerModal()">➕ Nuovo Operaio</button>
-                <div id="workers-list"></div>
+                <h2>👥 Gestione Operai</h2>
+                <button class="btn btn-primary" onclick="openNewOperaioModal()">➕ Nuovo Operaio</button>
+                <div id="operai-list" style="margin-top: 25px;">
+                    <div style="text-align: center; color: #94a3b8; padding: 20px;">Caricamento operai...</div>
+                </div>
             </div>
         </div>
 
         <!-- TAB: ATTIVITÀ -->
-        <div id="tab-activities" class="tab-content">
+        <div id="tab-attivita" class="tab-content">
             <div class="card">
-                <h2>⚙️ Gestione Attività</h2>
-                <button class="btn btn-primary" onclick="openNewActivityModal()">➕ Nuova Attività</button>
-                <div id="activities-list"></div>
+                <h2>🔧 Gestione Attività</h2>
+                <button class="btn btn-primary" onclick="openNewAttivitaModal()">➕ Nuova Attività</button>
+                <div id="attivita-list" style="margin-top: 25px;">
+                    <div style="text-align: center; color: #94a3b8; padding: 20px;">Caricamento attività...</div>
+                </div>
             </div>
+        </div>
+
+        <!-- TAB: REPORT -->
+        <div id="tab-report" class="tab-content">
+            <div class="card">
+                <h2>📊 Report Ore per Operaio</h2>
+                <div class="form-group">
+                    <label>Periodo</label>
+                    <select id="report-period" class="form-select" onchange="loadReport()">
+                        <option value="7">Ultimi 7 giorni</option>
+                        <option value="30" selected>Ultimo mese</option>
+                        <option value="90">Ultimi 3 mesi</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="report-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Report Ore per Attività</h2>
+                <div class="chart-container">
+                    <canvas id="activity-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- EXPORT EXCEL -->
+            <div class="card">
+                <h2>📥 Export Dati</h2>
+                <p style="color: #94a3b8; margin-bottom: 15px;">Esporta tutti i dati in formato Excel (compatibile con il tuo foglio presenze)</p>
+                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;">📥 EXPORT EXCEL</button>
+            </div>
+        </div>
+
+        <div id="status-message"></div>
+    </div>
+
+    <!-- MODAL: NUOVO OPERAIO -->
+    <div id="modal-new-operaio" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">➕ Crea Nuovo Operaio</div>
+            
+            <div class="form-group">
+                <label>Nome *</label>
+                <input type="text" id="new-operaio-nome" class="form-input" placeholder="Mario">
+            </div>
+
+            <div class="form-group">
+                <label>Cognome *</label>
+                <input type="text" id="new-operaio-cognome" class="form-input" placeholder="Rossi">
+            </div>
+
+            <button class="btn btn-primary" onclick="createOperaio()" style="width: 100%; margin-bottom: 10px;">✅ Crea Operaio</button>
+            <button class="btn btn-secondary" onclick="closeModal('modal-new-operaio')" style="width: 100%;">❌ Annulla</button>
+        </div>
+    </div>
+
+    <!-- MODAL: MOSTRA LINK -->
+    <div id="modal-show-link" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">🔗 Link Personale Operaio</div>
+            
+            <div id="link-content"></div>
+
+            <button class="btn btn-secondary" onclick="closeModal('modal-show-link')" style="width: 100%; margin-top: 15px;">Chiudi</button>
+        </div>
+    </div>
+
+    <!-- MODAL: NUOVA ATTIVITÀ -->
+    <div id="modal-new-attivita" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="attivita-modal-title">➕ Nuova Attività</div>
+            
+            <input type="hidden" id="edit-attivita-id">
+
+            <div class="form-group">
+                <label>Nome Attività *</label>
+                <input type="text" id="new-attivita-nome" class="form-input" placeholder="Es: Taglio legna">
+            </div>
+
+            <div class="form-group">
+                <label>Icona (emoji)</label>
+                <input type="text" id="new-attivita-icona" class="form-input" placeholder="🪓" maxlength="5">
+            </div>
+
+            <div class="form-group">
+                <label>Keywords (parole chiave per riconoscimento vocale)</label>
+                <textarea id="new-attivita-keywords" class="form-textarea" placeholder="Inserisci le parole separate da virgola.&#10;Es: legna, bosco, motosega, tagliare, taglio"></textarea>
+                <div style="color: #94a3b8; font-size: 0.85em; margin-top: 8px;">
+                    💡 Quando l'operaio dice una di queste parole, il sistema associa automaticamente questa attività
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Colore</label>
+                <input type="color" id="new-attivita-colore" class="form-input" value="#3b82f6">
+            </div>
+
+            <button class="btn btn-primary" onclick="saveAttivita()" style="width: 100%; margin-bottom: 10px;">✅ Salva</button>
+            <button class="btn btn-secondary" onclick="closeModal('modal-new-attivita')" style="width: 100%;">❌ Annulla</button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // CONFIGURAZIONE
+        // CONFIGURAZIONE SUPABASE
         // ==========================================
         const SUPABASE_URL = 'https://xxzyhzalfqyqseedsuub.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2ODgxNjMsImV4cCI6MjA4MzI2NDE2M30.7o18J8g0tcWX2qyrQl-zGBU10AerbHlG-R_WMkjRn7s';
+        const SUPABASE_ANON_KEY =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4enloemFsZnF5cXNlZWRzdXViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzY4ODE2MywiZXhwIjoyMDgzMjY0MTYzfQ.Y1fUlGwzlzjYc-zJnOIF7X-7V7FrcRzfJJN5ZNhgi2s';
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let personTrendChart = null;
-        let personPieChart = null;
-        let activityTrendChart = null;
-        let activityPieChart = null;
+        // ==========================================
+        // VARIABILI GLOBALI
+        // ==========================================
+        let operai = [];
+        let attivita = [];
+        let reportChart = null;
+        let activityChart = null;
 
         // ==========================================
         // INIZIALIZZAZIONE
         // ==========================================
         document.addEventListener('DOMContentLoaded', async function() {
-            await loadDashboardStats();
-            await loadOperaiList();
-            await loadAttivitaList();
-            await checkMissingToday();
-            await loadPendingRequests();
-
-            // Listener per periodo custom
-            document.getElementById('person-period').addEventListener('change', function() {
-                document.getElementById('person-custom-dates').style.display = 
-                    this.value === 'custom' ? 'block' : 'none';
-            });
-
-            document.getElementById('activity-period').addEventListener('change', function() {
-                document.getElementById('activity-custom-dates').style.display = 
-                    this.value === 'custom' ? 'block' : 'none';
-            });
+            await loadStats();
+            await loadOperai();
+            await loadAttivita();
         });
+
+        // ==========================================
+        // CARICA STATISTICHE
+        // ==========================================
+        async function loadStats() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                const weekAgoStr = weekAgo.toISOString().split('T')[0];
+
+                // Ore oggi
+                const { data: todayData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('ore')
+                    .eq('data', today);
+
+                const todayHours = todayData ? todayData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
+                document.getElementById('stat-today-hours').textContent = `${Math.round(todayHours)}h`;
+
+                // Ore settimana
+                const { data: weekData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('ore')
+                    .gte('data', weekAgoStr);
+
+                const weekHours = weekData ? weekData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
+                document.getElementById('stat-week-hours').textContent = `${Math.round(weekHours)}h`;
+
+                // Operai attivi
+                const { data: operaiData } = await supabaseClient
+                    .from('operai')
+                    .select('*')
+                    .eq('attivo', true);
+
+                document.getElementById('stat-active-workers').textContent = operaiData ? operaiData.length : 0;
+
+                // Attività
+                const { data: attivitaData } = await supabaseClient
+                    .from('attivita')
+                    .select('*')
+                    .eq('attiva', true);
+
+                document.getElementById('stat-activities').textContent = attivitaData ? attivitaData.length : 0;
+
+            } catch (error) {
+                console.error('Errore caricamento statistiche:', error);
+            }
+        }
+
+        // ==========================================
+        // CARICA OPERAI
+        // ==========================================
+        async function loadOperai() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('operai')
+                    .select('*')
+                    .order('cognome', { ascending: true });
+
+                if (error) throw error;
+
+                operai = data || [];
+
+                if (operai.length === 0) {
+                    document.getElementById('operai-list').innerHTML = 
+                        '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessun operaio registrato</div>';
+                    return;
+                }
+
+                // Per ogni operaio, carica le ore di oggi
+                const today = new Date().toISOString().split('T')[0];
+                const operaiWithHours = await Promise.all(
+                    operai.map(async (op) => {
+                        const { data: todayHours } = await supabaseClient
+                            .from('ore_lavorate')
+                            .select('ore')
+                            .eq('operaio_id', op.id)
+                            .eq('data', today);
+
+                        const hours = todayHours ? todayHours.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
+                        return { ...op, todayHours: hours };
+                    })
+                );
+
+                const html = operaiWithHours.map(op => `
+                    <div class="operaio-item" style="border-left-color: ${op.attivo ? '#10b981' : '#ef4444'}">
+                        <div class="operaio-info">
+                            <div class="operaio-name">${op.nome} ${op.cognome}</div>
+                            <div class="operaio-stats">
+                                Oggi: <strong>${op.todayHours}h</strong> • 
+                                ${op.attivo ? '✅ Attivo' : '❌ Non attivo'}
+                            </div>
+                        </div>
+                        <div class="operaio-actions">
+                            <button class="btn btn-secondary" onclick="showLink('${op.token_personale}', '${op.nome} ${op.cognome}')">
+                                🔗 Vedi Link
+                            </button>
+                            <button class="btn btn-primary" onclick="openOperaioLink('${op.token_personale}')">
+                                👤 Gestisci Ore
+                            </button>
+                            <button class="btn ${op.attivo ? 'btn-danger' : 'btn-primary'}" onclick="toggleOperaioStatus('${op.id}', ${!op.attivo})">
+                                ${op.attivo ? '🔒 Disattiva' : '✅ Attiva'}
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('operai-list').innerHTML = html;
+
+            } catch (error) {
+                console.error('Errore caricamento operai:', error);
+                showMessage('❌ Errore caricamento operai', 'error');
+            }
+        }
+
+        // ==========================================
+        // CREA OPERAIO
+        // ==========================================
+        function openNewOperaioModal() {
+            document.getElementById('new-operaio-nome').value = '';
+            document.getElementById('new-operaio-cognome').value = '';
+            openModal('modal-new-operaio');
+        }
+
+        async function createOperaio() {
+            const nome = document.getElementById('new-operaio-nome').value.trim();
+            const cognome = document.getElementById('new-operaio-cognome').value.trim();
+
+            if (!nome || !cognome) {
+                showMessage('⚠️ Inserisci nome e cognome', 'error');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('operai')
+                    .insert({ nome, cognome })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                closeModal('modal-new-operaio');
+                showMessage(`✅ Operaio ${nome} ${cognome} creato!`, 'success');
+                
+                // Mostra subito il link
+                showLink(data.token_personale, `${nome} ${cognome}`);
+                
+                await loadOperai();
+                await loadStats();
+
+            } catch (error) {
+                console.error('Errore creazione operaio:', error);
+                showMessage('❌ Errore nella creazione', 'error');
+            }
+        }
+
+        // ==========================================
+        // MOSTRA LINK
+        // ==========================================
+        function showLink(token, nomeCompleto) {
+            const baseUrl = window.location.origin + window.location.pathname.replace('gestionale.html', '');
+            const fullLink = `${baseUrl}operaio.html?token=${token}`;
+
+            document.getElementById('link-content').innerHTML = `
+                <p style="margin-bottom: 15px; color: #94a3b8;">
+                    Link personale per <strong style="color: #60a5fa;">${nomeCompleto}</strong>:
+                </p>
+                <div class="link-display">${fullLink}</div>
+                <button class="btn btn-primary" onclick="copyToClipboard('${fullLink}')" style="width: 100%; margin-bottom: 10px;">
+                    📋 Copia Link
+                </button>
+                <button class="btn btn-secondary" onclick="window.open('${fullLink}', '_blank')" style="width: 100%;">
+                    🔗 Apri Link
+                </button>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 0.9em; color: #94a3b8;">
+                    💡 Invia questo link all'operaio tramite WhatsApp, Email o SMS. L'operaio deve salvarlo nei preferiti del browser per accesso rapido.
+                </div>
+            `;
+
+            openModal('modal-show-link');
+        }
+
+        function openOperaioLink(token) {
+            const baseUrl = window.location.origin + window.location.pathname.replace('gestionale.html', '');
+            const fullLink = `${baseUrl}operaio.html?token=${token}`;
+            window.open(fullLink, '_blank');
+        }
+
+        // ==========================================
+        // TOGGLE OPERAIO STATUS
+        // ==========================================
+        async function toggleOperaioStatus(id, newStatus) {
+            try {
+                const { error } = await supabaseClient
+                    .from('operai')
+                    .update({ attivo: newStatus })
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                showMessage(`✅ Operaio ${newStatus ? 'attivato' : 'disattivato'}`, 'success');
+                await loadOperai();
+                await loadStats();
+
+            } catch (error) {
+                console.error('Errore aggiornamento stato:', error);
+                showMessage('❌ Errore aggiornamento', 'error');
+            }
+        }
+
+        // ==========================================
+        // CARICA ATTIVITÀ
+        // ==========================================
+        async function loadAttivita() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('attivita')
+                    .select('*')
+                    .order('ordine', { ascending: true });
+
+                if (error) throw error;
+
+                attivita = data || [];
+
+                if (attivita.length === 0) {
+                    document.getElementById('attivita-list').innerHTML = 
+                        '<div style="text-align: center; color: #94a3b8; padding: 20px;">Nessuna attività</div>';
+                    return;
+                }
+
+                const html = attivita.map(att => `
+                    <div class="attivita-item" style="border-left-color: ${att.colore}">
+                        <div class="attivita-header">
+                            <div class="attivita-name">${att.icona} ${att.nome}</div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-secondary" onclick="editAttivita('${att.id}')">✏️ Modifica</button>
+                                <button class="btn ${att.attiva ? 'btn-danger' : 'btn-primary'}" onclick="toggleAttivitaStatus('${att.id}', ${!att.attiva})">
+                                    ${att.attiva ? '🔒 Disattiva' : '✅ Attiva'}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="keywords-container">
+                            <div class="keywords-label">🔑 Keywords per riconoscimento vocale:</div>
+                            <div>
+                                ${att.keywords && att.keywords.length > 0 
+                                    ? att.keywords.map(kw => `<span class="keyword-tag">${kw}</span>`).join('') 
+                                    : '<span style="color: #94a3b8;">Nessuna keyword</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('attivita-list').innerHTML = html;
+
+            } catch (error) {
+                console.error('Errore caricamento attività:', error);
+                showMessage('❌ Errore caricamento attività', 'error');
+            }
+        }
+
+        // ==========================================
+        // NUOVA/MODIFICA ATTIVITÀ
+        // ==========================================
+        function openNewAttivitaModal() {
+            document.getElementById('attivita-modal-title').textContent = '➕ Nuova Attività';
+            document.getElementById('edit-attivita-id').value = '';
+            document.getElementById('new-attivita-nome').value = '';
+            document.getElementById('new-attivita-icona').value = '📋';
+            document.getElementById('new-attivita-keywords').value = '';
+            document.getElementById('new-attivita-colore').value = '#3b82f6';
+            openModal('modal-new-attivita');
+        }
+
+        function editAttivita(id) {
+            const att = attivita.find(a => a.id === id);
+            if (!att) return;
+
+            document.getElementById('attivita-modal-title').textContent = '✏️ Modifica Attività';
+            document.getElementById('edit-attivita-id').value = id;
+            document.getElementById('new-attivita-nome').value = att.nome;
+            document.getElementById('new-attivita-icona').value = att.icona;
+            document.getElementById('new-attivita-keywords').value = att.keywords ? att.keywords.join(', ') : '';
+            document.getElementById('new-attivita-colore').value = att.colore;
+            openModal('modal-new-attivita');
+        }
+
+        async function saveAttivita() {
+            const id = document.getElementById('edit-attivita-id').value;
+            const nome = document.getElementById('new-attivita-nome').value.trim();
+            const icona = document.getElementById('new-attivita-icona').value.trim();
+            const keywordsStr = document.getElementById('new-attivita-keywords').value.trim();
+            const colore = document.getElementById('new-attivita-colore').value;
+
+            if (!nome) {
+                showMessage('⚠️ Inserisci il nome dell\'attività', 'error');
+                return;
+            }
+
+            // Parse keywords
+            const keywords = keywordsStr
+                .split(',')
+                .map(k => k.trim().toLowerCase())
+                .filter(k => k.length > 0);
+
+            try {
+                const dataToSave = {
+                    nome,
+                    icona: icona || '📋',
+                    keywords,
+                    colore
+                };
+
+                if (id) {
+                    // Update
+                    const { error } = await supabaseClient
+                        .from('attivita')
+                        .update(dataToSave)
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    showMessage('✅ Attività aggiornata!', 'success');
+                } else {
+                    // Insert
+                    const { error } = await supabaseClient
+                        .from('attivita')
+                        .insert(dataToSave);
+
+                    if (error) throw error;
+                    showMessage('✅ Attività creata!', 'success');
+                }
+
+                closeModal('modal-new-attivita');
+                await loadAttivita();
+                await loadStats();
+
+            } catch (error) {
+                console.error('Errore salvataggio attività:', error);
+                showMessage('❌ Errore nel salvataggio', 'error');
+            }
+        }
+
+        async function toggleAttivitaStatus(id, newStatus) {
+            try {
+                const { error } = await supabaseClient
+                    .from('attivita')
+                    .update({ attiva: newStatus })
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                showMessage(`✅ Attività ${newStatus ? 'attivata' : 'disattivata'}`, 'success');
+                await loadAttivita();
+                await loadStats();
+
+            } catch (error) {
+                console.error('Errore aggiornamento stato:', error);
+                showMessage('❌ Errore aggiornamento', 'error');
+            }
+        }
+
+        // ==========================================
+        // REPORT
+        // ==========================================
+        async function loadReport() {
+            const days = parseInt(document.getElementById('report-period').value);
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
+
+            try {
+                // Report per operaio
+                const { data: oreData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, operai(*)')
+                    .gte('data', startDate.toISOString().split('T')[0]);
+
+                if (!oreData || oreData.length === 0) {
+                    return;
+                }
+
+                // Raggruppa per operaio
+                const operaioHours = {};
+                oreData.forEach(item => {
+                    const name = `${item.operai.nome} ${item.operai.cognome}`;
+                    if (!operaioHours[name]) {
+                        operaioHours[name] = 0;
+                    }
+                    operaioHours[name] += parseFloat(item.ore);
+                });
+
+                // Grafico operai
+                const ctx1 = document.getElementById('report-chart');
+                if (reportChart) reportChart.destroy();
+
+                reportChart = new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(operaioHours),
+                        datasets: [{
+                            label: 'Ore Lavorate',
+                            data: Object.values(operaioHours).map(h => Math.round(h)),
+                            backgroundColor: '#10b981',
+                            borderWidth: 2,
+                            borderColor: '#1e293b'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            },
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            }
+                        }
+                    }
+                });
+
+                // Report per attività
+                const { data: oreAttData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, attivita(*)')
+                    .gte('data', startDate.toISOString().split('T')[0]);
+
+                const activityHours = {};
+                oreAttData.forEach(item => {
+                    const name = item.attivita.nome;
+                    if (!activityHours[name]) {
+                        activityHours[name] = 0;
+                    }
+                    activityHours[name] += parseFloat(item.ore);
+                });
+
+                // Grafico attività
+                const ctx2 = document.getElementById('activity-chart');
+                if (activityChart) activityChart.destroy();
+
+                activityChart = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(activityHours),
+                        datasets: [{
+                            data: Object.values(activityHours).map(h => Math.round(h)),
+                            backgroundColor: [
+                                '#10b981', '#3b82f6', '#f59e0b', '#ef4444',
+                                '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#1e293b'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#94a3b8' }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Errore caricamento report:', error);
+            }
+        }
 
         // ==========================================
         // TABS
@@ -523,807 +1030,31 @@
             event.target.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
 
-            // Carica dati specifici tab
-            if (tabName === 'absences') {
-                checkMissingToday();
-                loadPendingRequests();
-                loadAllAbsences();
+            if (tabName === 'report') {
+                loadReport();
             }
         }
 
         // ==========================================
-        // DASHBOARD
+        // MODALS
         // ==========================================
-        async function loadDashboardStats() {
-            const today = new Date().toISOString().split('T')[0];
-            const monthStart = new Date();
-            monthStart.setDate(1);
-
-            // Ore oggi
-            const { data: todayData } = await supabaseClient
-                .from('ore_lavorate')
-                .select('ore')
-                .eq('data', today);
-
-            const todayHours = todayData ? todayData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
-            document.getElementById('stat-today').textContent = `${todayHours.toFixed(1)}h`;
-
-            // Ore mese
-            const { data: monthData } = await supabaseClient
-                .from('ore_lavorate')
-                .select('ore')
-                .gte('data', monthStart.toISOString().split('T')[0]);
-
-            const monthHours = monthData ? monthData.reduce((sum, item) => sum + parseFloat(item.ore), 0) : 0;
-            document.getElementById('stat-total-hours').textContent = monthHours.toFixed(0);
-
-            // Operai attivi
-            const { data: workers } = await supabaseClient
-                .from('operai')
-                .select('id')
-                .eq('attivo', true);
-
-            document.getElementById('stat-active-workers').textContent = workers ? workers.length : 0;
-
-            // Attività
-            const { data: activities } = await supabaseClient
-                .from('attivita')
-                .select('id')
-                .eq('attiva', true);
-
-            document.getElementById('stat-activities').textContent = activities ? activities.length : 0;
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
         }
 
-        // ==========================================
-        // ANALISI PERSONA
-        // ==========================================
-        async function loadOperaiList() {
-            const { data, error } = await supabaseClient
-                .from('operai')
-                .select('*')
-                .eq('attivo', true)
-                .order('nome');
-
-            if (!error && data) {
-                const select = document.getElementById('person-select');
-                select.innerHTML = '<option value="">Seleziona operaio...</option>';
-                data.forEach(op => {
-                    select.innerHTML += `<option value="${op.id}">${op.nome} ${op.cognome}</option>`;
-                });
-            }
-        }
-
-        async function loadAttivitaList() {
-            const { data, error } = await supabaseClient
-                .from('attivita')
-                .select('*')
-                .eq('attiva', true)
-                .order('ordine');
-
-            if (!error && data) {
-                const select = document.getElementById('activity-select');
-                select.innerHTML = '<option value="">Seleziona attività...</option>';
-                data.forEach(att => {
-                    select.innerHTML += `<option value="${att.id}">${att.icona} ${att.nome}</option>`;
-                });
-            }
-        }
-
-        async function loadPersonAnalysis() {
-            const operaioId = document.getElementById('person-select').value;
-            const period = document.getElementById('person-period').value;
-
-            if (!operaioId) {
-                showMessage('Seleziona un operaio', 'error');
-                return;
-            }
-
-            const { startDate, endDate } = calculateDateRange(period, 'person');
-
-            const { data, error } = await supabaseClient
-                .from('ore_lavorate')
-                .select('*, attivita(nome, icona)')
-                .eq('operaio_id', operaioId)
-                .gte('data', startDate)
-                .lte('data', endDate)
-                .order('data');
-
-            if (error) {
-                console.error('Errore:', error);
-                showMessage('Errore nel caricamento dati', 'error');
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                showMessage('Nessun dato trovato per il periodo selezionato', 'info');
-                return;
-            }
-
-            // Mostra statistiche
-            document.getElementById('person-stats').style.display = 'grid';
-            const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
-            const daysCount = new Set(data.map(item => item.data)).size;
-            const avgHours = totalHours / daysCount;
-
-            document.getElementById('person-total-hours').textContent = totalHours.toFixed(1);
-            document.getElementById('person-avg-hours').textContent = avgHours.toFixed(1);
-
-            // Processa dati per grafici
-            const dailyData = {};
-            const activityData = {};
-
-            data.forEach(item => {
-                // Trend giornaliero
-                if (!dailyData[item.data]) {
-                    dailyData[item.data] = 0;
-                }
-                dailyData[item.data] += parseFloat(item.ore);
-
-                // Distribuzione attività
-                const actName = item.attivita.nome;
-                if (!activityData[actName]) {
-                    activityData[actName] = 0;
-                }
-                activityData[actName] += parseFloat(item.ore);
-            });
-
-            updatePersonTrendChart(dailyData);
-            updatePersonPieChart(activityData);
-            updatePersonTable(data);
-
-            showMessage('✅ Analisi caricata con successo!', 'success');
-        }
-
-        function updatePersonTrendChart(dailyData) {
-            const ctx = document.getElementById('person-trend-chart').getContext('2d');
-
-            if (personTrendChart) {
-                personTrendChart.destroy();
-            }
-
-            personTrendChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: Object.keys(dailyData),
-                    datasets: [{
-                        label: 'Ore Giornaliere',
-                        data: Object.values(dailyData),
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#3b82f6',
-                        pointRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#fff', font: { size: 14 } }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Trend Ore nel Tempo',
-                            color: '#60a5fa',
-                            font: { size: 16 }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#94a3b8' },
-                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
-                        },
-                        x: {
-                            ticks: { color: '#94a3b8', maxRotation: 45 },
-                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function updatePersonPieChart(activityData) {
-            const ctx = document.getElementById('person-pie-chart').getContext('2d');
-
-            if (personPieChart) {
-                personPieChart.destroy();
-            }
-
-            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
-
-            personPieChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(activityData),
-                    datasets: [{
-                        data: Object.values(activityData),
-                        backgroundColor: colors,
-                        borderWidth: 3,
-                        borderColor: '#1e293b'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { 
-                                color: '#fff', 
-                                padding: 15,
-                                font: { size: 13 }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Distribuzione Ore per Attività (%)',
-                            color: '#60a5fa',
-                            font: { size: 16 }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${label}: ${value}h (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function updatePersonTable(data) {
-            const container = document.getElementById('person-table-container');
-            
-            let html = '<h3 style="color: #60a5fa; margin-top: 30px;">📋 Dettaglio Ore</h3>';
-            html += '<table><thead><tr><th>Data</th><th>Attività</th><th>Ore</th><th>Note</th></tr></thead><tbody>';
-
-            data.forEach(item => {
-                html += `<tr>
-                    <td>${item.data}</td>
-                    <td>${item.attivita.icona} ${item.attivita.nome}</td>
-                    <td><strong>${item.ore}h</strong></td>
-                    <td>${item.note || '-'}</td>
-                </tr>`;
-            });
-
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-
-        async function exportPersonToExcel() {
-            const operaioId = document.getElementById('person-select').value;
-            const period = document.getElementById('person-period').value;
-
-            if (!operaioId) {
-                showMessage('Seleziona un operaio', 'error');
-                return;
-            }
-
-            const { startDate, endDate } = calculateDateRange(period, 'person');
-
-            const { data: oreData } = await supabaseClient
-                .from('ore_lavorate')
-                .select('*, operai(nome, cognome), attivita(nome)')
-                .eq('operaio_id', operaioId)
-                .gte('data', startDate)
-                .lte('data', endDate)
-                .order('data');
-
-            if (!oreData || oreData.length === 0) {
-                showMessage('Nessun dato da esportare', 'error');
-                return;
-            }
-
-            const wb = XLSX.utils.book_new();
-            
-            const operaioName = `${oreData[0].operai.nome} ${oreData[0].operai.cognome}`.trim();
-
-            // Prepara dati
-            const sheetData = [
-                ['ANALISI ORE OPERAIO'],
-                [`Operaio: ${operaioName}`],
-                [`Periodo: ${startDate} a ${endDate}`],
-                [],
-                ['Data', 'Attività', 'Ore', 'Note']
-            ];
-
-            oreData.forEach(item => {
-                sheetData.push([
-                    item.data,
-                    item.attivita.nome,
-                    item.ore,
-                    item.note || ''
-                ]);
-            });
-
-            // Statistiche
-            const totalOre = oreData.reduce((sum, item) => sum + parseFloat(item.ore), 0);
-            const activityStats = {};
-            oreData.forEach(item => {
-                if (!activityStats[item.attivita.nome]) {
-                    activityStats[item.attivita.nome] = 0;
-                }
-                activityStats[item.attivita.nome] += parseFloat(item.ore);
-            });
-
-            sheetData.push([]);
-            sheetData.push(['TOTALE ORE', '', totalOre.toFixed(1), '']);
-            sheetData.push([]);
-            sheetData.push(['DISTRIBUZIONE ATTIVITÀ']);
-            
-            Object.entries(activityStats).forEach(([nome, ore]) => {
-                const perc = ((ore / totalOre) * 100).toFixed(1);
-                sheetData.push([nome, ore.toFixed(1), `${perc}%`]);
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(sheetData);
-            XLSX.utils.book_append_sheet(wb, ws, 'Analisi Operaio');
-
-            XLSX.writeFile(wb, `Analisi_${operaioName}_${startDate}_${endDate}.xlsx`);
-            showMessage('✅ Excel esportato con successo!', 'success');
-        }
-
-        // ==========================================
-        // ANALISI ATTIVITÀ
-        // ==========================================
-        async function loadActivityAnalysis() {
-            const attivitaId = document.getElementById('activity-select').value;
-            const period = document.getElementById('activity-period').value;
-
-            if (!attivitaId) {
-                showMessage('Seleziona un\'attività', 'error');
-                return;
-            }
-
-            const { startDate, endDate } = calculateDateRange(period, 'activity');
-
-            const { data, error } = await supabaseClient
-                .from('ore_lavorate')
-                .select('*, operai(nome, cognome)')
-                .eq('attivita_id', attivitaId)
-                .gte('data', startDate)
-                .lte('data', endDate)
-                .order('data');
-
-            if (error) {
-                console.error('Errore:', error);
-                showMessage('Errore nel caricamento dati', 'error');
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                showMessage('Nessun dato trovato per il periodo selezionato', 'info');
-                return;
-            }
-
-            // Statistiche
-            document.getElementById('activity-stats').style.display = 'grid';
-            const totalHours = data.reduce((sum, item) => sum + parseFloat(item.ore), 0);
-            const uniqueWorkers = new Set(data.map(item => item.operaio_id)).size;
-
-            document.getElementById('activity-total-hours').textContent = totalHours.toFixed(1);
-            document.getElementById('activity-workers').textContent = uniqueWorkers;
-
-            // Processa dati
-            const dailyData = {};
-            const workerData = {};
-
-            data.forEach(item => {
-                // Trend giornaliero
-                if (!dailyData[item.data]) {
-                    dailyData[item.data] = 0;
-                }
-                dailyData[item.data] += parseFloat(item.ore);
-
-                // Distribuzione operai
-                const workerName = `${item.operai.nome} ${item.operai.cognome}`.trim();
-                if (!workerData[workerName]) {
-                    workerData[workerName] = 0;
-                }
-                workerData[workerName] += parseFloat(item.ore);
-            });
-
-            updateActivityTrendChart(dailyData);
-            updateActivityPieChart(workerData);
-            updateActivityTable(data);
-
-            showMessage('✅ Analisi caricata con successo!', 'success');
-        }
-
-        function updateActivityTrendChart(dailyData) {
-            const ctx = document.getElementById('activity-trend-chart').getContext('2d');
-
-            if (activityTrendChart) {
-                activityTrendChart.destroy();
-            }
-
-            activityTrendChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(dailyData),
-                    datasets: [{
-                        label: 'Ore Totali Giornaliere',
-                        data: Object.values(dailyData),
-                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                        borderColor: '#10b981',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#fff', font: { size: 14 } }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Trend Ore Attività nel Tempo',
-                            color: '#60a5fa',
-                            font: { size: 16 }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#94a3b8' },
-                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
-                        },
-                        x: {
-                            ticks: { color: '#94a3b8', maxRotation: 45 },
-                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateActivityPieChart(workerData) {
-            const ctx = document.getElementById('activity-pie-chart').getContext('2d');
-
-            if (activityPieChart) {
-                activityPieChart.destroy();
-            }
-
-            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
-
-            activityPieChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(workerData),
-                    datasets: [{
-                        data: Object.values(workerData),
-                        backgroundColor: colors,
-                        borderWidth: 3,
-                        borderColor: '#1e293b'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { 
-                                color: '#fff', 
-                                padding: 15,
-                                font: { size: 13 }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Distribuzione Ore per Operaio (%)',
-                            color: '#60a5fa',
-                            font: { size: 16 }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${label}: ${value}h (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateActivityTable(data) {
-            const container = document.getElementById('activity-table-container');
-            
-            let html = '<h3 style="color: #60a5fa; margin-top: 30px;">📋 Dettaglio Ore</h3>';
-            html += '<table><thead><tr><th>Data</th><th>Operaio</th><th>Ore</th><th>Note</th></tr></thead><tbody>';
-
-            data.forEach(item => {
-                const workerName = `${item.operai.nome} ${item.operai.cognome}`.trim();
-                html += `<tr>
-                    <td>${item.data}</td>
-                    <td>${workerName}</td>
-                    <td><strong>${item.ore}h</strong></td>
-                    <td>${item.note || '-'}</td>
-                </tr>`;
-            });
-
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-
-        async function exportActivityToExcel() {
-            const attivitaId = document.getElementById('activity-select').value;
-            const period = document.getElementById('activity-period').value;
-
-            if (!attivitaId) {
-                showMessage('Seleziona un\'attività', 'error');
-                return;
-            }
-
-            const { startDate, endDate } = calculateDateRange(period, 'activity');
-
-            const { data: oreData } = await supabaseClient
-                .from('ore_lavorate')
-                .select('*, operai(nome, cognome), attivita(nome)')
-                .eq('attivita_id', attivitaId)
-                .gte('data', startDate)
-                .lte('data', endDate)
-                .order('data');
-
-            if (!oreData || oreData.length === 0) {
-                showMessage('Nessun dato da esportare', 'error');
-                return;
-            }
-
-            const wb = XLSX.utils.book_new();
-            
-            const attivitaName = oreData[0].attivita.nome;
-
-            const sheetData = [
-                ['ANALISI ORE ATTIVITÀ'],
-                [`Attività: ${attivitaName}`],
-                [`Periodo: ${startDate} a ${endDate}`],
-                [],
-                ['Data', 'Operaio', 'Ore', 'Note']
-            ];
-
-            oreData.forEach(item => {
-                const workerName = `${item.operai.nome} ${item.operai.cognome}`.trim();
-                sheetData.push([
-                    item.data,
-                    workerName,
-                    item.ore,
-                    item.note || ''
-                ]);
-            });
-
-            const totalOre = oreData.reduce((sum, item) => sum + parseFloat(item.ore), 0);
-            const workerStats = {};
-            oreData.forEach(item => {
-                const workerName = `${item.operai.nome} ${item.operai.cognome}`.trim();
-                if (!workerStats[workerName]) {
-                    workerStats[workerName] = 0;
-                }
-                workerStats[workerName] += parseFloat(item.ore);
-            });
-
-            sheetData.push([]);
-            sheetData.push(['TOTALE ORE', '', totalOre.toFixed(1), '']);
-            sheetData.push([]);
-            sheetData.push(['DISTRIBUZIONE OPERAI']);
-            
-            Object.entries(workerStats).forEach(([nome, ore]) => {
-                const perc = ((ore / totalOre) * 100).toFixed(1);
-                sheetData.push([nome, ore.toFixed(1), `${perc}%`]);
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(sheetData);
-            XLSX.utils.book_append_sheet(wb, ws, 'Analisi Attività');
-
-            XLSX.writeFile(wb, `Analisi_${attivitaName}_${startDate}_${endDate}.xlsx`);
-            showMessage('✅ Excel esportato con successo!', 'success');
-        }
-
-        // ==========================================
-        // ASSENZE
-        // ==========================================
-        async function checkMissingToday() {
-            const today = new Date().toISOString().split('T')[0];
-
-            const { data: operai } = await supabaseClient
-                .from('operai')
-                .select('id, nome, cognome')
-                .eq('attivo', true);
-
-            const { data: oreOggi } = await supabaseClient
-                .from('ore_lavorate')
-                .select('operaio_id')
-                .eq('data', today);
-
-            const registratiIds = new Set((oreOggi || []).map(o => o.operaio_id));
-
-            const { data: assenzeOggi } = await supabaseClient
-                .from('assenze')
-                .select('operaio_id, tipo')
-                .lte('data_inizio', today)
-                .gte('data_fine', today)
-                .eq('approvata', true);
-
-            const assentiMap = {};
-            (assenzeOggi || []).forEach(a => {
-                assentiMap[a.operaio_id] = a.tipo;
-            });
-
-            const container = document.getElementById('missing-today-container');
-            let html = '';
-
-            operai.forEach(op => {
-                if (!registratiIds.has(op.id)) {
-                    const tipo = assentiMap[op.id];
-                    if (tipo) {
-                        const icon = tipo === 'ferie' ? '🏖️' : tipo === 'malattia' ? '🏥' : '📝';
-                        html += `<div class="absent-item justified">
-                            ${icon} <strong>${op.nome} ${op.cognome}</strong> - ${tipo.toUpperCase()} ✅
-                        </div>`;
-                    } else {
-                        html += `<div class="absent-item">
-                            ❌ <strong>${op.nome} ${op.cognome}</strong> - Nessuna ora registrata
-                        </div>`;
-                    }
-                }
-            });
-
-            if (!html) {
-                html = '<div class="message message-success">✅ Tutti gli operai hanno registrato ore oggi!</div>';
-            }
-
-            container.innerHTML = html;
-        }
-
-        async function loadPendingRequests() {
-            const { data, error } = await supabaseClient
-                .from('assenze')
-                .select('*, operai(nome, cognome)')
-                .eq('approvata', false)
-                .order('created_at', { ascending: false });
-
-            const container = document.getElementById('pending-requests-container');
-            
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="message message-info">Nessuna richiesta in sospeso</div>';
-                return;
-            }
-
-            let html = '';
-            data.forEach(req => {
-                const workerName = `${req.operai.nome} ${req.operai.cognome}`.trim();
-                html += `<div class="request-item">
-                    <div>
-                        <strong>${workerName}</strong><br>
-                        Tipo: ${req.tipo} | Dal ${req.data_inizio} al ${req.data_fine}<br>
-                        ${req.motivo ? `Motivo: ${req.motivo}` : ''}
-                    </div>
-                    <div>
-                        <button class="btn btn-primary" onclick="approveRequest('${req.id}')">✅ Approva</button>
-                        <button class="btn btn-secondary" onclick="rejectRequest('${req.id}')">❌ Rifiuta</button>
-                    </div>
-                </div>`;
-            });
-
-            container.innerHTML = html;
-        }
-
-        async function approveRequest(id) {
-            const { error } = await supabaseClient
-                .from('assenze')
-                .update({ approvata: true })
-                .eq('id', id);
-
-            if (!error) {
-                showMessage('✅ Richiesta approvata!', 'success');
-                loadPendingRequests();
-                checkMissingToday();
-            }
-        }
-
-        async function rejectRequest(id) {
-            const { error } = await supabaseClient
-                .from('assenze')
-                .delete()
-                .eq('id', id);
-
-            if (!error) {
-                showMessage('❌ Richiesta rifiutata', 'info');
-                loadPendingRequests();
-            }
-        }
-
-        async function loadAllAbsences() {
-            const filter = document.getElementById('absences-filter').value;
-            let query = supabaseClient
-                .from('assenze')
-                .select('*, operai(nome, cognome)')
-                .eq('approvata', true)
-                .order('data_inizio', { ascending: false });
-
-            if (filter !== 'all') {
-                const daysAgo = new Date();
-                daysAgo.setDate(daysAgo.getDate() - parseInt(filter));
-                query = query.gte('data_inizio', daysAgo.toISOString().split('T')[0]);
-            }
-
-            const { data } = await query;
-
-            const container = document.getElementById('all-absences-container');
-            
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="message message-info">Nessuna assenza trovata</div>';
-                return;
-            }
-
-            let html = '<table><thead><tr><th>Operaio</th><th>Tipo</th><th>Dal</th><th>Al</th><th>Motivo</th></tr></thead><tbody>';
-            
-            data.forEach(abs => {
-                const workerName = `${abs.operai.nome} ${abs.operai.cognome}`.trim();
-                html += `<tr>
-                    <td>${workerName}</td>
-                    <td>${abs.tipo}</td>
-                    <td>${abs.data_inizio}</td>
-                    <td>${abs.data_fine}</td>
-                    <td>${abs.motivo || '-'}</td>
-                </tr>`;
-            });
-
-            html += '</tbody></table>';
-            container.innerHTML = html;
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
         }
 
         // ==========================================
         // UTILITY
         // ==========================================
-        function calculateDateRange(period, type) {
-            const today = new Date();
-            let startDate, endDate;
-
-            if (period === 'custom') {
-                const startInput = type === 'person' ? 'person-start-date' : 'activity-start-date';
-                const endInput = type === 'person' ? 'person-end-date' : 'activity-end-date';
-                
-                startDate = new Date(document.getElementById(startInput).value);
-                endDate = new Date(document.getElementById(endInput).value);
-            } else {
-                endDate = today;
-                startDate = new Date(today);
-                
-                switch(period) {
-                    case '7':
-                        startDate.setDate(startDate.getDate() - 7);
-                        break;
-                    case '30':
-                        startDate.setDate(startDate.getDate() - 30);
-                        break;
-                    case '90':
-                        startDate.setDate(startDate.getDate() - 90);
-                        break;
-                    case 'year':
-                        startDate = new Date(today.getFullYear(), 0, 1);
-                        break;
-                }
-            }
-
-            return {
-                startDate: startDate.toISOString().split('T')[0],
-                endDate: endDate.toISOString().split('T')[0]
-            };
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage('✅ Link copiato negli appunti!', 'success');
+            }).catch(() => {
+                showMessage('❌ Errore copia link', 'error');
+            });
         }
 
         function showMessage(message, type) {
@@ -1332,13 +1063,113 @@
             setTimeout(() => container.innerHTML = '', 4000);
         }
 
-        // Placeholder functions (già esistenti)
-        function openNewWorkerModal() {
-            alert('Funzionalità da implementare - Usa il gestionale esistente');
+
+        // ==========================================
+        // EXPORT TO EXCEL
+        // ==========================================
+        async function exportToExcel() {
+            try {
+                showMessage('⏳ Generando Excel...', 'info');
+                
+                // Preleva tutti i dati
+                const { data: oreData } = await supabaseClient
+                    .from('ore_lavorate')
+                    .select('*, operai(*), attivita(*)')
+                    .order('data', { ascending: true });
+
+                if (!oreData || oreData.length === 0) {
+                    showMessage('⚠️ Nessun dato da esportare', 'error');
+                    return;
+                }
+
+                // Raggruppa per mese/anno
+                const dataByMonth = {};
+                oreData.forEach(item => {
+                    const date = new Date(item.data);
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    if (!dataByMonth[monthKey]) {
+                        dataByMonth[monthKey] = [];
+                    }
+                    dataByMonth[monthKey].push(item);
+                });
+
+                // Crea workbook
+                const wb = XLSX.utils.book_new();
+
+                // Per ogni mese, crea un foglio
+                Object.entries(dataByMonth).forEach(([monthKey, monthData]) => {
+                    const [year, month] = monthKey.split('-');
+                    const monthNames = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+                    const sheetName = `${monthNames[parseInt(month) - 1]} ${year}`;
+
+                    // Struttura Excel: operaio | 1 | 2 | 3 | ... | 31 | TOTALE
+                    const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+                    
+                    // Header
+                    const headerRow = ['Nome'];
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        headerRow.push(d);
+                    }
+                    headerRow.push('TOTALE');
+
+                    // Dati operai
+                    const operaiData = {};
+                    monthData.forEach(item => {
+                        const operaioName = `${item.operai.nome} ${item.operai.cognome}`.trim();
+                        const day = new Date(item.data).getDate();
+                        
+                        if (!operaiData[operaioName]) {
+                            operaiData[operaioName] = Array(daysInMonth + 2).fill('');
+                            operaiData[operaioName][0] = operaioName;
+                        }
+                        
+                        // Aggiungi ore al giorno
+                        const currentValue = operaiData[operaioName][day] || 0;
+                        operaiData[operaioName][day] = (parseFloat(currentValue) + parseFloat(item.ore)).toFixed(1);
+                    });
+
+                    // Calcola totali
+                    Object.keys(operaiData).forEach(name => {
+                        let total = 0;
+                        for (let d = 1; d <= daysInMonth; d++) {
+                            const val = operaiData[name][d];
+                            if (val && val !== '') {
+                                total += parseFloat(val);
+                            }
+                        }
+                        operaiData[name][daysInMonth + 1] = total.toFixed(1);
+                    });
+
+                    // Converti in array per Excel
+                    const sheetData = [headerRow];
+                    Object.values(operaiData).forEach(row => {
+                        sheetData.push(row);
+                    });
+
+                    // Crea foglio
+                    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+                    
+                    // Aggiungi al workbook
+                    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                });
+
+                // Scarica file
+                const today = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, `presenze_${today}.xlsx`);
+                
+                showMessage('✅ Excel scaricato con successo!', 'success');
+
+            } catch (error) {
+                console.error('Errore export Excel:', error);
+                showMessage('❌ Errore durante l\'export', 'error');
+            }
         }
 
-        function openNewActivityModal() {
-            alert('Funzionalità da implementare - Usa il gestionale esistente');
+        // Click fuori modal per chiudere
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
         }
     </script>
 </body>
