@@ -1,0 +1,39 @@
+{
+  "name": "Ore Lavoro - Gestionale Operai",
+  "short_name": "Ore Lavoro",
+  "description": "App per registrazione ore lavoro con notifiche e analisi",
+  "start_url": "/operaio.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "business"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Registra Ore",
+      "url": "/operaio.html",
+      "description": "Registra le ore di lavoro"
+    },
+    {
+      "name": "Gestionale",
+      "url": "/gestionale.html",
+      "description": "Apri il gestionale admin"
+    }
+  ],
+  "prefer_related_applications": false
+}
