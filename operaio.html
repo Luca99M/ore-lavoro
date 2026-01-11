@@ -549,13 +549,22 @@
 
                 <div id="custom-date-range" class="custom-date-range">
                     <div class="form-group" style="margin: 0;">
-                        <label>Data Inizio</label>
-                        <input type="date" id="custom-start" class="form-input">
+                        <label style="font-size: 1em; color: #60a5fa;">Data Inizio</label>
+                        <input type="date" id="custom-start" class="form-input" style="font-size: 1.1em; padding: 18px;">
                     </div>
                     <div class="form-group" style="margin: 0;">
-                        <label>Data Fine</label>
-                        <input type="date" id="custom-end" class="form-input">
+                        <label style="font-size: 1em; color: #60a5fa;">Data Fine</label>
+                        <input type="date" id="custom-end" class="form-input" style="font-size: 1.1em; padding: 18px;">
                     </div>
+                </div>
+            </div>
+
+            <!-- GRAFICI TREND -->
+            <div class="card">
+                <h2>Trend Ore Giornaliere</h2>
+                <p style="color: #94a3b8; margin-bottom: 15px;">Andamento delle tue ore nel periodo selezionato</p>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="chart-trend"></canvas>
                 </div>
             </div>
 
@@ -621,6 +630,7 @@
         let currentFilter = 'oggi';
         let chartDaily = null;
         let chartActivities = null;
+        let chartTrend = null;
         let recognition = null;
         let isListening = false;
 
@@ -741,44 +751,75 @@
         function processVoiceInput(transcript) {
             console.log('Processando:', transcript);
             
-            const oreMatch = transcript.match(/(\d+(?:[.,]\d+)?)\s*(?:ore|ora|h)/i);
-            if (!oreMatch) {
-                showMessage('Non ho capito le ore. Riprova dicendo il numero di ore.', 'error');
+            // Trova TUTTI i pattern "numero ore [parola chiave]"
+            // Es: "2 ore pecore 5 ore macchia" → trova entrambi
+            const regex = /(\d+(?:[.,]\d+)?)\s*(?:ore|ora|h)\s+([a-zàèéìòù\s]+?)(?=\d+\s*(?:ore|ora|h)|$)/gi;
+            const matches = [...transcript.matchAll(regex)];
+            
+            if (matches.length === 0) {
+                showMessage('Non ho capito le ore. Riprova dicendo "X ore [attivita]".', 'error');
                 return;
             }
 
-            const ore = parseFloat(oreMatch[1].replace(',', '.'));
+            // Elabora ogni match trovato
+            const attivitaDaRegistrare = [];
             
-            const transcriptLower = transcript.toLowerCase();
-            let matchedAttivita = null;
-            let maxMatches = 0;
-
-            attivita.forEach(att => {
-                if (!att.keywords || att.keywords.length === 0) return;
+            matches.forEach(match => {
+                const ore = parseFloat(match[1].replace(',', '.'));
+                const paroleChiave = match[2].trim().toLowerCase();
                 
-                let matches = 0;
-                att.keywords.forEach(keyword => {
-                    if (transcriptLower.includes(keyword.toLowerCase())) {
-                        matches++;
+                // Cerca quale attività corrisponde alle parole dette
+                let bestMatch = null;
+                let maxScore = 0;
+
+                attivita.forEach(att => {
+                    if (!att.keywords || att.keywords.length === 0) return;
+                    
+                    let score = 0;
+                    att.keywords.forEach(keyword => {
+                        if (paroleChiave.includes(keyword.toLowerCase())) {
+                            score += keyword.length; // Più lunga la keyword, più alto lo score
+                        }
+                    });
+
+                    if (score > maxScore) {
+                        maxScore = score;
+                        bestMatch = att;
                     }
                 });
 
-                if (matches > maxMatches) {
-                    maxMatches = matches;
-                    matchedAttivita = att;
+                if (bestMatch) {
+                    attivitaDaRegistrare.push({
+                        attivita: bestMatch,
+                        ore: ore,
+                        paroleOriginali: paroleChiave
+                    });
                 }
             });
 
-            if (!matchedAttivita) {
-                showMessage('Non ho capito attivita. Prova a dire una parola chiave.', 'error');
+            if (attivitaDaRegistrare.length === 0) {
+                showMessage('Non ho capito nessuna attivita. Prova a dire parole chiave chiare.', 'error');
                 return;
             }
 
-            showMessage('Ho capito: ' + ore + 'h per ' + matchedAttivita.nome, 'info');
+            // Mostra riepilogo
+            const riepilogo = attivitaDaRegistrare.map(item => 
+                item.ore + 'h ' + item.attivita.nome
+            ).join(' + ');
             
+            showMessage('Ho capito: ' + riepilogo, 'info');
+            
+            // Registra TUTTE le attività trovate
             setTimeout(async () => {
-                await registraOreVocale(matchedAttivita.id, ore, 'Registrato tramite voce: "' + transcript + '"');
-            }, 1000);
+                for (const item of attivitaDaRegistrare) {
+                    await registraOreVocale(
+                        item.attivita.id, 
+                        item.ore, 
+                        'Registrato tramite voce: "' + transcript + '"'
+                    );
+                }
+                showMessage('Tutte le attivita registrate!', 'success');
+            }, 1500);
         }
 
         async function registraOreVocale(attivitaId, ore, note) {
@@ -1182,6 +1223,68 @@
                         legend: {
                             position: 'bottom',
                             labels: { color: '#94a3b8', padding: 15 }
+                        }
+                    }
+                }
+            });
+
+            // GRAFICO TREND (linea con area)
+            const ctx3 = document.getElementById('chart-trend');
+            if (chartTrend) chartTrend.destroy();
+
+            chartTrend = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: dailyLabels,
+                    datasets: [{
+                        label: 'Ore Giornaliere',
+                        data: dailyValues,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#60a5fa',
+                            bodyColor: '#fff',
+                            borderColor: '#3b82f6',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Ore: ' + context.parsed.y.toFixed(1) + 'h';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return value + 'h';
+                                }
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
                         }
                     }
                 }
