@@ -1121,35 +1121,6 @@
                 showMessage('Errore caricamento report', 'error');
             }
         }
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(activityHours),
-                        datasets: [{
-                            data: Object.values(activityHours).map(h => Math.round(h)),
-                            backgroundColor: [
-                                '#10b981', '#3b82f6', '#f59e0b', '#ef4444',
-                                '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'
-                            ],
-                            borderWidth: 2,
-                            borderColor: '#1e293b'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: { color: '#94a3b8' }
-                            }
-                        }
-                    }
-                });
-
-            } catch (error) {
-                console.error('Errore caricamento report:', error);
-            }
-        }
 
         // ==========================================
         // TABS
