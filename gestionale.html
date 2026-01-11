@@ -421,22 +421,50 @@
         <!-- TAB: REPORT -->
         <div id="tab-report" class="tab-content">
             <div class="card">
-                <h2> Report Ore per Operaio</h2>
+                <h2> Filtri Report</h2>
+                
+                <div class="form-group">
+                    <label>Operaio</label>
+                    <select id="report-operaio" class="form-select" onchange="loadReport()">
+                        <option value="">Tutti gli operai</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>Periodo</label>
-                    <select id="report-period" class="form-select" onchange="loadReport()">
+                    <select id="report-period" class="form-select" onchange="toggleReportDateInputs()">
                         <option value="7">Ultimi 7 giorni</option>
                         <option value="30" selected>Ultimo mese</option>
                         <option value="90">Ultimi 3 mesi</option>
+                        <option value="custom">Personalizzato</option>
                     </select>
                 </div>
+
+                <div id="report-custom-dates" style="display: none; margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Data Inizio</label>
+                            <input type="date" id="report-date-start" class="form-input" onchange="loadReport()">
+                        </div>
+                        <div class="form-group">
+                            <label>Data Fine</label>
+                            <input type="date" id="report-date-end" class="form-input" onchange="loadReport()">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="loadReport()" style="width: 100%; margin-bottom: 10px;">Aggiorna Report</button>
+            </div>
+
+            <div class="card">
+                <h2> Report Ore per Operaio</h2>
                 <div class="chart-container">
                     <canvas id="report-chart"></canvas>
                 </div>
             </div>
 
             <div class="card">
-                <h2> Report Ore per Attivit</h2>
+                <h2> Report Ore per Attivita</h2>
                 <div class="chart-container">
                     <canvas id="activity-chart"></canvas>
                 </div>
@@ -444,9 +472,9 @@
 
             <!-- EXPORT EXCEL -->
             <div class="card">
-                <h2> Export Dati</h2>
-                <p style="color: #94a3b8; margin-bottom: 15px;">Esporta tutti i dati in formato Excel (compatibile con il tuo foglio presenze)</p>
-                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;"> EXPORT EXCEL</button>
+                <h2> Export Dati Filtrati</h2>
+                <p style="color: #94a3b8; margin-bottom: 15px;">Esporta in Excel SOLO i dati del periodo e operaio selezionati</p>
+                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;"> EXPORT EXCEL FILTRATO</button>
             </div>
         </div>
 
@@ -535,6 +563,7 @@
         let attivita = [];
         let reportChart = null;
         let activityChart = null;
+        let currentReportData = []; // Dati correnti del report filtrato
 
         // ==========================================
         // INIZIALIZZAZIONE
@@ -909,19 +938,94 @@
         // ==========================================
         // REPORT
         // ==========================================
+        function initReportFilters() {
+            // Popola select operai
+            const selectOperai = document.getElementById('report-operaio');
+            selectOperai.innerHTML = '<option value="">Tutti gli operai</option>';
+            operai.forEach(op => {
+                selectOperai.innerHTML += `<option value="${op.id}">${op.nome} ${op.cognome}</option>`;
+            });
+
+            // Imposta date di default (ultimo mese)
+            const today = new Date();
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            document.getElementById('report-date-end').valueAsDate = today;
+            document.getElementById('report-date-start').valueAsDate = monthAgo;
+        }
+
+        function toggleReportDateInputs() {
+            const period = document.getElementById('report-period').value;
+            const customDates = document.getElementById('report-custom-dates');
+            
+            if (period === 'custom') {
+                customDates.style.display = 'block';
+            } else {
+                customDates.style.display = 'none';
+                loadReport();
+            }
+        }
+
+        function getReportDateRange() {
+            const period = document.getElementById('report-period').value;
+            const today = new Date();
+            let startDate, endDate = today;
+
+            if (period === 'custom') {
+                const customStart = document.getElementById('report-date-start').value;
+                const customEnd = document.getElementById('report-date-end').value;
+                if (customStart && customEnd) {
+                    startDate = new Date(customStart);
+                    endDate = new Date(customEnd);
+                } else {
+                    return null;
+                }
+            } else {
+                const days = parseInt(period);
+                startDate = new Date();
+                startDate.setDate(today.getDate() - days);
+            }
+
+            return {
+                start: startDate.toISOString().split('T')[0],
+                end: endDate.toISOString().split('T')[0]
+            };
+        }
+
         async function loadReport() {
-            const days = parseInt(document.getElementById('report-period').value);
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - days);
+            const dateRange = getReportDateRange();
+            if (!dateRange) {
+                showMessage('Seleziona data inizio e fine', 'error');
+                return;
+            }
+
+            const operaioId = document.getElementById('report-operaio').value;
 
             try {
-                // Report per operaio
-                const { data: oreData } = await supabaseClient
+                // Query base
+                let query = supabaseClient
                     .from('ore_lavorate')
-                    .select('*, operai(*)')
-                    .gte('data', startDate.toISOString().split('T')[0]);
+                    .select('*, operai(*), attivita(*)')
+                    .gte('data', dateRange.start)
+                    .lte('data', dateRange.end)
+                    .order('data', { ascending: true });
+
+                // Applica filtro operaio se selezionato
+                if (operaioId) {
+                    query = query.eq('operaio_id', operaioId);
+                }
+
+                const { data: oreData, error } = await query;
+
+                if (error) throw error;
+
+                // Salva i dati correnti per l'export
+                currentReportData = oreData || [];
 
                 if (!oreData || oreData.length === 0) {
+                    showMessage('Nessun dato per il periodo selezionato', 'error');
+                    if (reportChart) reportChart.destroy();
+                    if (activityChart) activityChart.destroy();
                     return;
                 }
 
@@ -970,14 +1074,9 @@
                     }
                 });
 
-                // Report per attivit
-                const { data: oreAttData } = await supabaseClient
-                    .from('ore_lavorate')
-                    .select('*, attivita(*)')
-                    .gte('data', startDate.toISOString().split('T')[0]);
-
+                // Raggruppa per attivita
                 const activityHours = {};
-                oreAttData.forEach(item => {
+                oreData.forEach(item => {
                     const name = item.attivita.nome;
                     if (!activityHours[name]) {
                         activityHours[name] = 0;
@@ -985,11 +1084,43 @@
                     activityHours[name] += parseFloat(item.ore);
                 });
 
-                // Grafico attivit
+                // Grafico attivita
                 const ctx2 = document.getElementById('activity-chart');
                 if (activityChart) activityChart.destroy();
 
                 activityChart = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(activityHours),
+                        datasets: [{
+                            data: Object.values(activityHours).map(h => Math.round(h)),
+                            backgroundColor: [
+                                '#10b981', '#3b82f6', '#f59e0b', '#ef4444',
+                                '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#1e293b'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#94a3b8' }
+                            }
+                        }
+                    }
+                });
+
+                showMessage(`Report aggiornato: ${oreData.length} registrazioni trovate`, 'success');
+
+            } catch (error) {
+                console.error('Errore caricamento report:', error);
+                showMessage('Errore caricamento report', 'error');
+            }
+        }
                     type: 'doughnut',
                     data: {
                         labels: Object.keys(activityHours),
@@ -1031,6 +1162,7 @@
             document.getElementById(`tab-${tabName}`).classList.add('active');
 
             if (tabName === 'report') {
+                initReportFilters();
                 loadReport();
             }
         }
@@ -1069,18 +1201,15 @@
         // ==========================================
         async function exportToExcel() {
             try {
-                showMessage(' Generando Excel...', 'info');
-                
-                // Preleva tutti i dati
-                const { data: oreData } = await supabaseClient
-                    .from('ore_lavorate')
-                    .select('*, operai(*), attivita(*)')
-                    .order('data', { ascending: true });
-
-                if (!oreData || oreData.length === 0) {
-                    showMessage(' Nessun dato da esportare', 'error');
+                // Usa i dati correnti del report filtrato
+                if (!currentReportData || currentReportData.length === 0) {
+                    showMessage('Nessun dato da esportare. Carica prima un report.', 'error');
                     return;
                 }
+
+                showMessage('Generando Excel...', 'info');
+                
+                const oreData = currentReportData;
 
                 // Raggruppa per mese/anno
                 const dataByMonth = {};
@@ -1153,15 +1282,32 @@
                     XLSX.utils.book_append_sheet(wb, ws, sheetName);
                 });
 
-                // Scarica file
-                const today = new Date().toISOString().split('T')[0];
-                XLSX.writeFile(wb, `presenze_${today}.xlsx`);
+                // Genera nome file con filtri applicati
+                const dateRange = getReportDateRange();
+                const operaioId = document.getElementById('report-operaio').value;
+                let filename = 'presenze';
                 
-                showMessage(' Excel scaricato con successo!', 'success');
+                if (operaioId) {
+                    const operaioSel = operai.find(o => o.id === operaioId);
+                    if (operaioSel) {
+                        filename += `_${operaioSel.nome}_${operaioSel.cognome}`;
+                    }
+                }
+                
+                if (dateRange) {
+                    filename += `_${dateRange.start}_${dateRange.end}`;
+                }
+                
+                filename += '.xlsx';
+
+                // Scarica file
+                XLSX.writeFile(wb, filename);
+                
+                showMessage('Excel scaricato con successo!', 'success');
 
             } catch (error) {
                 console.error('Errore export Excel:', error);
-                showMessage(' Errore durante l\'export', 'error');
+                showMessage('Errore durante export', 'error');
             }
         }
 
